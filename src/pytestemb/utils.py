@@ -5,7 +5,6 @@ PyTestEmb Project : utils gathered some utils function
 """
 
 __author__      = "$Author: jmbeguinet $"
-__version__     = "$Revision: 1.2 $"
 __copyright__   = "Copyright 2009, The PyTestEmb Project"
 __license__     = "GPL"
 __email__       = "jm.beguinet@gmail.com"
@@ -14,19 +13,6 @@ __email__       = "jm.beguinet@gmail.com"
 
 import os
 import sys
-
-
-
-
-
-
-
-
-
-
-
-
-import codecs
 import types
 
 

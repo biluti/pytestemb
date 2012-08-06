@@ -5,7 +5,6 @@ PyTestEmb Project : trace manages trace coming from module and script execution
 """
 
 __author__      = "$Author: jmbeguinet $"
-__version__     = "$Revision: 1.5 $"
 __copyright__   = "Copyright 2009, The PyTestEmb Project"
 __license__     = "GPL"
 __email__       = "jm.beguinet@gmail.com"
@@ -71,19 +70,30 @@ class Trace:
         line = []
 
         if    name == "assert_ko":
-            line.append("%s : time:'%s'" % (name, des["time"]))
             
+            if des.has_key("msg"):
+                msg = des["msg"]
+            else:
+                msg = ""
+            line.append("%s : '%s'" % (name, msg))
+
             for s in des["stack"]:
                 line.append("    File \"%s\", line %d, in %s" % (s["path"], s["line"], s["function"]))
                 line.append("        %s" % (s["code"]))
                     
             line.append("    File \"%s\", line %d, in %s" % (des["file"], des["line"], des["function"]))
             line.append("        + function   : \"%s\"" % des["function"])
-            if des.has_key("msg"):
-                line.append("        + message    : \"%s\"" % des["msg"])
             line.append("        + expression : \"%s\"" % des["expression"])
             line.append("        + values     : \"%s\"" % des["values"])
             line.append("        + time       : \"%s\"" % des["time"])
+        
+        elif    name == "assert_ok":
+            
+            if des.has_key("msg"):
+                msg = des["msg"]
+            else:
+                msg = ""            
+            line.append("%s : '%s'" % (name, msg))
         
         elif  name == "py_exception":
             line.append("%s : time:'%s'" % (name, des["time"]))
@@ -195,6 +205,15 @@ class TraceOctopylog(Trace):
 
         des = dict({"type":"octopylog"})
         self.result.trace_ctrl(des)
+        
+        self.trace_header()
+    
+    
+    def trace_header(self):
+        self.trace_scope("trace", "#"*64)
+        self.trace_scope("trace", "# %s" % time.strftime("Start %d/%m/%Y @ %H:%M:%S", self.gtime.start_date))
+        self.trace_scope("trace", "#"*64)
+        
 
     def trace_scope(self, scope, msg):
         try:
@@ -296,9 +315,9 @@ class TraceTxt(Trace):
             if not(os.path.lexists(TraceTxt.DEFAULT_DIR)):
                 os.mkdir(TraceTxt.DEFAULT_DIR)
             #pathfile = "%s\\" % TraceTxt.DEFAULT_DIR
-        pathfile =  os.path.join(TraceTxt.DEFAULT_DIR, self.gen_file_name() )
+        pathfile =  os.path.join(TraceTxt.DEFAULT_DIR, self.gen_file_name())
         # create file
-        des = dict({"type":"txt","file":pathfile})
+        des = dict({"type":"pyt","file":pathfile})
         try :
             self.file = codecs.open(pathfile, encoding="utf-8", mode="w")
         except (IOError) , (error):
@@ -315,12 +334,11 @@ class TraceTxt(Trace):
         m.update(time.strftime("%d_%m_%Y_%H_%M_%S", self.gtime.start_date))
         name_script = utils.get_script_name()
         name_hash = m.hexdigest()[0:16].upper()
-        return"%s_%s.log" % (name_script, name_hash)
+        return"%s_%s.pyt" % (name_script, name_hash)
 
     def format(self, mtime, scope, msg):
         mtime = mtime.ljust(16)
         scope = scope.ljust(24)
-        msg = msg.strip()
         return "%s%s%s\n"  % (mtime, scope, msg)
 
     def add_header(self):
@@ -344,8 +362,19 @@ class TraceTxt(Trace):
         self.add_line(interface, data)
 
     def trace_result(self, name, des):
+        
+        if      name == "assert_ko":
+            scope = "result"
+        elif    name == "assert_ok":
+            scope = "result"
+        elif    name == "py_exception":
+            scope = "exception"
+        else:
+            scope = "sequence"
         for l in self.format_result(name, des):
-            self.add_line("Result", l)
+            self.add_line(scope, l)
+        
+            
 
     def trace_warning(self, des):
         self.add_line("Warning", des["msg"])

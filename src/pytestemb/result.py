@@ -5,7 +5,6 @@ PyTestEmb Project : result manages result of script execution
 """
 
 __author__      = "$Author: jmbeguinet $"
-__version__     = "$Revision: 1.6 $"
 __copyright__   = "Copyright 2009, The PyTestEmb Project"
 __license__     = "GPL"
 __email__       = "jm.beguinet@gmail.com"
@@ -514,19 +513,21 @@ class ResultStandalone(Result):
     @stamp
     @trace
     def assert_ko(self, des):
-        sys.stdout.write("Assert KO\n")
+        
+        
+        if des.has_key("msg"):   
+            msg = des["msg"]
+        else:
+            msg = ""     
+        
+        sys.stdout.write("Assert KO : '%s'\n" % msg)
         
         for s in des["stack"]:
             loc = "    File \"%s\", line %d, in %s\n" % (s["path"], s["line"], s["function"])
             loc += "        %s\n" % (s["code"])
             sys.stdout.write("%s" % loc)       
-        
-        loc = "    File \"%s\", line %d, in %s\n" % (des["file"], des["line"], des["function"])
-        sys.stdout.write("%s" % loc)       
-        
+        sys.stdout.write("    File \"%s\", line %d, in %s\n" % (des["file"], des["line"], des["function"]))       
         sys.stdout.write("        + function   : \"%s\"\n" % des["function"])
-        if des.has_key("msg"):
-            sys.stdout.write("        + message    : \"%s\"\n" % des["msg"])
         sys.stdout.write("        + expression : \"%s\"\n" % des["expression"])
         sys.stdout.write("        + values     : \"%s\"\n" % des["values"])
 

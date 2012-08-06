@@ -5,7 +5,6 @@ PyTestEmb Project : config manages configuration runtime of other modules
 """
 
 __author__      = "$Author: jmbeguinet $"
-__version__     = "$Revision: 1.1 $"
 __copyright__   = "Copyright 2009, The PyTestEmb Project"
 __license__     = "GPL"
 __email__       = "jm.beguinet@gmail.com"

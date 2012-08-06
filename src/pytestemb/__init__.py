@@ -3,6 +3,12 @@
 """
  Historic :
 
+
+*1.4.0
+    - change log extension to '*.pyt'
+    - improve Assert KO formating
+    - add header with date and hour in Octopylog trace 
+
 *1.3.4
     - tag_value : remove timestamp
 
@@ -41,7 +47,6 @@
 """
 
 __author__      = "$Author: jmbeguinet $"
-__version__     = "$Revision: 1.9 $"
 __copyright__   = "Copyright 2009, The PyTestEmb Project"
 __license__     = "GPL"
 __email__       = "jm.beguinet@gmail.com"
@@ -50,7 +55,7 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "1.3.4"
+VERSION_STRING = "1.4.0"
 
 
 
@@ -177,6 +182,7 @@ __trace__.set_config(__config__)
 __trace__.start()
 
 __config__.start()
+
 
 # Configuration management
 SCOPE_CF = "CF"

@@ -1,3 +1,13 @@
+# -*- coding: UTF-8 -*-
+
+""" 
+
+"""
+
+__author__      = "$Author: jmbeguinet $"
+__copyright__   = "Copyright 2009, The PyTestEmb Project"
+__license__     = "GPL"
+__email__       = "jm.beguinet@gmail.com"
 
 
 
