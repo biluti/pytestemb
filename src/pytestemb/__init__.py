@@ -4,6 +4,9 @@
  Historic :
 
 
+*1.4.1
+    - add destroy callback
+
 *1.4.0
     - change log extension to '*.pyt'
     - improve Assert KO formating
@@ -55,7 +58,7 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "1.4.0"
+VERSION_STRING = "1.4.1"
 
 
 
@@ -232,6 +235,23 @@ def set_cleanup(func_cleanup):
         __pydoc__.set_cleanup(func_cleanup)
     else :
         __valid__.set_cleanup(func_cleanup)
+
+
+
+
+
+
+def set_destroy(func_destroy):
+    """
+    @function           : set_destroy(func_destroy)
+    @param func_destroy : (function) a destroy function
+    @return             : None
+    @summary            : add a destroy function to the script
+    """
+    if options.doc :
+        pass
+    else :
+        __valid__.set_destroy(func_destroy)
 
 
 

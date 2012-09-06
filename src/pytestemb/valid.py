@@ -39,6 +39,7 @@ class Valid:
         self.result = result
         self.setup = self._nothing_
         self.cleanup = self._nothing_
+        self.destroy = self._nothing_
         self.case = []
         self.name = utils.get_script_name()
 
@@ -60,11 +61,20 @@ class Valid:
             # Avoid user mistake with two time function set
             raise pexception.PytestembError("CleanUp function already set")
 
+
+
+    def set_destroy(self, funcDestroy):
+        if self.destroy == self._nothing_ :
+            self.cleanup = funcDestroy
+        else:
+            # Avoid user mistake with two time function set
+            raise pexception.PytestembError("funcDestroy function already set")
+        
+
     def add_test_case(self, funcCase):
         self.case.append(funcCase)
 
-#    def script_need_run(self, name):
-#        return True
+
 
 
     def run_script(self):
@@ -85,6 +95,7 @@ class Valid:
             self.result.cleanup_start({})
             self.run_try(self.cleanup)
             self.result.cleanup_stop({})
+            self.run_try(self.destroy)
         except:
             raise
         self.result.script_stop({"name":self.name})
@@ -133,7 +144,6 @@ class Valid:
         des["exception_class"]  = exception.__class__.__name__
 
         self.result.py_exception(des)
-
 
 
 
