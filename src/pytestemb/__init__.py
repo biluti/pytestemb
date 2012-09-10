@@ -4,6 +4,9 @@
  Historic :
 
 
+*1.4.2
+    - fix regression on cleanup callback
+
 *1.4.1
     - add destroy callback
 
