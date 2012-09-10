@@ -65,7 +65,7 @@ class Valid:
 
     def set_destroy(self, funcDestroy):
         if self.destroy == self._nothing_ :
-            self.funcDestroy = funcDestroy
+            self.destroy = funcDestroy
         else:
             # Avoid user mistake with two time function set
             raise pexception.PytestembError("funcDestroy function already set")
