@@ -1,5 +1,11 @@
 # -*- coding: UTF-8 -*-
 
+
+
+
+VERSION_STRING = "1.4.2"
+
+
 """
  Historic :
 
@@ -61,7 +67,7 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "1.4.1"
+
 
 
 
