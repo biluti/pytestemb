@@ -3,12 +3,15 @@
 
 
 
-VERSION_STRING = "1.4.2"
+VERSION_STRING = "1.4.3"
 
 
 """
  Historic :
 
+*1.4.3
+    - add create callback
+    - update parser for create and destroy 
 
 *1.4.2
     - fix regression on cleanup callback
@@ -248,7 +251,18 @@ def set_cleanup(func_cleanup):
 
 
 
-
+def set_create(func_create):
+    """
+    @function           : set_create(func_create)
+    @param func_create  : (function) a create function
+    @return             : None
+    @summary            : add a create function to the script
+    """
+    if options.doc :
+        pass
+    else :
+        __valid__.set_create(func_create)
+        
 
 def set_destroy(func_destroy):
     """

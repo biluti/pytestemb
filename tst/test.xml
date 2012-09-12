@@ -33,5 +33,13 @@
             <Script Path="script" Type="TST" Name="script_traceback"/>
             <Script Path="script" Type="TST" Name="script_utf8"/>
         </Campaign>
+        <Campaign Info="" Name="env">
+            <Script Path="script" Type="TST" Name="script_create_01"/>
+            <Script Path="script" Type="TST" Name="script_create_02"/>
+            <Script Path="script" Type="TST" Name="script_destroy_01"/>
+            <Script Path="script" Type="TST" Name="script_destroy_02"/>
+            <Script Path="script" Type="TST" Name="script_cleanup_01"/>
+            <Script Path="script" Type="TST" Name="script_cleanup_02"/>
+        </Campaign>
     </Campaigns>
 </Project>

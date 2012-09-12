@@ -128,6 +128,18 @@ class Result:
 
 
 
+    def create_start(self, des):
+        pass
+        
+    def create_stop(self, des):
+        pass
+
+    def destroy_start(self, des):
+        pass
+        
+    def destroy_stop(self, des):
+        pass
+        
     def script_start(self, des):
         pass
 
@@ -224,25 +236,37 @@ def stamp(func):
 
 class ResultStdout(Result):
     SEPARATOR = "="
-    SCRIPT_START = "SCRIPT_START"
-    SCRIPT_STOP = "SCRIPT_STOP"
-    SETUP_START = "SETUP_START"
-    SETUP_STOP = "SETUP_STOP"
-    CLEANUP_START = "CLEANUP_START"
-    CLEANUP_STOP = "CLEANUP_STOP"
-    CASE_START = "CASE_START"
-    CASE_STOP = "CASE_STOP"
-    CASE_NOTEXECUTED = "CASE_NOTEXECUTED"
-    ERROR_CONFIG = "ERROR_CONFIG"
-    ERROR_IO = "ERROR_IO"
-    ERROR_TEST = "ERROR_TEST"
-    WARNING = "WARNING"
-    ASSERT_OK = "ASSERT_OK"
-    ASSERT_KO = "ASSERT_KO"
-    PY_EXCEPTION = "PY_EXCEPTION"
-    TRACE = "TRACE"
-    DOC = "DOC"
-    TAGVALUE = "TAGVALUE"
+    
+    
+    CREATE_START        = "CREATE_START"
+    CREATE_STOP         = "CREATE_STOP"
+    
+    DESTROY_START       = "DESTROY_START"
+    DESTROY_STOP        = "DESTROY_STOP"  
+      
+    SCRIPT_START        = "SCRIPT_START"
+    SCRIPT_STOP         = "SCRIPT_STOP"
+    
+    SETUP_START         = "SETUP_START"
+    SETUP_STOP          = "SETUP_STOP"
+    
+    CLEANUP_START       = "CLEANUP_START"
+    CLEANUP_STOP        = "CLEANUP_STOP"
+    
+    CASE_START          = "CASE_START"
+    CASE_STOP           = "CASE_STOP"
+    
+    CASE_NOTEXECUTED    = "CASE_NOTEXECUTED"
+    ERROR_CONFIG        = "ERROR_CONFIG"
+    ERROR_IO            = "ERROR_IO"
+    ERROR_TEST          = "ERROR_TEST"
+    WARNING             = "WARNING"
+    ASSERT_OK           = "ASSERT_OK"
+    ASSERT_KO           = "ASSERT_KO"
+    PY_EXCEPTION        = "PY_EXCEPTION"
+    TRACE               = "TRACE"
+    DOC                 = "DOC"
+    TAGVALUE            = "TAGVALUE"
 
 
     def __init__(self, trace):
@@ -267,6 +291,23 @@ class ResultStdout(Result):
         for item in self.delay_trace_ctrl:
             self.write(ResultStdout.TRACE, item)
 
+
+    @trace
+    def create_start(self, des):
+        self.write(ResultStdout.CREATE_START, des)
+        
+    @trace
+    def create_stop(self, des):
+        self.write(ResultStdout.CREATE_STOP, des)
+
+    @trace
+    def destroy_start(self, des):
+        self.write(ResultStdout.DESTROY_START, des)
+        
+    @trace
+    def destroy_stop(self, des):
+        self.write(ResultStdout.DESTROY_STOP, des)
+                
     @trace
     def script_stop(self, des):
         self.write(ResultStdout.SCRIPT_STOP, des)
@@ -451,6 +492,24 @@ class ResultStandalone(Result):
             self.add_line("Script \"%s\"" % des["name"] , "KO")
         sys.stdout.write("+%s+\n" % ("-"*95))
 
+
+
+    @trace
+    def create_start(self, des):
+        pass
+        
+    @trace
+    def create_stop(self, des):
+        pass
+
+    @trace
+    def destroy_start(self, des):
+        pass
+        
+    @trace
+    def destroy_stop(self, des):
+        pass
+
     @trace
     def setup_start(self, des):
         pass
@@ -514,7 +573,6 @@ class ResultStandalone(Result):
     @trace
     def assert_ko(self, des):
         
-        
         if des.has_key("msg"):   
             msg = des["msg"]
         else:
@@ -534,8 +592,7 @@ class ResultStandalone(Result):
         self.result[-1]["assert_ko"] += 1
         
 
-                       
-
+                    
     @stamp
     @trace
     def py_exception(self, des):
@@ -545,17 +602,13 @@ class ResultStandalone(Result):
             dis += "        %s\n" % (sline["code"])
         dis += "    %s\n" % (des["exception_class"])
         dis += "    %s\n" % (des["exception_info"])
-        
-
-        
+    
         sys.stdout.write(dis.encode("utf-8"))
 
         try :
             self.result[-1]["assert_ko"] += 1
         except Exception, ex:
             pass
-
-
 
 
     @trace
@@ -573,8 +626,7 @@ class ResultStandalone(Result):
 
 
 
-#    def trace_ctrl(self, des):
-#        sys.stdout.write("Trace info : %s\n" % des.__str__())
+
 
 
 def create(interface, mtrace):

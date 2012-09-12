@@ -29,7 +29,6 @@ def create_des(info):
 
         
 
-
 class Test_ResultReader(unittest.TestCase):
     def setUp(self):
         pass
@@ -370,6 +369,44 @@ class Test_ResultReader(unittest.TestCase):
                 
         
 
+    def test_case_06(self):
+
+        reader = parser.ResultStdoutReader()
+        
+        reader.add_line("%s%sscript_01\n" % (result.ResultStdout.SCRIPT_START, result.ResultStdout.SEPARATOR))
+        
+        reader.add_line("%s%s{}\n" % (result.ResultStdout.CREATE_START, result.ResultStdout.SEPARATOR))
+        
+        
+        exp= PY_EXCEPTION="""{'exception_info': u'', 'exception_class': 'Exception', 'stack': [{'function': 'destroy', 'path': '/home/jmb/workspace/pytestemb_git/tst/script/script_destroy_02.py', 'line': 37, 'code': '    raise Exception()'}], 'time': 0.21273398399353027}"""
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.PY_EXCEPTION, result.ResultStdout.SEPARATOR, exp))
+        
+
+
+        reader.add_line("%s%s{}\n" % (result.ResultStdout.CREATE_STOP, result.ResultStdout.SEPARATOR))
+        
+        reader.add_line("%s%s\n" % (result.ResultStdout.SETUP_START, result.ResultStdout.SEPARATOR))
+
+
+        error_data = "{'info':'assert_ok_01'"
+        s = "%s%s%s\n" %    (   result.ResultStdout.ASSERT_OK,\
+                                            result.ResultStdout.SEPARATOR,\
+                                            error_data)
+        
+
+        
+        self.assertRaises(parser.StdoutReaderError, reader.add_line, s)
+                
+        reader.add_line("%s%s\n" % (result.ResultStdout.SETUP_STOP, result.ResultStdout.SEPARATOR))
+
+
+        reader.add_line("%s%s\n" % (result.ResultStdout.CLEANUP_START, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s\n" % (result.ResultStdout.CLEANUP_STOP, result.ResultStdout.SEPARATOR))
+
+        reader.add_line("%s%s{}\n" % (result.ResultStdout.DESTROY_START, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s{}\n" % (result.ResultStdout.DESTROY_STOP, result.ResultStdout.SEPARATOR))
+        
+        reader.add_line("%s%sscript_01\n" % (result.ResultStdout.SCRIPT_STOP, result.ResultStdout.SEPARATOR))
 
 
  

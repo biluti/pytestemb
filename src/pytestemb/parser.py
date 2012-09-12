@@ -76,10 +76,10 @@ class ResultStdoutReader(StdoutReader):
 
 
     def __str__(self):
-        str = ""
+        s = ""
         for scr in self.script:
-            str += "%s\n" % scr.__str__()
-        return str
+            s += "%s\n" % scr.__str__()
+        return s
     
 
     def create_resultcounter(self):
@@ -111,6 +111,8 @@ class ResultStdoutReader(StdoutReader):
         # SETUP_START, CLEANUP_START, CASE_START
         elif        key == result.ResultStdout.SETUP_START\
                 or  key == result.ResultStdout.CLEANUP_START\
+                or  key == result.ResultStdout.CREATE_START\
+                or  key == result.ResultStdout.DESTROY_START\
                 or  key == result.ResultStdout.CASE_START :
             self.check_started(not(self.case_started))
             if      key == result.ResultStdout.SETUP_START :
@@ -119,6 +121,12 @@ class ResultStdoutReader(StdoutReader):
             elif    key == result.ResultStdout.CLEANUP_START:
                 value = "cleanup"
                 t = None
+            elif    key == result.ResultStdout.CREATE_START:
+                value = "create"
+                t = None
+            elif    key == result.ResultStdout.DESTROY_START:
+                value = "destroy"
+                t = None                                
             else :
                 dic = self.conv_dict(value)
                 value = dic["name"]
@@ -132,6 +140,8 @@ class ResultStdoutReader(StdoutReader):
         # SETUP_STOP, CLEANUP_STOP, CASE_STOP
         elif        key == result.ResultStdout.SETUP_STOP\
                 or  key == result.ResultStdout.CLEANUP_STOP\
+                or  key == result.ResultStdout.CREATE_STOP\
+                or  key == result.ResultStdout.DESTROY_STOP\
                 or  key == result.ResultStdout.CASE_STOP :
             self.check_started(self.case_started)
             self.case_started = False
@@ -164,7 +174,7 @@ class ResultStdoutReader(StdoutReader):
                 or  key == result.ResultStdout.WARNING\
                 or  key == result.ResultStdout.ASSERT_OK\
                 or  key == result.ResultStdout.ASSERT_KO\
-                or  key == result.ResultStdout.PY_EXCEPTION :
+                or  key == result.ResultStdout.PY_EXCEPTION:
             self.check_started(self.case_started)
             dic = self.conv_dict(value)
             self.script[-1].case[-1].add_result(key, dic)
@@ -172,7 +182,7 @@ class ResultStdoutReader(StdoutReader):
         elif        key == result.ResultStdout.TAGVALUE:
             self.check_started(self.script_started)
             tv = value.partition("=")
-            self.script[-1].case[-1].add_result(key, {tv[0]:tv[2]})              
+            self.script[-1].case[-1].add_result(key, {tv[0]:tv[2]})                              
         else :
             pass
             #print "key=%s value=%s" % (key, value)
@@ -188,8 +198,7 @@ class DocStdoutReader(StdoutReader):
         self.data = []
         
     def __str__(self):
-        str = ""
-        return str
+        return ""
     
     
     def process(self, key, value):

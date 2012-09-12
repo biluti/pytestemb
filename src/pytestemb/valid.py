@@ -20,7 +20,6 @@ import inspect
 
 
 import result
-#import trace
 import utils
 import pexception
 
@@ -37,9 +36,10 @@ class Valid:
     def __init__(self, config, result):
         self.config = config
         self.result = result
-        self.setup = self._nothing_
-        self.cleanup = self._nothing_
-        self.destroy = self._nothing_
+        self.setup      = self._nothing_
+        self.cleanup    = self._nothing_
+        self.create     = self._nothing_
+        self.destroy    = self._nothing_
         self.case = []
         self.name = utils.get_script_name()
 
@@ -62,6 +62,13 @@ class Valid:
             raise pexception.PytestembError("CleanUp function already set")
 
 
+    def set_create(self, funcCreate):
+        if self.create == self._nothing_ :
+            self.create = funcCreate
+        else:
+            # Avoid user mistake with two time function set
+            raise pexception.PytestembError("funcCreate function already set")
+        
 
     def set_destroy(self, funcDestroy):
         if self.destroy == self._nothing_ :
@@ -81,6 +88,10 @@ class Valid:
 
         self.result.script_start({"name":self.name})
         try:
+            # Create
+            self.result.create_start({})
+            self.run_try(self.create)
+            self.result.create_stop({})
             # Setup
             self.result.setup_start({})
             self.run_try(self.setup)
@@ -95,7 +106,12 @@ class Valid:
             self.result.cleanup_start({})
             self.run_try(self.cleanup)
             self.result.cleanup_stop({})
+            
+            # Destroy
+            self.result.destroy_start({})
             self.run_try(self.destroy)
+            self.result.destroy_stop({})
+            
         except:
             raise
         self.result.script_stop({"name":self.name})
