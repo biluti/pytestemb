@@ -49,7 +49,6 @@ class StdoutReader:
         if pos == line[-1] :
             self.process(line, None)
         else :
-            
             try:
                 self.process(line[0:pos], line[pos+1:])
             except StdoutReaderError, ex:
@@ -90,7 +89,9 @@ class ResultStdoutReader(StdoutReader):
         obj.add_kind(result.ResultStdout.WARNING)
         obj.add_kind(result.ResultStdout.ASSERT_OK)
         obj.add_kind(result.ResultStdout.ASSERT_KO)
-        obj.add_kind(result.ResultStdout.PY_EXCEPTION)        
+        obj.add_kind(result.ResultStdout.PY_EXCEPTION)
+        obj.add_kind(result.ResultStdout.ABORT)
+        obj.add_kind(result.ResultStdout.ABORTED)            
         obj.add_kind(result.ResultStdout.TAGVALUE)
         return obj
     
@@ -174,7 +175,9 @@ class ResultStdoutReader(StdoutReader):
                 or  key == result.ResultStdout.WARNING\
                 or  key == result.ResultStdout.ASSERT_OK\
                 or  key == result.ResultStdout.ASSERT_KO\
-                or  key == result.ResultStdout.PY_EXCEPTION:
+                or  key == result.ResultStdout.PY_EXCEPTION\
+                or  key == result.ResultStdout.ABORT\
+                or  key == result.ResultStdout.ABORTED:
             self.check_started(self.case_started)
             dic = self.conv_dict(value)
             self.script[-1].case[-1].add_result(key, dic)
@@ -200,7 +203,6 @@ class DocStdoutReader(StdoutReader):
     def __str__(self):
         return ""
     
-    
     def process(self, key, value):
         # DOC
         if  key == result.ResultStdout.DOC :
@@ -208,7 +210,6 @@ class DocStdoutReader(StdoutReader):
         else:
             pass
             #print "key=%s value=%s" % (key, value)
-            
             
             
             

@@ -12,10 +12,6 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-import sys
-import copy
-import os.path
-
 
 
 

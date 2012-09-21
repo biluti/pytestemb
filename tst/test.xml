@@ -28,10 +28,10 @@
             <Script Path="script" Type="TST" Name="script_exception_encoding"/>
             <Script Path="script" Type="TST" Name="script_format"/>
             <Script Path="script" Type="TST" Name="script_io_echo"/>
-            <Script Path="script" Type="TST" Name="script_rules_01"/>
-            <Script Path="script" Type="TST" Name="script_rules_02"/>
             <Script Path="script" Type="TST" Name="script_traceback"/>
             <Script Path="script" Type="TST" Name="script_utf8"/>
+            <Script Path="script" Type="TST" Name="script_fatal_00"/>
+            <Script Path="script" Type="TST" Name="script_fatal_01"/>
         </Campaign>
         <Campaign Info="" Name="env">
             <Script Path="script" Type="TST" Name="script_create_01"/>
@@ -40,6 +40,16 @@
             <Script Path="script" Type="TST" Name="script_destroy_02"/>
             <Script Path="script" Type="TST" Name="script_cleanup_01"/>
             <Script Path="script" Type="TST" Name="script_cleanup_02"/>
+        </Campaign>
+        <Campaign Info="" Name="abort">
+            <Script Path="script" Type="TST" Name="script_abort_00"/>
+            <Script Path="script" Type="TST" Name="script_abort_01"/>
+            <Script Path="script" Type="TST" Name="script_abort_02"/>
+            <Script Path="script" Type="TST" Name="script_abort_03"/>
+            <Script Path="script" Type="TST" Name="script_abort_04"/>
+            <Script Path="script" Type="TST" Name="script_abort_05"/>
+            <Script Path="script" Type="TST" Name="script_abort_06"/>
+            <Script Path="script" Type="TST" Name="script_abort_07"/>
         </Campaign>
     </Campaigns>
 </Project>

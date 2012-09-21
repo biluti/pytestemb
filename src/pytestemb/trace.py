@@ -87,8 +87,26 @@ class Trace:
             line.append("        + values     : \"%s\"" % des["values"])
             line.append("        + time       : \"%s\"" % des["time"])
         
-        elif    name == "assert_ok":
+        
+        elif name == "abort":
             
+            if des.has_key("msg"):
+                msg = des["msg"]
+            else:
+                msg = ""
+            line.append("%s : '%s'" % (name, msg))
+
+            for s in des["stack"]:
+                line.append("    File \"%s\", line %d, in %s" % (s["path"], s["line"], s["function"]))
+                line.append("        %s" % (s["code"]))
+                    
+            line.append("    File \"%s\", line %d, in %s" % (des["file"], des["line"], des["function"]))
+            line.append("        + function   : \"%s\"" % des["function"])
+            line.append("        + expression : \"%s\"" % des["expression"])
+            line.append("        + time       : \"%s\"" % des["time"])
+            
+        
+        elif    name == "assert_ok":
             if des.has_key("msg"):
                 msg = des["msg"]
             else:
@@ -103,9 +121,7 @@ class Trace:
                 line.append("        %s" % (s["code"]))
             line.append("    %s" % (des["exception_class"]))
             line.append("    %s" % (des["exception_info"]))
-        
-        
-        
+
         elif    name in ["case_start", "case_stop", "assert_ok", "script_start", "script_stop", "tag_value", "warning"]:
             info = ", ".join(["%s:'%s'" % (k,v) for k,v in des.iteritems()])
             line.append("%s : %s" % (name, info))                 
@@ -115,15 +131,12 @@ class Trace:
         return line
     
 
-    
 
 class TraceManager(Trace):
     def __init__(self):
         Trace.__init__(self)
-
         self.dictra = dict()
         
-
     def add_trace(self, name, tra):
         if not self.dictra.has_key(name):
             self.dictra[name] = tra
@@ -205,7 +218,6 @@ class TraceOctopylog(Trace):
 
         des = dict({"type":"octopylog"})
         self.result.trace_ctrl(des)
-        
         self.trace_header()
     
     
@@ -218,7 +230,7 @@ class TraceOctopylog(Trace):
     def trace_scope(self, scope, msg):
         try:
             self.scope[scope].info("%s" % msg)
-        except Exception, ex:
+        except Exception:
             self.scope[scope] = logging.getLogger("pytestemb.%s" % scope)
             self.scope[scope].info("%s" % msg)
 
@@ -287,7 +299,6 @@ class TraceStdout(Trace):
         self._write(data)
         
 
-from config import ConfigError
 
 
 class TraceTxt(Trace):
@@ -309,12 +320,10 @@ class TraceTxt(Trace):
         else:
             self.started = True        
         # output path and filename for trace file
-        try:
-            pathfile = self.config.get_config("TRACE_PATH")
-        except (ConfigError), (error):
-            if not(os.path.lexists(TraceTxt.DEFAULT_DIR)):
-                os.mkdir(TraceTxt.DEFAULT_DIR)
-            #pathfile = "%s\\" % TraceTxt.DEFAULT_DIR
+
+        if not(os.path.lexists(TraceTxt.DEFAULT_DIR)):
+            os.mkdir(TraceTxt.DEFAULT_DIR)
+
         pathfile =  os.path.join(TraceTxt.DEFAULT_DIR, self.gen_file_name())
         # create file
         des = dict({"type":"pyt","file":pathfile})

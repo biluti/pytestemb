@@ -25,7 +25,9 @@ class TestErrorFatal(Exception):
     "Fatal Error"
     pass
 
-
+class TestAbort(Exception):
+    "Abort"
+    pass
 
 
 
@@ -33,7 +35,6 @@ class Result:
 
     def __init__(self, trace):
         self.trace = trace
-
         self.start_date = time.localtime()
         self.start_clock = time.clock()
         self.gtime = gtime.Gtime.create()
@@ -48,20 +49,20 @@ class Result:
     def get_time(self):
         return self.gtime.get_time()
 
-    def get_assert_caller(self):
-        CALL_DEPTH = 4
+    def get_assert_caller(self, call_depth):
+
         default = dict.fromkeys(["path","line","function","code"], "no info")
         traceback = inspect.stack()
         dic = {}
         stack = []
         try :
-            dic["file"]         = copy.copy(traceback[CALL_DEPTH][1])
-            dic["line"]         = copy.copy(traceback[CALL_DEPTH][2])
-            dic["function"]     = copy.copy(traceback[CALL_DEPTH][3])
-            dic["expression"]   = copy.copy(traceback[CALL_DEPTH][4][0].strip(" \t\n"))
-            for index in range(CALL_DEPTH+1, len(traceback)):
+            dic["file"]         = copy.copy(traceback[call_depth][1])
+            dic["line"]         = copy.copy(traceback[call_depth][2])
+            dic["function"]     = copy.copy(traceback[call_depth][3])
+            dic["expression"]   = copy.copy(traceback[call_depth][4][0].strip(" \t\n"))
+            for index in range(call_depth+1, len(traceback)):
                 if          traceback[index][1].endswith("valid.py") \
-                    and     traceback[index][3] == ("run_case"):
+                    and     (traceback[index][3] == "run_case" or traceback[index][3] == "run_try") :
                     break
                 stack.append(copy.copy(default))
                 stack[-1]["path"]      = copy.copy(traceback[index][1])
@@ -78,16 +79,21 @@ class Result:
         if exp :
             self.assert_ok(des)
         else :
-            # info = self.get_assert_caller()
-            info, stack = self.get_assert_caller()
-            
-            des["stack"] = stack
-            des["values"] = values
+            info, stack = self.get_assert_caller(4)
+            des["stack"]    = stack
+            des["values"]   = values
             des.update(info)
             self.assert_ko(des)
             if fatal :
                 raise TestErrorFatal
 
+    def abort_test(self, des):
+        info, stack = self.get_assert_caller(3)
+        des["stack"] = stack
+        des.update(info)
+        self.abort(des)
+        raise TestAbort
+        
     def fail(self, des):
         self._assert_(False, False, des)
 
@@ -125,8 +131,6 @@ class Result:
     def assert_notequal_fatal(self, exp1, exp2, des):
         values = "%s == %s" % (utils.to_unicode(exp1), utils.to_unicode(exp2))
         self._assert_((exp1 != exp2), True, des, values)
-
-
 
     def create_start(self, des):
         pass
@@ -187,7 +191,13 @@ class Result:
 
     def py_exception(self, des):
         pass
+    
+    def abort(self, des):
+        pass
 
+    def aborted(self, des):
+        pass
+    
     def tag_value(self, des):
         pass    
 
@@ -211,9 +221,8 @@ def trace(func):
             try:
                 trace_func = args[0].trace_result
                 trace_func(func.func_name, args[1])
-            except Exception, ex:
+            except Exception:
                 raise
-
         result = func(*args, **kwargs)
         return result
     return decorated
@@ -226,7 +235,7 @@ def stamp(func):
         stamp = args[0].get_time()
         try:
             args[1]["time"] = stamp
-        except Exception, ex:
+        except Exception:
             pass
         result = func(*args, **kwargs)
         return result
@@ -264,6 +273,8 @@ class ResultStdout(Result):
     ASSERT_OK           = "ASSERT_OK"
     ASSERT_KO           = "ASSERT_KO"
     PY_EXCEPTION        = "PY_EXCEPTION"
+    ABORT               = "ABORT"
+    ABORTED             = "ABORTED"
     TRACE               = "TRACE"
     DOC                 = "DOC"
     TAGVALUE            = "TAGVALUE"
@@ -290,7 +301,6 @@ class ResultStdout(Result):
         self.write(ResultStdout.SCRIPT_START, des)
         for item in self.delay_trace_ctrl:
             self.write(ResultStdout.TRACE, item)
-
 
     @trace
     def create_start(self, des):
@@ -378,6 +388,16 @@ class ResultStdout(Result):
     def py_exception(self, des):
         self.write(ResultStdout.PY_EXCEPTION, des)
 
+    @stamp
+    @trace        
+    def abort(self, des):
+        self.write(ResultStdout.ABORT, des)        
+
+    @stamp
+    @trace        
+    def aborted(self, des):
+        self.write(ResultStdout.ABORTED, des)    
+    
     @trace
     def tag_value(self, des):
         self.write(ResultStdout.TAGVALUE, "%s=%s" % (des.keys()[0], des.values()[0]))
@@ -389,6 +409,234 @@ class ResultStdout(Result):
     def trace_ctrl(self, des):
         # delay sending
         self.delay_trace_ctrl.append(des)
+
+
+
+class ResultStandalone(Result):
+    
+    ASSERT_OK   = "ASSERT_OK"
+    ASSERT_KO   = "ASSERT_KO"
+    ABORTED     = "ABORTED"
+       
+
+    def __init__(self, trace):
+        Result.__init__(self, trace)
+        self.case = False
+        self.result = []
+
+    @trace
+    def script_start(self, des):
+        sys.stdout.write("Start running '%s' ...\n" % des["name"])
+        for item in self.delay_trace_ctrl:
+            sys.stdout.write("Trace : %s\n" % item)
+
+    def magical(self, data, size):
+        return (len(data)-size)
+
+    def add_line(self, col1, col2):
+        col1 = col1.ljust(60)
+        col2 = col2.ljust(32)
+        sys.stdout.write("| %s| %s|\n"  % (col1, col2))
+
+    @trace
+    def script_stop(self, des):
+        sys.stdout.write("End running '%s'\n" % des["name"])
+
+        test_ok = True
+        aborted = False
+
+        sys.stdout.write("\n+%s+\n" % ("-"*95))
+        for case in self.result :
+            
+            if case[self.ABORTED] > 0 or aborted:
+                self.add_line("Case \"%s\"" % case["case"], "aborted")
+                aborted = True
+            elif    case[self.ASSERT_KO] == 0 \
+                and case[self.ASSERT_OK] > 0:
+                self.add_line("Case \"%s\"" % case["case"], "ok")
+            elif    case[self.ASSERT_KO] == 0 \
+                and case[self.ASSERT_OK] == 0:
+                self.add_line("Case \"%s\"" % case["case"], "??")  
+                test_ok = False              
+            else:
+                self.add_line("Case \"%s\"" % case["case"], "ko")
+                test_ok = False
+     
+        sys.stdout.write("+%s+\n" % ("-"*95))
+        
+        if aborted :
+            self.add_line("Script \"%s\"" % des["name"] , "ABORTED")    
+        elif test_ok :
+            self.add_line("Script \"%s\"" % des["name"] , "OK")
+        else:
+            self.add_line("Script \"%s\"" % des["name"] , "KO")
+        sys.stdout.write("+%s+\n" % ("-"*95))
+
+
+
+    @trace
+    def create_start(self, des):
+        sys.stdout.write("Create  : \n")
+        
+    @trace
+    def create_stop(self, des):
+        pass
+
+    @trace
+    def destroy_start(self, des):
+        sys.stdout.write("Destroy :\n")
+        
+    @trace
+    def destroy_stop(self, des):
+        pass
+
+    @trace
+    def setup_start(self, des):
+        sys.stdout.write("Setup   :\n")
+
+    @trace
+    def setup_stop(self, des):
+        pass
+
+    @trace
+    def cleanup_start(self, des):
+        sys.stdout.write("Cleanup :\n")
+
+    @trace
+    def cleanup_stop(self, des):
+        pass
+
+    @stamp
+    @trace
+    def case_start(self, des):
+        self.result.append({"case":des["name"]})
+        self.result[-1][self.ASSERT_OK] = 0
+        self.result[-1][self.ASSERT_KO] = 0
+        self.result[-1][self.ABORTED] = 0
+        sys.stdout.write("Case    : '%s'\n" % des["name"])
+        
+        self.case = True
+
+    @stamp
+    @trace
+    def case_stop(self, des):
+        self.case = False
+
+    @stamp
+    @trace
+    def case_not_executed(self, des):
+        pass
+
+    @stamp
+    @trace
+    def error_config(self, des):
+        self.result[-1]["error_config"] += 1
+
+    @stamp
+    @trace
+    def error_io(self, des):
+        pass
+
+    @stamp
+    @trace
+    def error_test(self, des):
+        pass
+
+    @stamp
+    @trace
+    def warning(self, des):
+        sys.stdout.write("Warning : %s\n" % des["msg"])
+
+    @stamp
+    @trace
+    def assert_ok(self, des):
+        self.result[-1][self.ASSERT_OK] += 1
+
+    @stamp
+    @trace
+    def assert_ko(self, des):
+        
+        if des.has_key("msg"):   
+            msg = des["msg"]
+        else:
+            msg = ""     
+        
+        sys.stdout.write("Assert KO : '%s'\n" % msg)
+        
+        for s in des["stack"]:
+            loc = "    File \"%s\", line %d, in %s\n" % (s["path"], s["line"], s["function"])
+            loc += "        %s\n" % (s["code"])
+            sys.stdout.write("%s" % loc)       
+        sys.stdout.write("    File \"%s\", line %d, in %s\n" % (des["file"], des["line"], des["function"]))       
+        sys.stdout.write("        + function   : \"%s\"\n" % des["function"])
+        sys.stdout.write("        + expression : \"%s\"\n" % des["expression"])
+        sys.stdout.write("        + values     : \"%s\"\n" % des["values"])
+
+
+        if self.case :
+            self.result[-1][self.ASSERT_KO] += 1
+        
+      
+    @stamp
+    @trace
+    def py_exception(self, des):
+        dis = "Exception \n"
+        for sline in des["stack"] :
+            dis += "    File \"%s\", line %d, in %s\n" % (sline["path"], sline["line"], sline["function"])
+            dis += "        %s\n" % (sline["code"])
+        dis += "    %s\n" % (des["exception_class"])
+        dis += "    %s\n" % (des["exception_info"])
+    
+        sys.stdout.write(dis.encode("utf-8"))
+        
+        if self.case:
+            self.result[-1][self.ASSERT_KO] += 1
+        
+
+
+    @stamp
+    @trace        
+    def abort(self, des):
+        if des.has_key("msg"):   
+            msg = des["msg"]
+        else:
+            msg = ""     
+        
+        sys.stdout.write("Abort : '%s'\n" % msg)
+        
+        for s in des["stack"]:
+            loc = "    File \"%s\", line %d, in %s\n" % (s["path"], s["line"], s["function"])
+            loc += "        %s\n" % (s["code"])
+            sys.stdout.write("%s" % loc)       
+        sys.stdout.write("    File \"%s\", line %d, in %s\n" % (des["file"], des["line"], des["function"]))       
+        sys.stdout.write("        + function   : \"%s\"\n" % des["function"])
+        sys.stdout.write("        + expression : \"%s\"\n" % des["expression"])
+
+        if self.case:
+            self.result[-1][self.ABORTED] += 1
+        
+        
+    @trace
+    def aborted(self, des):
+        sys.stdout.write("  Aborted\n")
+        
+        if self.case:
+            self.result[-1][self.ABORTED] += 1
+          
+
+    @trace
+    def tag_value(self, des):
+        pass
+        
+    @trace
+    def doc(self, des):
+        import pydoc
+        sys.stdout.write("\n")
+
+        sys.stdout.write("Name : %s\n" % des[pydoc.KEY_NAME])
+        sys.stdout.write("Type : %s\n" % des[pydoc.KEY_TYPE])
+        sys.stdout.write("Doc :\n%s\n" % des[pydoc.KEY_DOC])
+
 
 
 
@@ -444,186 +692,6 @@ class ResultScript:
             sstr += "TRACE:%s" % item
 
         return sstr
-
-
-
-
-
-
-class ResultStandalone(Result):
-
-    def __init__(self, trace):
-        Result.__init__(self, trace)
-
-        self.case = None
-        self.result = []
-
-    @trace
-    def script_start(self, des):
-        sys.stdout.write("Start running %s ...\n" % des["name"])
-        for item in self.delay_trace_ctrl:
-            sys.stdout.write("Trace : %s\n" % item)
-
-    def magical(self, data, size):
-        return (len(data)-size)
-
-    def add_line(self, col1, col2):
-        col1 = col1.ljust(60)
-        col2 = col2.ljust(32)
-        sys.stdout.write("| %s| %s|\n"  % (col1, col2))
-
-    @trace
-    def script_stop(self, des):
-        sys.stdout.write("End running %s\n" % des["name"])
-
-        test_ok = True
-
-        sys.stdout.write("\n+%s+\n" % ("-"*95))
-        for case in self.result :
-            if case["assert_ko"] == 0 :
-                self.add_line("Case \"%s\"" % case["case"], "ok")
-            else :
-                self.add_line("Case \"%s\"" % case["case"], "ko")
-                test_ok = False
-        sys.stdout.write("+%s+\n" % ("-"*95))
-        if test_ok :
-            self.add_line("Script \"%s\"" % des["name"] , "OK")
-        else:
-            self.add_line("Script \"%s\"" % des["name"] , "KO")
-        sys.stdout.write("+%s+\n" % ("-"*95))
-
-
-
-    @trace
-    def create_start(self, des):
-        pass
-        
-    @trace
-    def create_stop(self, des):
-        pass
-
-    @trace
-    def destroy_start(self, des):
-        pass
-        
-    @trace
-    def destroy_stop(self, des):
-        pass
-
-    @trace
-    def setup_start(self, des):
-        pass
-
-    @trace
-    def setup_stop(self, des):
-        pass
-
-    @trace
-    def cleanup_start(self, des):
-        pass
-
-    @trace
-    def cleanup_stop(self, des):
-        pass
-
-    @stamp
-    @trace
-    def case_start(self, des):
-        self.result.append({"case":des["name"]})
-        self.result[-1]["assert_ok"] = 0
-        self.result[-1]["assert_ko"] = 0
-        sys.stdout.write("Case \"%s\" :\n" % des["name"])
-
-    @stamp
-    @trace
-    def case_stop(self, des):
-        pass
-
-    @stamp
-    @trace
-    def case_not_executed(self, des):
-        pass
-
-    @stamp
-    @trace
-    def error_config(self, des):
-        self.result[-1]["error_config"] += 1
-
-    @stamp
-    @trace
-    def error_io(self, des):
-        pass
-
-    @stamp
-    @trace
-    def error_test(self, des):
-        pass
-
-    @stamp
-    @trace
-    def warning(self, des):
-        sys.stdout.write("Warning : %s\n" % des["msg"])
-
-    @stamp
-    @trace
-    def assert_ok(self, des):
-        self.result[-1]["assert_ok"] += 1
-
-    @stamp
-    @trace
-    def assert_ko(self, des):
-        
-        if des.has_key("msg"):   
-            msg = des["msg"]
-        else:
-            msg = ""     
-        
-        sys.stdout.write("Assert KO : '%s'\n" % msg)
-        
-        for s in des["stack"]:
-            loc = "    File \"%s\", line %d, in %s\n" % (s["path"], s["line"], s["function"])
-            loc += "        %s\n" % (s["code"])
-            sys.stdout.write("%s" % loc)       
-        sys.stdout.write("    File \"%s\", line %d, in %s\n" % (des["file"], des["line"], des["function"]))       
-        sys.stdout.write("        + function   : \"%s\"\n" % des["function"])
-        sys.stdout.write("        + expression : \"%s\"\n" % des["expression"])
-        sys.stdout.write("        + values     : \"%s\"\n" % des["values"])
-
-        self.result[-1]["assert_ko"] += 1
-        
-
-                    
-    @stamp
-    @trace
-    def py_exception(self, des):
-        dis = "Exception \n"
-        for sline in des["stack"] :
-            dis += "    File \"%s\", line %d, in %s\n" % (sline["path"], sline["line"], sline["function"])
-            dis += "        %s\n" % (sline["code"])
-        dis += "    %s\n" % (des["exception_class"])
-        dis += "    %s\n" % (des["exception_info"])
-    
-        sys.stdout.write(dis.encode("utf-8"))
-
-        try :
-            self.result[-1]["assert_ko"] += 1
-        except Exception, ex:
-            pass
-
-
-    @trace
-    def tag_value(self, des):
-        pass
-        
-    @trace
-    def doc(self, des):
-        import pydoc
-        sys.stdout.write("\n")
-
-        sys.stdout.write("Name : %s\n" % des[pydoc.KEY_NAME])
-        sys.stdout.write("Type : %s\n" % des[pydoc.KEY_TYPE])
-        sys.stdout.write("Doc :\n%s\n" % des[pydoc.KEY_DOC])
-
 
 
 

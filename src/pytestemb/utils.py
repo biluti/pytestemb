@@ -28,9 +28,6 @@ def to_unicode(instr):
             return unicode(ascii_text)
 
 
-
-
-
 def get_script_name():
     return os.path.splitext(os.path.split(sys.argv[0])[1])[0]
 

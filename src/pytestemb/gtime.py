@@ -14,7 +14,7 @@ __email__       = "jm.beguinet@gmail.com"
 import time
 
 
-class Gtime():
+class Gtime(object):
 
     __single = None
     

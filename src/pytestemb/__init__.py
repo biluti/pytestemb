@@ -3,11 +3,17 @@
 
 
 
-VERSION_STRING = "1.4.3"
+VERSION_STRING = "1.5.0-dev"
 
 
 """
  Historic :
+
+*1.5.0
+    - add abort script (test.abort)
+    - add fatal mode : on fatal abort all remaining cases
+    - rework execution sequencer
+    - rework standalone execution mode : add information and formating    
 
 *1.4.3
     - add create callback
@@ -67,7 +73,27 @@ __license__     = "GPL"
 __email__       = "jm.beguinet@gmail.com"
 
 
+""" 
 
+
+Execution sequence :
+- create
+- setup
+- cases
+- cleanup
+- destroy
+
+create & destroy => for environment management
+setup & cleanup  => for test management
+
+
+Sequence :
+* assert, fail generate KO
+* fatal stop the execution following the mode : stop execution of the current case or stop all cases
+* abort stop the execution of script and just execute destroy
+
+
+"""
 
 
 
@@ -278,6 +304,21 @@ def set_destroy(func_destroy):
 
 
 
+def set_fatal_mode(stop_case_run=False):
+    """
+    @function           : set_fatal_mode(stop_case_run)
+    @param func_destroy : (boolean) a destroy function
+    @return             : None
+    @summary            : set mode for behavior when fatal : True abort all cases 
+    """
+    if options.doc :
+        pass
+    else :
+        __valid__.set_fatal_mode(stop_case_run)
+        
+        
+
+
 def add_test_case(func_case):
     """
     @function       : add_test_case(func_case)
@@ -439,6 +480,14 @@ def fail_fatal(msg=None):
     """
     __result__.fail_fatal(_create_des_(msg))
 
+def abort(msg=None):
+    """
+    @function       : abort(msg=None)
+    @param msg      : (string) message string describing the abort
+    @return         : None
+    @summary        : generate an abortion of script
+    """
+    __result__.abort_test(_create_des_(msg))
 
 
 def tag_value(tag, value):

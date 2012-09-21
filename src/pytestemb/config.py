@@ -16,7 +16,7 @@ import time
 
 
 class ConfigError(Exception):
-    "Exception raised by config"
+    """ Exception raised by config"""
     def __init__(self, info):
         Exception.__init__(self)
         self.info = info
