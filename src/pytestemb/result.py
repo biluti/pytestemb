@@ -94,6 +94,10 @@ class Result:
         self.abort(des)
         raise TestAbort
         
+
+    def success(self, des):
+        self.assert_ok(des)
+    
     def fail(self, des):
         self._assert_(False, False, des)
 
@@ -440,11 +444,27 @@ class ResultStandalone(Result):
 
     @trace
     def script_stop(self, des):
-        sys.stdout.write("End running '%s'\n" % des["name"])
-
-        test_ok = True
+        
+        # | aborted |   ok    |   ko    | result
+        # +---------+---------+---------+--------
+        # |    0    |   0     |   0     |   ?  
+        # |    0    |   0     |   1     |   ko
+        # |    0    |   1     |   0     |   ok
+        # |    0    |   1     |   1     |   ko       
+        # |    1    |   0     |   0     |   aborted
+        # |    1    |   0     |   1     |   aborted
+        # |    1    |   1     |   0     |   aborted
+        # |    1    |   1     |   1     |   aborted
+        #
+        # result_aborted = aborted
+        # result_unknown = not(aborted or ok or ko)
+        # result_ok = ok and not(aborted) and not(ko)
+        # result_ko = ko and not(aborted)
+        ok      = False
+        ko      = False
         aborted = False
-
+        
+        sys.stdout.write("End running '%s'\n" % des["name"])
         sys.stdout.write("\n+%s+\n" % ("-"*95))
         for case in self.result :
             
@@ -454,23 +474,29 @@ class ResultStandalone(Result):
             elif    case[self.ASSERT_KO] == 0 \
                 and case[self.ASSERT_OK] > 0:
                 self.add_line("Case \"%s\"" % case["case"], "ok")
+                ok = True
             elif    case[self.ASSERT_KO] == 0 \
                 and case[self.ASSERT_OK] == 0:
-                self.add_line("Case \"%s\"" % case["case"], "??")  
-                test_ok = False              
+                self.add_line("Case \"%s\"" % case["case"], "??")       
             else:
                 self.add_line("Case \"%s\"" % case["case"], "ko")
-                test_ok = False
-     
-        sys.stdout.write("+%s+\n" % ("-"*95))
-        
+                ko = True
+    
+        sys.stdout.write("+%s+\n" % ("-"*95))    
         if aborted :
             self.add_line("Script \"%s\"" % des["name"] , "ABORTED")    
-        elif test_ok :
+        elif not(aborted or ok or ko):
+            self.add_line("Script \"%s\"" % des["name"] , "??")
+        elif ok and not(aborted) and not(ko) :
             self.add_line("Script \"%s\"" % des["name"] , "OK")
-        else:
+        elif ko and not(aborted):
             self.add_line("Script \"%s\"" % des["name"] , "KO")
+        else:
+            raise Exception("assert")
         sys.stdout.write("+%s+\n" % ("-"*95))
+
+
+
 
 
 

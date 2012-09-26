@@ -48,6 +48,8 @@ class Test_ResultReader(unittest.TestCase):
         compare[result.ResultStdout.ASSERT_KO] = []
         compare[result.ResultStdout.PY_EXCEPTION] = [] 
         compare[result.ResultStdout.TAGVALUE] = []
+        compare[result.ResultStdout.ABORT] = []
+        compare[result.ResultStdout.ABORTED] = []
          
         self.assertEqual(resultcounter.counter, compare)
     
@@ -169,6 +171,8 @@ class Test_ResultReader(unittest.TestCase):
         compare[result.ResultStdout.ASSERT_OK] = [{"info":"assert_ok_01"}, {"info":"assert_ok_02"}]
         compare[result.ResultStdout.ASSERT_KO] = [{"info":"assert_ko_01"}, {"info":"assert_ko_02"}]
         compare[result.ResultStdout.PY_EXCEPTION] = []
+        compare[result.ResultStdout.ABORT] = []
+        compare[result.ResultStdout.ABORTED] = []
         compare[result.ResultStdout.TAGVALUE] = [{"TAG":"VALUE"}]
 
          
@@ -187,6 +191,8 @@ class Test_ResultReader(unittest.TestCase):
         compare[result.ResultStdout.ASSERT_KO] = []
         compare[result.ResultStdout.PY_EXCEPTION] = []
         compare[result.ResultStdout.TAGVALUE] = []
+        compare[result.ResultStdout.ABORT] = []
+        compare[result.ResultStdout.ABORTED] = []        
         
         self.assertEqual(reader.script[0].case[0].counter, compare)
         self.assertEqual(reader.script[0].case[2].counter, compare)
@@ -283,6 +289,8 @@ class Test_ResultReader(unittest.TestCase):
         compare[result.ResultStdout.ASSERT_KO] = [{"info":"assert_ko_01"}]
         compare[result.ResultStdout.PY_EXCEPTION] = [{"info":"py_exception_01"}] 
         compare[result.ResultStdout.TAGVALUE] = []
+        compare[result.ResultStdout.ABORT] = []
+        compare[result.ResultStdout.ABORTED] = []        
          
         self.assertEqual(reader.script[0].case[0].counter, compare)
         self.assertEqual(reader.script[0].case[-1].counter, compare)

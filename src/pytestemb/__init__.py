@@ -3,7 +3,7 @@
 
 
 
-VERSION_STRING = "1.5.0-dev"
+VERSION_STRING = "1.5.0"
 
 
 """
@@ -11,9 +11,10 @@ VERSION_STRING = "1.5.0-dev"
 
 *1.5.0
     - add abort script (test.abort)
+    - add success (test.success / test.fail)
     - add fatal mode : on fatal abort all remaining cases
     - rework execution sequencer
-    - rework standalone execution mode : add information and formating    
+    - rework standalone execution mode : more information during execution and result report    
 
 *1.4.3
     - add create callback
@@ -461,6 +462,20 @@ def warning(msg=None):
     @summary        : generate a warning
     """
     __result__.warning(_create_des_(msg))
+
+
+
+
+
+def success(msg=None):
+    """
+    @function       : success(msg=None)
+    @param msg      : (string) message string describing the success
+    @return         : None
+    @summary        : generate a success
+    """
+    __result__.success(_create_des_(msg))
+
 
 def fail(msg=None):
     """

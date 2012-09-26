@@ -164,9 +164,7 @@ class Valid:
         except (Exception), (error):
             self.inspect_traceback(error)
  
-
-
-
+ 
 
     def inspect_traceback(self, exception):
         CALL_DEPTH = 1
