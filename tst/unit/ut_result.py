@@ -58,7 +58,13 @@ class Test_ResultReader(unittest.TestCase):
 
         reader = parser.ResultStdoutReader()
         
-        reader.add_line("%s%sscript_01\n" % (result.ResultStdout.SCRIPT_START, result.ResultStdout.SEPARATOR))
+        
+        reader.add_line("%s%s%s\n" %    (   result.ResultStdout.SCRIPT_START,\
+                                            result.ResultStdout.SEPARATOR,\
+                                            {"name":"script_01", "time":1}))
+                
+                
+        #reader.add_line("%s%sscript_01\n" % (result.ResultStdout.SCRIPT_START, result.ResultStdout.SEPARATOR))
         reader.add_line("%s%s\n" % (result.ResultStdout.SETUP_START, result.ResultStdout.SEPARATOR))
         reader.add_line("%s%s\n" % (result.ResultStdout.SETUP_STOP, result.ResultStdout.SEPARATOR))
 
@@ -66,13 +72,19 @@ class Test_ResultReader(unittest.TestCase):
         reader.add_line("%s%s\n" % (result.ResultStdout.CLEANUP_START, result.ResultStdout.SEPARATOR))
         reader.add_line("%s%s\n" % (result.ResultStdout.CLEANUP_STOP, result.ResultStdout.SEPARATOR))
 
-        reader.add_line("%s%sscript_01\n" % (result.ResultStdout.SCRIPT_STOP, result.ResultStdout.SEPARATOR))
+        #reader.add_line("%s%sscript_01\n" % (result.ResultStdout.SCRIPT_STOP, result.ResultStdout.SEPARATOR))
         
+        reader.add_line("%s%s%s\n" %    (   result.ResultStdout.SCRIPT_STOP,\
+                                            result.ResultStdout.SEPARATOR,\
+                                            {"name":"script_01", "time":3}))
+                
         self.assertEqual(len(reader.script), 1)
         self.assertEqual(reader.script[0].name, "script_01")
         self.assertEqual(len(reader.script[0].case), 2)
         self.assertEqual(reader.script[0].case[0].name, "setup")
         self.assertEqual(reader.script[0].case[1].name, "cleanup")
+        self.assertEqual(reader.script[0].time_exec, 2)
+
         
         
         
@@ -81,7 +93,11 @@ class Test_ResultReader(unittest.TestCase):
 
         reader = parser.ResultStdoutReader()
         
-        reader.add_line("%s%sscript_01\n" % (result.ResultStdout.SCRIPT_START, result.ResultStdout.SEPARATOR))
+        
+        reader.add_line("%s%s%s\n" %    (   result.ResultStdout.SCRIPT_START,\
+                                            result.ResultStdout.SEPARATOR,\
+                                            {"name":"script_01", "time":1}))
+                
         reader.add_line("%s%s\n" % (result.ResultStdout.SETUP_START, result.ResultStdout.SEPARATOR))
         reader.add_line("%s%s\n" % (result.ResultStdout.SETUP_STOP, result.ResultStdout.SEPARATOR))
 
@@ -159,7 +175,9 @@ class Test_ResultReader(unittest.TestCase):
         reader.add_line("%s%s\n" % (result.ResultStdout.CLEANUP_START, result.ResultStdout.SEPARATOR))
         reader.add_line("%s%s\n" % (result.ResultStdout.CLEANUP_STOP, result.ResultStdout.SEPARATOR))
 
-        reader.add_line("%s%sscript_01\n" % (result.ResultStdout.SCRIPT_STOP, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" %    (   result.ResultStdout.SCRIPT_STOP,\
+                                            result.ResultStdout.SEPARATOR,\
+                                            {"name":"script_01", "time":4}))
 
 
         compare = {}
@@ -209,7 +227,9 @@ class Test_ResultReader(unittest.TestCase):
 
         reader = parser.ResultStdoutReader()
         
-        reader.add_line("%s%sscript_01\n" % (result.ResultStdout.SCRIPT_START, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" %    (   result.ResultStdout.SCRIPT_START,\
+                                            result.ResultStdout.SEPARATOR,\
+                                            {"name":"script_01", "time":1}))
         
         
         reader.add_line("%s%s\n" % (result.ResultStdout.SETUP_START, result.ResultStdout.SEPARATOR))
@@ -277,7 +297,9 @@ class Test_ResultReader(unittest.TestCase):
         
         reader.add_line("%s%s\n" % (result.ResultStdout.CLEANUP_STOP, result.ResultStdout.SEPARATOR))
 
-        reader.add_line("%s%sscript_01\n" % (result.ResultStdout.SCRIPT_STOP, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" %    (   result.ResultStdout.SCRIPT_STOP,\
+                                            result.ResultStdout.SEPARATOR,\
+                                            {"name":"script_01", "time":1}))
 
 
         compare = {}
@@ -300,7 +322,9 @@ class Test_ResultReader(unittest.TestCase):
 
         reader = parser.ResultStdoutReader()
         
-        reader.add_line("%s%sscript_01\n" % (result.ResultStdout.SCRIPT_START, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" %    (   result.ResultStdout.SCRIPT_START,\
+                                            result.ResultStdout.SEPARATOR,\
+                                            {"name":"script_01", "time":1}))
         
         try :
             reader.add_line("%s%s\n" % (result.ResultStdout.SETUP_STOP, result.ResultStdout.SEPARATOR))
@@ -314,7 +338,9 @@ class Test_ResultReader(unittest.TestCase):
 
         reader = parser.ResultStdoutReader()
         
-        reader.add_line("%s%sscript_01\n" % (result.ResultStdout.SCRIPT_START, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" %    (   result.ResultStdout.SCRIPT_START,\
+                                            result.ResultStdout.SEPARATOR,\
+                                            {"name":"script_01", "time":1}))
         
         reader.add_line("%s%s\n" % (result.ResultStdout.SETUP_START, result.ResultStdout.SEPARATOR))
 
@@ -329,7 +355,10 @@ class Test_ResultReader(unittest.TestCase):
 
         reader = parser.ResultStdoutReader()
         
-        reader.add_line("%s%sscript_01\n" % (result.ResultStdout.SCRIPT_START, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" %    (   result.ResultStdout.SCRIPT_START,\
+                                            result.ResultStdout.SEPARATOR,\
+                                            {"name":"script_01", "time":1}))
+                
         reader.add_line("%s%s\n" % (result.ResultStdout.SETUP_START, result.ResultStdout.SEPARATOR))
         reader.add_line("%s%s\n" % (result.ResultStdout.SETUP_STOP, result.ResultStdout.SEPARATOR))
 
@@ -337,7 +366,9 @@ class Test_ResultReader(unittest.TestCase):
         reader.add_line("%s%s\n" % (result.ResultStdout.CLEANUP_START, result.ResultStdout.SEPARATOR))
         reader.add_line("%s%s\n" % (result.ResultStdout.CLEANUP_STOP, result.ResultStdout.SEPARATOR))
 
-        reader.add_line("%s%sscript_01\n" % (result.ResultStdout.SCRIPT_STOP, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" %    (   result.ResultStdout.SCRIPT_STOP,\
+                                            result.ResultStdout.SEPARATOR,\
+                                            {"name":"script_01", "time":1}))
         
         self.assertEqual(len(reader.script), 1)
         self.assertEqual(reader.script[0].name, "script_01")
@@ -350,7 +381,9 @@ class Test_ResultReader(unittest.TestCase):
 
         reader = parser.ResultStdoutReader()
         
-        reader.add_line("%s%sscript_01\n" % (result.ResultStdout.SCRIPT_START, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" %    (   result.ResultStdout.SCRIPT_START,\
+                                            result.ResultStdout.SEPARATOR,\
+                                            {"name":"script_01", "time":1}))
         reader.add_line("%s%s\n" % (result.ResultStdout.SETUP_START, result.ResultStdout.SEPARATOR))
 
 
@@ -372,7 +405,9 @@ class Test_ResultReader(unittest.TestCase):
         reader.add_line("%s%s\n" % (result.ResultStdout.CLEANUP_START, result.ResultStdout.SEPARATOR))
         reader.add_line("%s%s\n" % (result.ResultStdout.CLEANUP_STOP, result.ResultStdout.SEPARATOR))
 
-        reader.add_line("%s%sscript_01\n" % (result.ResultStdout.SCRIPT_STOP, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" %    (   result.ResultStdout.SCRIPT_STOP,\
+                                            result.ResultStdout.SEPARATOR,\
+                                            {"name":"script_01", "time":1}))
 
                 
         
@@ -381,7 +416,9 @@ class Test_ResultReader(unittest.TestCase):
 
         reader = parser.ResultStdoutReader()
         
-        reader.add_line("%s%sscript_01\n" % (result.ResultStdout.SCRIPT_START, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" %    (   result.ResultStdout.SCRIPT_START,\
+                                            result.ResultStdout.SEPARATOR,\
+                                            {"name":"script_01", "time":1}))
         
         reader.add_line("%s%s{}\n" % (result.ResultStdout.CREATE_START, result.ResultStdout.SEPARATOR))
         
@@ -414,7 +451,9 @@ class Test_ResultReader(unittest.TestCase):
         reader.add_line("%s%s{}\n" % (result.ResultStdout.DESTROY_START, result.ResultStdout.SEPARATOR))
         reader.add_line("%s%s{}\n" % (result.ResultStdout.DESTROY_STOP, result.ResultStdout.SEPARATOR))
         
-        reader.add_line("%s%sscript_01\n" % (result.ResultStdout.SCRIPT_STOP, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" %    (   result.ResultStdout.SCRIPT_STOP,\
+                                            result.ResultStdout.SEPARATOR,\
+                                            {"name":"script_01", "time":1}))
 
 
  
@@ -461,7 +500,6 @@ class Test_ResultStdout(unittest.TestCase):
         self.assertEqual(stub.buffer, "%s%s\n" % (result.ResultStdout.CASE_STOP, result.ResultStdout.SEPARATOR))
         res.case_stop("test")
         self.assertEqual(stub.buffer, "%s%stest\n" % (result.ResultStdout.CASE_STOP, result.ResultStdout.SEPARATOR))        
-
 
         
         

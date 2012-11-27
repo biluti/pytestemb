@@ -69,7 +69,6 @@ class ConfigStdin(Config):
             self.trace_config("Error line invalid : %s" % line)
         
     def start(self):
-        
         self.trace_config("CONFIG = STDIN")
         time.sleep(0.5)
         try:

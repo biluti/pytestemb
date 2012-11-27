@@ -3,11 +3,14 @@
 
 
 
-VERSION_STRING = "1.5.0"
+VERSION_STRING = "1.5.1"
 
 
 """
  Historic :
+ 
+*1.5.1
+    - add script time execution feature
 
 *1.5.0
     - add abort script (test.abort)

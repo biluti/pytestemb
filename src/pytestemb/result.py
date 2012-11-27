@@ -299,7 +299,7 @@ class ResultStdout(Result):
         arg = arg.__str__().encode("utf-8")
         sys.stdout.write("%s%s%s\n" % (opcode, ResultStdout.SEPARATOR, arg))
 
-
+    @stamp
     @trace
     def script_start(self, des):
         self.write(ResultStdout.SCRIPT_START, des)
@@ -309,7 +309,8 @@ class ResultStdout(Result):
     @trace
     def create_start(self, des):
         self.write(ResultStdout.CREATE_START, des)
-        
+
+         
     @trace
     def create_stop(self, des):
         self.write(ResultStdout.CREATE_STOP, des)
@@ -317,11 +318,13 @@ class ResultStdout(Result):
     @trace
     def destroy_start(self, des):
         self.write(ResultStdout.DESTROY_START, des)
-        
+
+          
     @trace
     def destroy_stop(self, des):
         self.write(ResultStdout.DESTROY_STOP, des)
                 
+    @stamp     
     @trace
     def script_stop(self, des):
         self.write(ResultStdout.SCRIPT_STOP, des)
@@ -427,12 +430,17 @@ class ResultStandalone(Result):
         Result.__init__(self, trace)
         self.case = False
         self.result = []
+        self.time_exec = None
 
+
+    @stamp
     @trace
     def script_start(self, des):
         sys.stdout.write("Start running '%s' ...\n" % des["name"])
         for item in self.delay_trace_ctrl:
             sys.stdout.write("Trace : %s\n" % item)
+        
+        self.time_exec = des["time"]
 
     def magical(self, data, size):
         return (len(data)-size)
@@ -442,8 +450,13 @@ class ResultStandalone(Result):
         col2 = col2.ljust(32)
         sys.stdout.write("| %s| %s|\n"  % (col1, col2))
 
+    @stamp
     @trace
     def script_stop(self, des):
+        
+        SIZE = 95
+    
+        self.time_exec = des["time"] - self.time_exec     
         
         # | aborted |   ok    |   ko    | result
         # +---------+---------+---------+--------
@@ -465,7 +478,12 @@ class ResultStandalone(Result):
         aborted = False
         
         sys.stdout.write("End running '%s'\n" % des["name"])
-        sys.stdout.write("\n+%s+\n" % ("-"*95))
+        
+        
+        sys.stdout.write("\n+%s+\n" % ("-"*SIZE))
+        self.add_line("Script time execution" , "%.3f (sec)" % self.time_exec)
+        
+        sys.stdout.write("+%s+\n" % ("-"*SIZE))   
         for case in self.result :
             
             if case[self.ABORTED] > 0 or aborted:
@@ -482,7 +500,7 @@ class ResultStandalone(Result):
                 self.add_line("Case \"%s\"" % case["case"], "ko")
                 ko = True
     
-        sys.stdout.write("+%s+\n" % ("-"*95))    
+        sys.stdout.write("+%s+\n" % ("-"*SIZE))    
         if aborted :
             self.add_line("Script \"%s\"" % des["name"] , "ABORTED")    
         elif not(aborted or ok or ko):
@@ -493,7 +511,9 @@ class ResultStandalone(Result):
             self.add_line("Script \"%s\"" % des["name"] , "KO")
         else:
             raise Exception("assert")
-        sys.stdout.write("+%s+\n" % ("-"*95))
+        
+        
+        sys.stdout.write("+%s+\n" % ("-"*SIZE))
 
 
 
@@ -705,6 +725,7 @@ class ResultCounter:
 class ResultScript:
     def __init__(self, name):
         self.name = name
+        self.time_exec = None
         self.case = []
         self.trace = []
         self.tagvalue = []

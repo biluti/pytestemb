@@ -98,17 +98,22 @@ class ResultStdoutReader(StdoutReader):
     
     
     def process(self, key, value):
-        #print "key=%s value=%s" % (key, value)
+        print "key=%s value=%s" % (key, value)
         
         # SCRIPT_START
         if      key == result.ResultStdout.SCRIPT_START :
+            
+            dic = self.conv_dict(value)
             self.check_started(not(self.script_started))
-            self.script.append(result.ResultScript(value))
+            self.script.append(result.ResultScript(dic["name"]))
+            self.script[-1].time_exec = dic["time"]
             self.script_started = True
         # SCRIPT_STOP
         elif    key == result.ResultStdout.SCRIPT_STOP :
+            dic = self.conv_dict(value)
             self.check_started(self.script_started)
             self.script_started = False
+            self.script[-1].time_exec = dic["time"] - self.script[-1].time_exec 
         # SETUP_START, CLEANUP_START, CASE_START
         elif        key == result.ResultStdout.SETUP_START\
                 or  key == result.ResultStdout.CLEANUP_START\
@@ -150,12 +155,7 @@ class ResultStdoutReader(StdoutReader):
             if key == result.ResultStdout.CASE_STOP:
                 dic = self.conv_dict(value)
                 t = dic["time"]
-            
-                r = self.script[-1].case[-1].timeex                
-                r = (float(t) -  float(r))
-                if r < 0:
-                    r = 0
-                self.script[-1].case[-1].timeex = r
+                self.script[-1].case[-1].timeex = dic["time"] - self.script[-1].case[-1].timeex    
  
         # CASE_NOTEXECUTED
         elif    key == result.ResultStdout.CASE_NOTEXECUTED :
