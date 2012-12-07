@@ -33,14 +33,11 @@ class Trace:
     def __init__(self):
         self.gtime = gtime.Gtime.create()
         self.result = None
-        self.config = None
         self.started = False
 
     def set_result(self, result):
         self.result = result
 
-    def set_config(self, config):
-        self.config = config
 
     def start(self):
         pass
@@ -57,8 +54,6 @@ class Trace:
     def trace_warning(self, msg):
         pass
 
-    def trace_config(self, msg):
-        pass
 
     def trace_env(self, scope, data):
         pass
@@ -147,10 +142,6 @@ class TraceManager(Trace):
         for tra in self.dictra.itervalues() :
             tra.set_result(result)
 
-    def set_config(self, config):
-        for tra in self.dictra.itervalues() :
-            tra.set_config(config)
-
     def start(self):
         for tra in self.dictra.itervalues() :
             tra.start()
@@ -171,9 +162,6 @@ class TraceManager(Trace):
         for tra in self.dictra.itervalues() :
             tra.trace_warning(msg)
 
-    def trace_config(self, msg):
-        for tra in self.dictra.itervalues() :
-            tra.trace_config(msg)
 
     def trace_env(self, scope, data):
         for tra in self.dictra.itervalues() :
@@ -251,9 +239,6 @@ class TraceOctopylog(Trace):
     def trace_warning(self, des):
         self.trace_scope("warning", des["msg"])
 
-    def trace_config(self, msg):
-        self.trace_scope("config", msg)
-
     def trace_env(self, scope, data):
         self.trace_scope("env.%s" % scope, data)
 
@@ -289,8 +274,6 @@ class TraceStdout(Trace):
     def trace_warning(self, des):
         self._write(des)        
 
-    def trace_config(self, msg):
-        self._write(msg)
 
     def trace_env(self, scope, data):
         self._write(data)
@@ -388,8 +371,6 @@ class TraceTxt(Trace):
     def trace_warning(self, des):
         self.add_line("Warning", des["msg"])
         
-    def trace_config(self, msg):
-        self.add_line("Config", msg)
 
     def trace_env(self, scope, data):
         self.add_line(scope, data)

@@ -31,8 +31,7 @@ KEY_DOC  = "doc"
 
 class Pydoc:
     
-    def __init__(self, config, result):
-        self.config = config
+    def __init__(self, result):
         self.result = result
         
     

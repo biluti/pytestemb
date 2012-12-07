@@ -3,11 +3,17 @@
 
 
 
-VERSION_STRING = "1.5.1"
+VERSION_STRING = "1.5.2"
 
 
 """
  Historic :
+
+*1.5.2
+    - remove config by stdin system
+    - update command line parameter 'config': string
+    - new command line parameter 'mode' : string 
+    - fix regression on print parsing
  
 *1.5.1
     - add script time execution feature
@@ -113,7 +119,6 @@ import platform
 import trace
 import valid
 import result
-import config
 import pydoc
 import pexception
 import utils
@@ -132,8 +137,7 @@ interface = {}
 INTERFACE_DEFAULT = 0
 INTERFACE_LIST = 1
 
-interface["config"] = (("none"),
-                       ("none", "stdin"))
+
 interface["result"] = (("standalone"),
                        ("none", "standalone", "stdout"))
 interface["trace"] =  ([],
@@ -141,9 +145,7 @@ interface["trace"] =  ([],
 
 
 parser = OptionParser()
-parser.add_option("-c", "--config",
-                    action="store", type="string", dest="config", default=interface["config"][INTERFACE_DEFAULT],
-                    help="set the interface for configuration, value can be : %s" % interface["config"][INTERFACE_LIST].__str__())
+
 parser.add_option("-r", "--result",
                     action="store", type="string", dest="result", default=interface["result"][INTERFACE_DEFAULT],
                     help="set the interface for result, value can be : %s" % interface["result"][INTERFACE_LIST].__str__())
@@ -153,6 +155,12 @@ parser.add_option("-t", "--trace",
 parser.add_option("-p", "--path",
                     action="store", type="string", dest="path", default=None,
                     help="add path to python path")
+parser.add_option("-c", "--config",
+                    action="store", type="string", dest="config", default=None,
+                    help="add config general purpose string (flag, filename ...)")
+parser.add_option("-m", "--mode",
+                    action="store", type="string", dest="mode", default=None,
+                    help="add mode general purpose string (debug, ...)")
 parser.add_option("-d", "--doc",
                     action="store_true", dest="doc", default=False,
                     help="add path to python path")
@@ -176,7 +184,6 @@ def checker(name, value):
 
 if args != []:
     parser.error("Argument invalid %s " % args.__str__())
-checker("config", options.config)
 checker("result", options.result)
 for item in options.trace:
     checker("trace", item)
@@ -199,8 +206,6 @@ if options.ver :
 
 __trace__   = None
 __result__  = None
-__config__  = None
-__valid__   = None
 __pydoc__   = None
 
 
@@ -212,21 +217,17 @@ if options.doc :
     # doc generation
     __trace__   = trace.create(options.trace)
     __result__  = result.create(options.result, __trace__ )
-    __config__  = config.create(options.config, __trace__ )
     __pydoc__   = pydoc.Pydoc(None, __result__)
 else :
     # test execution
     __trace__   = trace.create(options.trace)
     __result__  = result.create(options.result, __trace__ )
-    __config__  = config.create(options.config, __trace__ )
-    __valid__   = valid.Valid(__config__, __result__)
+    __valid__   = valid.Valid(__result__)
 
 
 __trace__.set_result(__result__)
-__trace__.set_config(__config__)
 __trace__.start()
 
-__config__.start()
 
 
 # Configuration management
@@ -244,7 +245,6 @@ def add_trace(interfaces):
     global __trace__
     __trace__.add_traces(interfaces)
     __trace__.set_result(__result__)
-    __trace__.set_config(__config__)
     __trace__.start()
 
 
@@ -358,6 +358,15 @@ def _create_des_(msg):
         raise pexception.PytestembError("Msg must be a string")
     else:
         return dict({"msg":"%s" % utils.to_unicode(msg)})
+
+
+
+def get_config():
+    return options.config
+
+
+def get_mode():
+    return options.mode
 
 
 
@@ -562,14 +571,6 @@ def trace_layer(scope, data):
     __trace__.trace_layer(scope, data)
     
 
-def config_get(key):
-    """
-    @function       : config_get(key)
-    @param key      : (string) key of configuration parameter
-    @return         : value of parameter
-    @summary        : get a parameter by a kay value
-    """
-    return __config__.get_config(key)
 
 
 

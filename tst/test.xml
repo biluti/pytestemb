@@ -2,6 +2,11 @@
 <Project Name="test">
     <XMLProjectVersion Version="2.1"/>
     <MetaCampaigns>
+        <MetaCampaign Info="" Name="all">
+            <Campaign Name="automatic"/>
+            <Campaign Name="env"/>
+            <Campaign Name="abort"/>
+        </MetaCampaign>
     </MetaCampaigns>
     <Campaigns>
         <Campaign Info="" Name="automatic">

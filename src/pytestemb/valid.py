@@ -33,8 +33,7 @@ sys.stderr = sys.stdout
 
 
 class Valid:
-    def __init__(self, config, result):
-        self.config = config
+    def __init__(self, result):
         self.result = result
         self.setup      = self._nothing_
         self.cleanup    = self._nothing_

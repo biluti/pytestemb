@@ -175,8 +175,6 @@ class Result:
     def case_not_executed(self, des):
         pass
 
-    def error_config(self, des):
-        pass
 
     def error_io(self, des):
         pass
@@ -270,7 +268,6 @@ class ResultStdout(Result):
     CASE_STOP           = "CASE_STOP"
     
     CASE_NOTEXECUTED    = "CASE_NOTEXECUTED"
-    ERROR_CONFIG        = "ERROR_CONFIG"
     ERROR_IO            = "ERROR_IO"
     ERROR_TEST          = "ERROR_TEST"
     WARNING             = "WARNING"
@@ -360,10 +357,6 @@ class ResultStdout(Result):
     def case_not_executed(self, des):
         self.write(ResultStdout.CASE_NOTEXECUTED, des)
 
-    @stamp
-    @trace
-    def error_config(self, des):
-        self.write(ResultStdout.ERROR_CONFIG, des)
 
     @stamp
     @trace
@@ -573,10 +566,6 @@ class ResultStandalone(Result):
     def case_not_executed(self, des):
         pass
 
-    @stamp
-    @trace
-    def error_config(self, des):
-        self.result[-1]["error_config"] += 1
 
     @stamp
     @trace

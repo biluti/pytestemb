@@ -83,7 +83,6 @@ class ResultStdoutReader(StdoutReader):
 
     def create_resultcounter(self):
         obj = result.ResultCounter()
-        obj.add_kind(result.ResultStdout.ERROR_CONFIG)
         obj.add_kind(result.ResultStdout.ERROR_IO)
         obj.add_kind(result.ResultStdout.ERROR_TEST)
         obj.add_kind(result.ResultStdout.WARNING)
@@ -98,7 +97,6 @@ class ResultStdoutReader(StdoutReader):
     
     
     def process(self, key, value):
-        print "key=%s value=%s" % (key, value)
         
         # SCRIPT_START
         if      key == result.ResultStdout.SCRIPT_START :
@@ -169,8 +167,7 @@ class ResultStdoutReader(StdoutReader):
             self.check_started(self.script_started)
             self.script[-1].trace.append(self.conv_dict(value))
         # CASE_XX
-        elif        key == result.ResultStdout.ERROR_CONFIG\
-                or  key == result.ResultStdout.ERROR_IO\
+        elif        key == result.ResultStdout.ERROR_IO\
                 or  key == result.ResultStdout.ERROR_TEST\
                 or  key == result.ResultStdout.WARNING\
                 or  key == result.ResultStdout.ASSERT_OK\
