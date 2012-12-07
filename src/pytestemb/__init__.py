@@ -3,14 +3,14 @@
 
 
 
-VERSION_STRING = "1.5.2"
+VERSION_STRING = "1.6.0"
 
 
 """
  Historic :
 
-*1.5.2
-    - remove config by stdin system
+*1.6.0
+    - remove config by stdin system (API non compatibility) 
     - update command line parameter 'config': string
     - new command line parameter 'mode' : string 
     - fix regression on print parsing
