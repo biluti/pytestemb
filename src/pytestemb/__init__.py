@@ -217,7 +217,7 @@ if options.doc :
     # doc generation
     __trace__   = trace.create(options.trace)
     __result__  = result.create(options.result, __trace__ )
-    __pydoc__   = pydoc.Pydoc(None, __result__)
+    __pydoc__   = pydoc.Pydoc(__result__)
 else :
     # test execution
     __trace__   = trace.create(options.trace)
