@@ -3,11 +3,14 @@
 
 
 
-VERSION_STRING = "1.6.0"
+VERSION_STRING = "1.6.1"
 
 
 """
  Historic :
+
+*1.6.1
+    - fix regression on doc 
 
 *1.6.0
     - remove config by stdin system (API non compatibility) 
