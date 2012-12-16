@@ -3,11 +3,17 @@
 
 
 
-VERSION_STRING = "1.6.1"
+VERSION_STRING = "1.7.0-dev"
 
 
 """
  Historic :
+
+*1.7.0
+    - add exception description for standalone mode
+    - trace report
+    - improve of 10% time for txt trace
+    - get script name
 
 *1.6.1
     - fix regression on doc 
@@ -371,6 +377,9 @@ def get_config():
 def get_mode():
     return options.mode
 
+
+def get_script_name():
+    return utils.get_script_name()
 
 
 def assert_true(exp, msg=None):

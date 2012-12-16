@@ -17,7 +17,7 @@ import codecs
 import hashlib
 import platform
 
-import logging
+
 import logging.handlers
 
 
@@ -125,6 +125,8 @@ class Trace:
             
         return line
     
+    def trace_report(self, msg):
+        pass
 
 
 class TraceManager(Trace):
@@ -170,6 +172,11 @@ class TraceManager(Trace):
     def trace_layer(self, scope, data):
         for tra in self.dictra.itervalues() :
             tra.trace_layer(scope, data)
+    
+    def trace_report(self, msg):
+        for tra in self.dictra.itervalues() :
+            tra.trace_report(msg)
+
 
     def add_traces(self, interfaces):
         for interface in interfaces:
@@ -244,6 +251,9 @@ class TraceOctopylog(Trace):
 
     def trace_layer(self, scope, data):
         self.trace_scope("layer.%s" % scope, data)
+
+    def trace_report(self, msg):
+        self.trace_scope("report", msg)
         
 
 class TraceStdout(Trace):
@@ -274,14 +284,15 @@ class TraceStdout(Trace):
     def trace_warning(self, des):
         self._write(des)        
 
-
     def trace_env(self, scope, data):
         self._write(data)
         
     def trace_layer(self, scope, data):
         self._write(data)
         
-
+    def trace_report(self, msg):
+        self._write(msg)
+        
 
 
 class TraceTxt(Trace):
@@ -311,7 +322,7 @@ class TraceTxt(Trace):
         # create file
         des = dict({"type":"pyt","file":pathfile})
         try :
-            self.file = codecs.open(pathfile, encoding="utf-8", mode="w")
+            self.file = codecs.open(pathfile, encoding="utf-8", mode="w", buffering=-1)
         except (IOError) , (error):
             self.file = None
             des["error"] = error.__str__()
@@ -366,7 +377,8 @@ class TraceTxt(Trace):
         for l in self.format_result(name, des):
             self.add_line(scope, l)
         
-            
+    def trace_report(self, msg):
+        self.file.write(utils.to_unicode(msg))
 
     def trace_warning(self, des):
         self.add_line("Warning", des["msg"])

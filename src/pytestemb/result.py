@@ -416,6 +416,7 @@ class ResultStandalone(Result):
     
     ASSERT_OK   = "ASSERT_OK"
     ASSERT_KO   = "ASSERT_KO"
+    EXCEPTION   = "EXCEPTION"
     ABORTED     = "ABORTED"
        
 
@@ -438,10 +439,18 @@ class ResultStandalone(Result):
     def magical(self, data, size):
         return (len(data)-size)
 
+
+
     def add_line(self, col1, col2):
         col1 = col1.ljust(60)
         col2 = col2.ljust(32)
-        sys.stdout.write("| %s| %s|\n"  % (col1, col2))
+        self.trace_report("| %s| %s|\n"  % (col1, col2))
+
+
+    def trace_report(self, info):
+        sys.stdout.write(info)
+        self.trace.trace_report(info)
+        
 
     @stamp
     @trace
@@ -473,15 +482,18 @@ class ResultStandalone(Result):
         sys.stdout.write("End running '%s'\n" % des["name"])
         
         
-        sys.stdout.write("\n+%s+\n" % ("-"*SIZE))
+        self.trace_report("\n+%s+\n" % ("-"*SIZE))
         self.add_line("Script time execution" , "%.3f (sec)" % self.time_exec)
         
-        sys.stdout.write("+%s+\n" % ("-"*SIZE))   
+        self.trace_report("+%s+\n" % ("-"*SIZE))   
         for case in self.result :
             
             if case[self.ABORTED] > 0 or aborted:
                 self.add_line("Case \"%s\"" % case["case"], "aborted")
                 aborted = True
+            elif    case[self.EXCEPTION] != None :    
+                self.add_line("Case \"%s\"" % case["case"], case[self.EXCEPTION])
+                ko = True
             elif    case[self.ASSERT_KO] == 0 \
                 and case[self.ASSERT_OK] > 0:
                 self.add_line("Case \"%s\"" % case["case"], "ok")
@@ -493,7 +505,7 @@ class ResultStandalone(Result):
                 self.add_line("Case \"%s\"" % case["case"], "ko")
                 ko = True
     
-        sys.stdout.write("+%s+\n" % ("-"*SIZE))    
+        self.trace_report("+%s+\n" % ("-"*SIZE))    
         if aborted :
             self.add_line("Script \"%s\"" % des["name"] , "ABORTED")    
         elif not(aborted or ok or ko):
@@ -505,11 +517,7 @@ class ResultStandalone(Result):
         else:
             raise Exception("assert")
         
-        
-        sys.stdout.write("+%s+\n" % ("-"*SIZE))
-
-
-
+        self.trace_report("+%s+\n" % ("-"*SIZE))
 
 
 
@@ -551,7 +559,8 @@ class ResultStandalone(Result):
         self.result.append({"case":des["name"]})
         self.result[-1][self.ASSERT_OK] = 0
         self.result[-1][self.ASSERT_KO] = 0
-        self.result[-1][self.ABORTED] = 0
+        self.result[-1][self.EXCEPTION] = None
+        self.result[-1][self.ABORTED]   = 0
         sys.stdout.write("Case    : '%s'\n" % des["name"])
         
         self.case = True
@@ -625,7 +634,7 @@ class ResultStandalone(Result):
         sys.stdout.write(dis.encode("utf-8"))
         
         if self.case:
-            self.result[-1][self.ASSERT_KO] += 1
+            self.result[-1][self.EXCEPTION] = des["exception_class"]
         
 
 

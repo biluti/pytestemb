@@ -16,6 +16,8 @@ import sys
 import types
 
 
+
+
 def to_unicode(instr):
     if type(instr) == types.UnicodeType:
         return instr

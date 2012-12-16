@@ -10,7 +10,7 @@ import pytestemb as test
 
 
 def test_load():
-    for i in range(10000):
+    for i in range(50000):
         test.assert_equal(1, 2, u"long data" * 64)
         test.assert_equal(1, 1, u"long data" * 64)
         test.trace_script( u"long data" * 64)
