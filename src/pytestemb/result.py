@@ -214,30 +214,16 @@ def trace(func):
     """ call trace_result
      decorator function """
     def decorated(*args, **kwargs):
-
-        if func.func_name == "warning":
-            trace_func = args[0].trace_warning
-            trace_func(args[1])
-        else:
-            try:
-                trace_func = args[0].trace_result
-                trace_func(func.func_name, args[1])
-            except Exception:
-                raise
-        result = func(*args, **kwargs)
-        return result
+        trace_func = args[0].trace_result
+        trace_func(func.func_name, args[1])
+        return func(*args, **kwargs)
     return decorated
 
 
 def stamp(func):
     """ add time stamp """
     def decorated(*args, **kwargs):
-        # args[0] = self
-        stamp = args[0].get_time()
-        try:
-            args[1]["time"] = stamp
-        except Exception:
-            pass
+        args[1]["time"] = args[0].get_time()
         result = func(*args, **kwargs)
         return result
     return decorated

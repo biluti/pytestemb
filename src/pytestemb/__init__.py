@@ -10,7 +10,7 @@ VERSION_STRING = "1.7.0-dev"
  Historic :
 
 *1.7.0
-    - improve global performance
+    - improve global and trace performance
     - add exception description for standalone mode
     - add script report execution on trace
     - get script and case name

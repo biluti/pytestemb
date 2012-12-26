@@ -208,7 +208,7 @@ class TraceOctopylog(Trace):
             
         socketHandler = logging.handlers.SocketHandler("localhost", logging.handlers.DEFAULT_TCP_LOGGING_PORT)
         rootLogger = logging.getLogger("pytestemb")
-        rootLogger.setLevel(logging.DEBUG)
+        rootLogger.setLevel(logging.INFO)
         rootLogger.addHandler(socketHandler)
 
         des = dict({"type":"octopylog"})
@@ -224,7 +224,7 @@ class TraceOctopylog(Trace):
 
     def trace_scope(self, scope, msg):
         try:
-            self.scope[scope].info("%s" % msg)
+            self.scope[scope].info(msg)
         except Exception:
             self.scope[scope] = logging.getLogger("pytestemb.%s" % scope)
             self.scope[scope].info("%s" % msg)
@@ -253,7 +253,7 @@ class TraceOctopylog(Trace):
         self.trace_scope("layer.%s" % scope, data)
 
     def trace_report(self, msg):
-        self.trace_scope("report", msg)
+        self.trace_scope("report", msg.replace("\n", ""))
         
 
 class TraceStdout(Trace):
@@ -296,6 +296,11 @@ class TraceStdout(Trace):
 
 
 class TraceTxt(Trace):
+    
+    SCOPE_MAPPING = {"assert_ko":"result",
+                         "assert_ok":"result",
+                         "py_exception":"exception",
+                         }
 
     if      platform.system() == "Linux":
         DEFAULT_DIR = "/tmp/pytestemb"
@@ -307,7 +312,7 @@ class TraceTxt(Trace):
     def __init__(self):
         Trace.__init__(self)
         self.file = None
-        self.cachetime = None
+
 
     def start(self):
         if self.started:
@@ -337,7 +342,7 @@ class TraceTxt(Trace):
         m.update(time.strftime("%d_%m_%Y_%H_%M_%S", self.gtime.start_date))
         name_script = utils.get_script_name()
         name_hash = m.hexdigest()[0:16].upper()
-        return"%s_%s.pyt" % (name_script, name_hash)
+        return "%s_%s.pyt" % (name_script, name_hash)
 
     def format(self, mtime, scope, msg):
         mtime = mtime.ljust(16)
@@ -351,56 +356,43 @@ class TraceTxt(Trace):
         dis += "\n%s\n" % self.format("Time(s)", "Scope", "Info")
         self.file.write(dis)
 
-    def add_line(self, scope, msg, cachetime=False):
+    
+    def add_line(self, scope, msg=[]):
         
-        
-        if cachetime:
-            if self.cachetime is None:
-                self.cachetime = self.gtime.get_time()
-            else:
-                pass
-        else:
-            self.cachetime = self.gtime.get_time()
-            
-        mtime = "%.6f" % self.cachetime
-        mtime = mtime.ljust(16)
+        mtime = "%.6f          " % self.gtime.get_time()
         scope = scope.ljust(24)
-        dis = u"%s%s%s\n"  % (mtime, scope, msg)
-        self.file.write(dis)
-
+        for m in msg: 
+            self.file.write(u"%s%s%s\n" % (mtime, scope, m))
+        
+        
         
     def trace_script(self, msg):
-        self.add_line("Script", msg, cachetime=False)
+        self.add_line("Script", [msg])
 
     def trace_io(self, interface, data):
-        self.add_line(interface, data, cachetime=False)
+        self.add_line(interface, [data])
 
     def trace_result(self, name, des):
-        
-        if      name == "assert_ko":
-            scope = "result"
-        elif    name == "assert_ok":
-            scope = "result"
-        elif    name == "py_exception":
-            scope = "exception"
-        else:
+        try:
+            scope = self.SCOPE_MAPPING[name]
+        except KeyError:
             scope = "sequence"
-        self.cachetime = self.gtime.get_time()
-        for l in self.format_result(name, des):
-            self.add_line(scope, l, cachetime=True)
-        
+
+        l = self.format_result(name, des)
+        self.add_line(scope, l)
+                      
+                      
     def trace_report(self, msg):
         self.file.write(msg)
 
     def trace_warning(self, des):
-        self.add_line("Warning", des["msg"], cachetime=False)
+        self.add_line("Warning", [des["msg"]])
         
-
     def trace_env(self, scope, data):
-        self.add_line(scope, data, cachetime=False)
+        self.add_line(scope, [data])
 
     def trace_layer(self, scope, data):
-        self.add_line(scope, data, cachetime=False)
+        self.add_line(scope, [data])
 
 
 def create(interfaces):
