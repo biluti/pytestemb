@@ -26,7 +26,6 @@ def to_unicode(instr):
             return unicode(str(instr), "utf-8")
         except UnicodeDecodeError:
             ascii_text = "%s" % (str(instr).encode('string_escape'))
-            #ascii_text = "Error decoding string : %s " % (str(instr))
             return unicode(ascii_text)
 
 

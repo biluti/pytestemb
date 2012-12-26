@@ -12,7 +12,6 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 import sys
-import copy
 import time
 import inspect
 
@@ -56,22 +55,22 @@ class Result:
         dic = {}
         stack = []
         try :
-            dic["file"]         = copy.copy(traceback[call_depth][1])
-            dic["line"]         = copy.copy(traceback[call_depth][2])
-            dic["function"]     = copy.copy(traceback[call_depth][3])
-            dic["expression"]   = copy.copy(traceback[call_depth][4][0].strip(" \t\n"))
+            dic["file"]         = traceback[call_depth][1]
+            dic["line"]         = traceback[call_depth][2]
+            dic["function"]     = traceback[call_depth][3]
+            dic["expression"]   = traceback[call_depth][4][0].strip(" \t\n")
             for index in range(call_depth+1, len(traceback)):
                 if          traceback[index][1].endswith("valid.py") \
                     and     (traceback[index][3] == "run_case" or traceback[index][3] == "run_try") :
                     break
-                stack.append(copy.copy(default))
-                stack[-1]["path"]      = copy.copy(traceback[index][1])
-                stack[-1]["line"]      = copy.copy(traceback[index][2])
-                stack[-1]["function"]  = copy.copy(traceback[index][3])
-                stack[-1]["code"]      = copy.copy(traceback[index][4][0].strip("\n"))           
+                #stack.append(copy.copy(default))
+                stack.append(default)
+                stack[-1]["path"]      = traceback[index][1]
+                stack[-1]["line"]      = traceback[index][2]
+                stack[-1]["function"]  = traceback[index][3]
+                stack[-1]["code"]      = traceback[index][4][0].strip("\n")     
             stack.reverse()
         finally:
-            del traceback
             return dic, stack
 
 
@@ -605,17 +604,18 @@ class ResultStandalone(Result):
         else:
             msg = ""     
         
-        sys.stdout.write("Assert KO : '%s'\n" % msg)
-        
+        s = ""
+        s += "Assert KO : '%s'\n" % msg
         for s in des["stack"]:
-            loc = "    File \"%s\", line %d, in %s\n" % (s["path"], s["line"], s["function"])
-            loc += "        %s\n" % (s["code"])
-            sys.stdout.write("%s" % loc)       
-        sys.stdout.write("    File \"%s\", line %d, in %s\n" % (des["file"], des["line"], des["function"]))       
-        sys.stdout.write("        + function   : \"%s\"\n" % des["function"])
-        sys.stdout.write("        + expression : \"%s\"\n" % des["expression"])
-        sys.stdout.write("        + values     : \"%s\"\n" % des["values"])
+            s += "    File \"%s\", line %d, in %s\n" % (s["path"], s["line"], s["function"])
+            s += "        %s\n" % (s["code"])
 
+        s += "    File \"%s\", line %d, in %s\n" % (des["file"], des["line"], des["function"])
+        s += "        + function   : \"%s\"\n" % des["function"]
+        s += "        + expression : \"%s\"\n" % des["expression"]
+        s += "        + values     : \"%s\"\n" % des["values"]
+
+        sys.stdout.write(s)
 
         if self.case :
             self.result[-1][self.ASSERT_KO] += 1

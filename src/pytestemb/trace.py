@@ -133,50 +133,50 @@ class TraceManager(Trace):
     def __init__(self):
         Trace.__init__(self)
         self.dictra = dict()
+        self.l = list()
         
     def add_trace(self, name, tra):
         if not self.dictra.has_key(name):
             self.dictra[name] = tra
+            self.l.append(tra)
         else:
             pass
 
-    def set_result(self, result):
-        for tra in self.dictra.itervalues() :
-            tra.set_result(result)
+    def set_result(self, result):            
+        for t in self.l:
+            t.set_result(result)
 
     def start(self):
-        for tra in self.dictra.itervalues() :
-            tra.start()
+        for t in self.l:
+            t.start()            
 
     def trace_script(self, msg):
-        for tra in self.dictra.itervalues() :
-            tra.trace_script(msg)
-
+        for t in self.l:
+            t.trace_script(msg)
+            
     def trace_io(self, interface, data):
-        for tra in self.dictra.itervalues() :
-            tra.trace_io(interface, data)
-
+        for t in self.l:
+            t.trace_io(interface, data)     
+            
     def trace_result(self, name, des):
-        for tra in self.dictra.itervalues() :
-            tra.trace_result(name, des)
+        for t in self.l:
+            t.trace_result(name, des)
 
     def trace_warning(self, msg):
-        for tra in self.dictra.itervalues() :
-            tra.trace_warning(msg)
-
+        for t in self.l:
+            t.trace_warning(msg)
 
     def trace_env(self, scope, data):
-        for tra in self.dictra.itervalues() :
-            tra.trace_env(scope, data)
+        for t in self.l:
+            t.trace_env(scope, data)
             
     def trace_layer(self, scope, data):
-        for tra in self.dictra.itervalues() :
-            tra.trace_layer(scope, data)
+        for t in self.l:
+            t.trace_layer(scope, data)
     
     def trace_report(self, msg):
-        for tra in self.dictra.itervalues() :
-            tra.trace_report(msg)
-
+        for t in self.l:
+            t.trace_report(msg)     
 
     def add_traces(self, interfaces):
         for interface in interfaces:
@@ -270,7 +270,7 @@ class TraceStdout(Trace):
         self.result.trace_ctrl(des)
 
     def _write(self, msg):
-        sys.stdout.write(codecs.encode(utils.to_unicode(msg), "utf-8"))
+        sys.stdout.write(msg)
 
     def trace_script(self, msg):
         self._write(msg)
@@ -305,8 +305,9 @@ class TraceTxt(Trace):
         raise Exception("Platform not supported")
 
     def __init__(self):
-        self.file = None
         Trace.__init__(self)
+        self.file = None
+        self.cachetime = None
 
     def start(self):
         if self.started:
@@ -327,7 +328,6 @@ class TraceTxt(Trace):
             self.file = None
             des["error"] = error.__str__()
         self.result.trace_ctrl(des)
-        # write header
         self.add_header()
 
     def gen_file_name(self):
@@ -345,24 +345,35 @@ class TraceTxt(Trace):
         return "%s%s%s\n"  % (mtime, scope, msg)
 
     def add_header(self):
-        if self.file is not None :
-            dis = ""
-            dis += "Script file    : %s\n" % sys.argv[0]
-            dis += "Date           : %s\n" % time.strftime("%d/%m/%Y %H:%M:%S", self.gtime.start_date)
-            dis += "\n%s\n" % self.format("Time(s)", "Scope", "Info")
-            self.file.write(utils.to_unicode(dis))
+        dis = ""
+        dis += "Script file    : %s\n" % sys.argv[0]
+        dis += "Date           : %s\n" % time.strftime("%d/%m/%Y %H:%M:%S", self.gtime.start_date)
+        dis += "\n%s\n" % self.format("Time(s)", "Scope", "Info")
+        self.file.write(dis)
 
-    def add_line(self, scope, msg):
-        if self.file is not None :
-            mtime = "%.6f" % self.gtime.get_time()
-            dis = self.format(mtime, scope, msg)
-            self.file.write(utils.to_unicode(dis))
+    def add_line(self, scope, msg, cachetime=False):
+        
+        
+        if cachetime:
+            if self.cachetime is None:
+                self.cachetime = self.gtime.get_time()
+            else:
+                pass
+        else:
+            self.cachetime = self.gtime.get_time()
+            
+        mtime = "%.6f" % self.cachetime
+        mtime = mtime.ljust(16)
+        scope = scope.ljust(24)
+        dis = u"%s%s%s\n"  % (mtime, scope, msg)
+        self.file.write(dis)
 
+        
     def trace_script(self, msg):
-        self.add_line("Script", msg)
+        self.add_line("Script", msg, cachetime=False)
 
     def trace_io(self, interface, data):
-        self.add_line(interface, data)
+        self.add_line(interface, data, cachetime=False)
 
     def trace_result(self, name, des):
         
@@ -374,21 +385,22 @@ class TraceTxt(Trace):
             scope = "exception"
         else:
             scope = "sequence"
+        self.cachetime = self.gtime.get_time()
         for l in self.format_result(name, des):
-            self.add_line(scope, l)
+            self.add_line(scope, l, cachetime=True)
         
     def trace_report(self, msg):
-        self.file.write(utils.to_unicode(msg))
+        self.file.write(msg)
 
     def trace_warning(self, des):
-        self.add_line("Warning", des["msg"])
+        self.add_line("Warning", des["msg"], cachetime=False)
         
 
     def trace_env(self, scope, data):
-        self.add_line(scope, data)
+        self.add_line(scope, data, cachetime=False)
 
     def trace_layer(self, scope, data):
-        self.add_line(scope, data)
+        self.add_line(scope, data, cachetime=False)
 
 
 def create(interfaces):

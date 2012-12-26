@@ -18,7 +18,6 @@ import inspect
 
 
 
-
 import result
 import utils
 import pexception
@@ -46,6 +45,8 @@ class Valid:
         
         self.abort_fatal_mode = False
         self.abort_fatal = False
+        
+        self.case_name = None
         
 
     def _nothing_(self):
@@ -91,6 +92,9 @@ class Valid:
         self.case.append(funcCase)
 
 
+    def get_case_name(self):
+        return self.case_name
+
 
     def run_script(self):
         self.result.script_start({"name":self.name})
@@ -106,21 +110,27 @@ class Valid:
             pass
         else:
             self.result.setup_start({})
+            self.case_name = "setup"
             self.run_try(self.setup)
             self.result.setup_stop({})
+            self.case_name = None
         # Case
         for acase in self.case :
             name = acase.func_name
             self.result.case_start({"name":name})
+            self.case_name = name
             self.run_case(acase)
             self.result.case_stop({"name":name})
+            self.case_name = None
         # Cleanup
         if self.cleanup == self._nothing_:
             pass
         else:
             self.result.cleanup_start({})
+            self.case_name = "cleanup"
             self.run_try(self.cleanup)
             self.result.cleanup_stop({})
+            self.case_name = None
         # Destroy    
         if self.destroy == self._nothing_:
             pass
@@ -183,7 +193,7 @@ class Valid:
             del traceback
         des = {}
         des["stack"]            = stack
-        des["exception_info"]   = utils.to_unicode(exception.__str__())
+        des["exception_info"]   = utils.to_unicode(exception)
         des["exception_class"]  = exception.__class__.__name__
 
         self.result.py_exception(des)

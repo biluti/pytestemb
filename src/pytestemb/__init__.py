@@ -10,10 +10,11 @@ VERSION_STRING = "1.7.0-dev"
  Historic :
 
 *1.7.0
+    - improve global performance
     - add exception description for standalone mode
-    - trace report
-    - improve of 10% time for txt trace
-    - get script name
+    - add script report execution on trace
+    - get script and case name
+    
 
 *1.6.1
     - fix regression on doc 
@@ -363,11 +364,8 @@ def run_script():
 def _create_des_(msg):
     if msg is None :
         return {}
-    elif not(isinstance(msg, types.StringTypes)):
-        raise pexception.PytestembError("Msg must be a string")
     else:
-        return dict({"msg":"%s" % utils.to_unicode(msg)})
-
+        return dict({u"msg":utils.to_unicode(msg)})
 
 
 def get_config():
@@ -381,6 +379,12 @@ def get_mode():
 def get_script_name():
     return utils.get_script_name()
 
+
+def get_case_name():
+    if options.doc :
+        pass
+    else :
+        return __valid__.get_case_name()
 
 def assert_true(exp, msg=None):
     """
