@@ -56,5 +56,8 @@
             <Script Path="script" Type="TST" Name="script_abort_06"/>
             <Script Path="script" Type="TST" Name="script_abort_07"/>
         </Campaign>
+        <Campaign Info="" Name="performance">
+            <Script Path="script" Type="TST" Name="script_performance"/>
+        </Campaign>
     </Campaigns>
 </Project>
