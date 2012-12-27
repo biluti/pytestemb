@@ -13,13 +13,11 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 import sys
-import copy
 import inspect
 
 
-
-import result
 import utils
+import result
 import pexception
 
 
@@ -179,18 +177,18 @@ class Valid:
         CALL_DEPTH = 1
         traceback = inspect.trace()
         stack = []
+        
         default = dict.fromkeys(["path","line","function","code"], "no info")
         try:
             for index in range(CALL_DEPTH, len(traceback)):
-                stack.append(copy.copy(default))
-                stack[-1]["path"]      = copy.copy(traceback[index][1])
-                stack[-1]["line"]      = copy.copy(traceback[index][2])
-                stack[-1]["function"]  = copy.copy(traceback[index][3])
-                stack[-1]["code"]      = copy.copy(traceback[index][4][0].strip("\n"))
+                stack.append(default)
+                stack[-1]["path"]      = traceback[index][1]
+                stack[-1]["line"]      = traceback[index][2]
+                stack[-1]["function"]  = traceback[index][3]
+                stack[-1]["code"]      = utils.to_unicode(traceback[index][4][0].strip("\n"))
         except Exception:
             pass
-        finally:
-            del traceback
+
         des = {}
         des["stack"]            = stack
         des["exception_info"]   = utils.to_unicode(exception)

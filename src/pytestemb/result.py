@@ -63,15 +63,15 @@ class Result:
                 if          traceback[index][1].endswith("valid.py") \
                     and     (traceback[index][3] == "run_case" or traceback[index][3] == "run_try") :
                     break
-                #stack.append(copy.copy(default))
                 stack.append(default)
                 stack[-1]["path"]      = traceback[index][1]
                 stack[-1]["line"]      = traceback[index][2]
                 stack[-1]["function"]  = traceback[index][3]
-                stack[-1]["code"]      = traceback[index][4][0].strip("\n")     
+                stack[-1]["code"]      = traceback[index][4][0].strip("\n")
             stack.reverse()
         finally:
             return dic, stack
+
 
 
     def _assert_(self, exp, fatal, des, values=""):
@@ -592,9 +592,9 @@ class ResultStandalone(Result):
         
         s = ""
         s += "Assert KO : '%s'\n" % msg
-        for s in des["stack"]:
-            s += "    File \"%s\", line %d, in %s\n" % (s["path"], s["line"], s["function"])
-            s += "        %s\n" % (s["code"])
+        for d in des["stack"]:
+            s += "    File \"%s\", line %d, in %s\n" % (d["path"], d["line"], d["function"])
+            s += "        %s\n" % (d["code"])
 
         s += "    File \"%s\", line %d, in %s\n" % (des["file"], des["line"], des["function"])
         s += "        + function   : \"%s\"\n" % des["function"]
@@ -617,7 +617,7 @@ class ResultStandalone(Result):
         dis += "    %s\n" % (des["exception_class"])
         dis += "    %s\n" % (des["exception_info"])
     
-        sys.stdout.write(dis.encode("utf-8"))
+        sys.stdout.write(dis)
         
         if self.case:
             self.result[-1][self.EXCEPTION] = des["exception_class"]

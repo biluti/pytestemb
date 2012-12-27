@@ -10,11 +10,10 @@ VERSION_STRING = "1.7.0-dev"
  Historic :
 
 *1.7.0
-    - improve global and trace performance
+    - improve general and trace performance (high improvement for trace)
     - add exception description for standalone mode
     - add script report execution on trace
     - get script and case name
-    
 
 *1.6.1
     - fix regression on doc 
@@ -164,7 +163,7 @@ parser.add_option("-t", "--trace",
                     help="set the interface for trace, value can be : %s" % interface["trace"][INTERFACE_LIST].__str__())
 parser.add_option("-p", "--path",
                     action="store", type="string", dest="path", default=None,
-                    help="add path to python path")
+                    help="add path to Python path")
 parser.add_option("-c", "--config",
                     action="store", type="string", dest="config", default=None,
                     help="add config general purpose string (flag, filename ...)")
@@ -173,7 +172,7 @@ parser.add_option("-m", "--mode",
                     help="add mode general purpose string (debug, ...)")
 parser.add_option("-d", "--doc",
                     action="store_true", dest="doc", default=False,
-                    help="add path to python path")
+                    help="add path to Python path")
 parser.add_option("-v", "--version",
                     action="store_true", dest="ver", default=False,
                     help="version of software")
@@ -225,7 +224,7 @@ __pydoc__   = None
 
 if options.doc :
     # doc generation
-    __trace__   = trace.create(options.trace)
+    __trace__   = trace.create([]) # no trace
     __result__  = result.create(options.result, __trace__ )
     __pydoc__   = pydoc.Pydoc(__result__)
 else :
@@ -553,7 +552,7 @@ def trace_env(scope, data):
     @return         : None
     @summary        : trace data towards environment trace type
     """
-    __trace__.trace_env(scope, data)
+    __trace__.trace_env(scope, utils.to_unicode(data))
 
 def trace_io(interface, data):
     """
@@ -563,7 +562,7 @@ def trace_io(interface, data):
     @return         : None
     @summary        : trace data towards io trace type
     """
-    __trace__.trace_io(interface, data)
+    __trace__.trace_io(interface, utils.to_unicode(data))
 
 
 def trace_script(msg):
@@ -573,7 +572,7 @@ def trace_script(msg):
     @return         : None
     @summary        : trace message, for script application
     """
-    __trace__.trace_script(msg)
+    __trace__.trace_script(utils.to_unicode(msg))
 
 
 def trace_layer(scope, data):
@@ -584,7 +583,7 @@ def trace_layer(scope, data):
     @return         : None
     @summary        : trace data towards layer trace type
     """
-    __trace__.trace_layer(scope, data)
+    __trace__.trace_layer(scope, utils.to_unicode(data))
     
 
 
