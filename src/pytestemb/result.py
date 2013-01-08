@@ -50,7 +50,7 @@ class Result:
 
     def get_assert_caller(self, call_depth):
 
-        default = dict.fromkeys(["path","line","function","code"], "no info")
+        DEFAULT = dict.fromkeys(["path","line","function","code"], "no info")
         traceback = inspect.stack()
         dic = {}
         stack = []
@@ -63,7 +63,7 @@ class Result:
                 if          traceback[index][1].endswith("valid.py") \
                     and     (traceback[index][3] == "run_case" or traceback[index][3] == "run_try") :
                     break
-                stack.append(default)
+                stack.append(dict(DEFAULT))
                 stack[-1]["path"]      = traceback[index][1]
                 stack[-1]["line"]      = traceback[index][2]
                 stack[-1]["function"]  = traceback[index][3]

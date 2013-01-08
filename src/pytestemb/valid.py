@@ -175,13 +175,13 @@ class Valid:
 
     def inspect_traceback(self, exception):
         CALL_DEPTH = 1
+        DEFAULT = dict.fromkeys(["path","line","function","code"], "no info")
         traceback = inspect.trace()
         stack = []
         
-        default = dict.fromkeys(["path","line","function","code"], "no info")
         try:
             for index in range(CALL_DEPTH, len(traceback)):
-                stack.append(default)
+                stack.append(dict(DEFAULT))
                 stack[-1]["path"]      = traceback[index][1]
                 stack[-1]["line"]      = traceback[index][2]
                 stack[-1]["function"]  = traceback[index][3]
