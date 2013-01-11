@@ -21,11 +21,9 @@ import pytestemb.gtime as gtime
 
 
 class TestErrorFatal(Exception):
-    "Fatal Error"
     pass
 
 class TestAbort(Exception):
-    "Abort"
     pass
 
 
@@ -57,7 +55,7 @@ class Result:
 
     def get_assert_caller(self, call_depth):
 
-        DEFAULT = dict.fromkeys(["path","line","function","code"], "no info")
+        DEFAULT = dict.fromkeys(["path", "line", "function", "code"], "no info")
         traceback = inspect.stack()
         dic = {}
         stack = []
@@ -283,7 +281,7 @@ class ResultStdout(Result):
         sys.stdout.write("%s%s\n" % (key, ResultStdout.SEPARATOR))
 
     def write_one_arg(self, key, value):
-        sys.stdout.write("%s%s%s\n" % (key, ResultStdout.SEPARATOR ,value))
+        sys.stdout.write("%s%s%s\n" % (key, ResultStdout.SEPARATOR, value))
 
 
     def write(self, opcode, arg):
@@ -417,7 +415,8 @@ class ResultStandalone(Result):
     def __init__(self, trace):
         Result.__init__(self, trace)
 
-    def write_stdout(self, info):
+    @staticmethod
+    def write_stdout(info):
         sys.stdout.write(info)
 
     @stamp
@@ -433,7 +432,8 @@ class ResultStandalone(Result):
         
         self.write_stdout(dis)
 
-    def magical(self, data, size):
+    @staticmethod
+    def magical(data, size):
         return (len(data)-size)
 
 
@@ -608,9 +608,9 @@ class ResultStandalone(Result):
         
         dis = ""
         dis += "Assert KO : '%s'\n" % msg
-        for d in des["stack"]:
-            dis += "    File \"%s\", line %d, in %s\n" % (d["path"], d["line"], d["function"])
-            dis += "        %s\n" % (d["code"])
+        for i in des["stack"]:
+            dis += "    File \"%s\", line %d, in %s\n" % (i["path"], i["line"], i["function"])
+            dis += "        %s\n" % (i["code"])
 
         dis += "    File \"%s\", line %d, in %s\n" % (des["file"], des["line"], des["function"])
         dis += "        + function   : \"%s\"\n" % des["function"]
@@ -684,7 +684,7 @@ class ResultStandalone(Result):
         
     @trace
     def doc(self, des):
-        import pydoc
+        import pytestemb.pydoc as pydoc
         
         self.write_stdout("\n")
 

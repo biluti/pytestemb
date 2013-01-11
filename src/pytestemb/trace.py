@@ -268,7 +268,9 @@ class TraceStdout(Trace):
         des = dict({"type":"stdout"})
         self.result.trace_ctrl(des)
 
-    def _write(self, msg):
+
+    @staticmethod
+    def _write(msg):
         sys.stdout.write(msg)
 
     def trace_script(self, msg):
@@ -325,7 +327,7 @@ class TraceTxt(Trace):
 
         pathfile =  os.path.join(TraceTxt.DEFAULT_DIR, self.gen_file_name())
         # create file
-        des = dict({"type":"pyt","file":pathfile})
+        des = dict({"type":"pyt", "file":pathfile})
         try :
             self.file = codecs.open(pathfile, encoding="utf-8", mode="w", buffering=-1)
         except (IOError) , (error):
@@ -335,12 +337,11 @@ class TraceTxt(Trace):
         self.add_header()
 
     def gen_file_name(self):
-        """ """
-        m = hashlib.md5()
-        m.update(sys.argv[0])
-        m.update(time.strftime("%d_%m_%Y_%H_%M_%S", self.gtime.start_date))
+        md = hashlib.md5()
+        md.update(sys.argv[0])
+        md.update(time.strftime("%d_%m_%Y_%H_%M_%S", self.gtime.start_date))
         name_script = utils.get_script_name()
-        name_hash = m.hexdigest()[0:16].upper()
+        name_hash = md.hexdigest()[0:16].upper()
         return "%s_%s.pyt" % (name_script, name_hash)
 
     def format(self, mtime, scope, msg):

@@ -16,7 +16,7 @@ import sys
 import inspect
 
 
-import utils
+import pytestemb.utils as utils
 import pytestemb.result as result
 import pytestemb.pexception as pexception
 
@@ -50,33 +50,33 @@ class Valid:
     def _nothing_(self):
         pass
 
-    def set_setup(self, funcSetup):
+    def set_setup(self, funcsetup):
         if self.setup == self._nothing_ :
-            self.setup = funcSetup
+            self.setup = funcsetup
         else:
             # Avoid user mistake with two time function set
             raise pexception.PytestembError("Setup function already set")
 
 
-    def set_cleanup(self, funcCleanup):
+    def set_cleanup(self, funccleanup):
         if self.cleanup == self._nothing_ :
-            self.cleanup = funcCleanup
+            self.cleanup = funccleanup
         else:
             # Avoid user mistake with two time function set
             raise pexception.PytestembError("CleanUp function already set")
 
 
-    def set_create(self, funcCreate):
+    def set_create(self, funccreate):
         if self.create == self._nothing_ :
-            self.create = funcCreate
+            self.create = funccreate
         else:
             # Avoid user mistake with two time function set
             raise pexception.PytestembError("funcCreate function already set")
         
 
-    def set_destroy(self, funcDestroy):
+    def set_destroy(self, funcdestroy):
         if self.destroy == self._nothing_ :
-            self.destroy = funcDestroy
+            self.destroy = funcdestroy
         else:
             # Avoid user mistake with two time function set
             raise pexception.PytestembError("funcDestroy function already set")
@@ -175,7 +175,7 @@ class Valid:
 
     def inspect_traceback(self, exception):
         CALL_DEPTH = 1
-        DEFAULT = dict.fromkeys(["path","line","function","code"], "no info")
+        DEFAULT = dict.fromkeys(["path", "line", "function", "code"], "no info")
         traceback = inspect.trace()
         stack = []
         

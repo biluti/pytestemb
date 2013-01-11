@@ -46,14 +46,14 @@ class Pydoc:
         self.result.doc(des)
         
         
-    def set_setup(self, funcSetup):
-        self._function(TYPE_SETUP, funcSetup)
+    def set_setup(self, funcsetup):
+        self._function(TYPE_SETUP, funcsetup)
     
-    def set_cleanup(self, funcCleanup):
-        self._function(TYPE_CLEANUP, funcCleanup)
+    def set_cleanup(self, funccleanup):
+        self._function(TYPE_CLEANUP, funccleanup)
     
-    def add_test_case(self, funcCase):
-        self._function(TYPE_CASE, funcCase)
+    def add_test_case(self, funccase):
+        self._function(TYPE_CASE, funccase)
         
     
     def _function(self, ftype, func):
