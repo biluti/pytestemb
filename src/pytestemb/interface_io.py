@@ -17,7 +17,7 @@ import pytestemb
   
 
 class InterfaceError(Exception):
-    "Exception raised by InterfaceIO"
+    """Exception raised by InterfaceIO"""
     def __init__(self, info):
         Exception.__init__(self)
         self.info = info
@@ -43,23 +43,23 @@ class Interface_io:
 
  
 
- 
-""" Patern 
+# 
+#Patern 
+#
+#__interface__ = {}
+#
+# 
+#def create(name):
+#    __interface__[name] = Interface_io()   
+#
+#
+#def start(name):
+#    __interface__[name].start()
+#
+#   
+#
+#def stop(name):   
+#    __interface__[name].stop()
 
-__interface__ = {}
 
- 
-def create(name):
-    __interface__[name] = Interface_io()   
-
-
-def start(name):
-    __interface__[name].start()
-
-   
-
-def stop(name):   
-    __interface__[name].stop()
-
-"""  
 

@@ -16,8 +16,8 @@ import time
 import inspect
 
 
-import utils
-import gtime
+import pytestemb.utils as utils
+import pytestemb.gtime as gtime
 
 
 class TestErrorFatal(Exception):
@@ -38,6 +38,13 @@ class Result:
         self.start_clock = time.clock()
         self.gtime = gtime.Gtime.create()
         self.delay_trace_ctrl = []
+        
+        # report
+        self.case = False
+        self.result = []
+        self.time_exec = None
+        
+                
 
     def trace_result(self, name, des):
         self.trace.trace_result(name, des)
@@ -208,6 +215,8 @@ class Result:
     def trace_ctrl(self, des):
         # delay sending
         self.delay_trace_ctrl.append(des)
+        
+
 
 
 def trace(func):
@@ -407,19 +416,22 @@ class ResultStandalone(Result):
 
     def __init__(self, trace):
         Result.__init__(self, trace)
-        self.case = False
-        self.result = []
-        self.time_exec = None
 
+    def write_stdout(self, info):
+        sys.stdout.write(info)
 
     @stamp
     @trace
     def script_start(self, des):
-        sys.stdout.write("Start running '%s' ...\n" % des["name"])
-        for item in self.delay_trace_ctrl:
-            sys.stdout.write("Trace : %s\n" % item)
         
+        dis = ""
+        dis += "Start running '%s' ...\n" % des["name"]
+        for item in self.delay_trace_ctrl:
+            dis += "Trace : %s\n" % item
+        dis += "\n"
         self.time_exec = des["time"]
+        
+        self.write_stdout(dis)
 
     def magical(self, data, size):
         return (len(data)-size)
@@ -433,7 +445,7 @@ class ResultStandalone(Result):
 
 
     def trace_report(self, info):
-        sys.stdout.write(info)
+        self.write_stdout(info)
         self.trace.trace_report(info)
         
 
@@ -464,7 +476,7 @@ class ResultStandalone(Result):
         ko      = False
         aborted = False
         
-        sys.stdout.write("End running '%s'\n" % des["name"])
+        #self.trace_report("End running '%s'\n" % des["name"])
         
         
         self.trace_report("\n+%s+\n" % ("-"*SIZE))
@@ -508,7 +520,7 @@ class ResultStandalone(Result):
 
     @trace
     def create_start(self, des):
-        sys.stdout.write("Create  : \n")
+        self.write_stdout("Create  : \n")
         
     @trace
     def create_stop(self, des):
@@ -516,7 +528,7 @@ class ResultStandalone(Result):
 
     @trace
     def destroy_start(self, des):
-        sys.stdout.write("Destroy :\n")
+        self.write_stdout("Destroy :\n")
         
     @trace
     def destroy_stop(self, des):
@@ -524,7 +536,7 @@ class ResultStandalone(Result):
 
     @trace
     def setup_start(self, des):
-        sys.stdout.write("Setup   :\n")
+        self.write_stdout("Setup   :\n")
 
     @trace
     def setup_stop(self, des):
@@ -532,7 +544,7 @@ class ResultStandalone(Result):
 
     @trace
     def cleanup_start(self, des):
-        sys.stdout.write("Cleanup :\n")
+        self.write_stdout("Cleanup :\n")
 
     @trace
     def cleanup_stop(self, des):
@@ -546,9 +558,12 @@ class ResultStandalone(Result):
         self.result[-1][self.ASSERT_KO] = 0
         self.result[-1][self.EXCEPTION] = None
         self.result[-1][self.ABORTED]   = 0
-        sys.stdout.write("Case    : '%s'\n" % des["name"])
         
         self.case = True
+        
+        self.write_stdout("Case    : '%s'\n" % des["name"])
+        
+        
 
     @stamp
     @trace
@@ -574,7 +589,8 @@ class ResultStandalone(Result):
     @stamp
     @trace
     def warning(self, des):
-        sys.stdout.write("Warning : %s\n" % des["msg"])
+        self.write_stdout("Warning : %s\n" % des["msg"])
+        
 
     @stamp
     @trace
@@ -590,21 +606,23 @@ class ResultStandalone(Result):
         else:
             msg = ""     
         
-        s = ""
-        s += "Assert KO : '%s'\n" % msg
+        dis = ""
+        dis += "Assert KO : '%s'\n" % msg
         for d in des["stack"]:
-            s += "    File \"%s\", line %d, in %s\n" % (d["path"], d["line"], d["function"])
-            s += "        %s\n" % (d["code"])
+            dis += "    File \"%s\", line %d, in %s\n" % (d["path"], d["line"], d["function"])
+            dis += "        %s\n" % (d["code"])
 
-        s += "    File \"%s\", line %d, in %s\n" % (des["file"], des["line"], des["function"])
-        s += "        + function   : \"%s\"\n" % des["function"]
-        s += "        + expression : \"%s\"\n" % des["expression"]
-        s += "        + values     : \"%s\"\n" % des["values"]
+        dis += "    File \"%s\", line %d, in %s\n" % (des["file"], des["line"], des["function"])
+        dis += "        + function   : \"%s\"\n" % des["function"]
+        dis += "        + expression : \"%s\"\n" % des["expression"]
+        dis += "        + values     : \"%s\"\n" % des["values"]
 
-        sys.stdout.write(s)
+        
 
         if self.case :
             self.result[-1][self.ASSERT_KO] += 1
+            
+        self.write_stdout(dis)
         
       
     @stamp
@@ -617,12 +635,13 @@ class ResultStandalone(Result):
         dis += "    %s\n" % (des["exception_class"])
         dis += "    %s\n" % (des["exception_info"])
     
-        sys.stdout.write(dis)
         
         if self.case:
             self.result[-1][self.EXCEPTION] = des["exception_class"]
         
-
+        self.write_stdout(dis)
+        
+        
 
     @stamp
     @trace        
@@ -631,27 +650,32 @@ class ResultStandalone(Result):
             msg = des["msg"]
         else:
             msg = ""     
-        
-        sys.stdout.write("Abort : '%s'\n" % msg)
+            
+        dis = ""
+        dis += "Abort : '%s'\n" % msg
         
         for s in des["stack"]:
             loc = "    File \"%s\", line %d, in %s\n" % (s["path"], s["line"], s["function"])
             loc += "        %s\n" % (s["code"])
-            sys.stdout.write("%s" % loc)       
-        sys.stdout.write("    File \"%s\", line %d, in %s\n" % (des["file"], des["line"], des["function"]))       
-        sys.stdout.write("        + function   : \"%s\"\n" % des["function"])
-        sys.stdout.write("        + expression : \"%s\"\n" % des["expression"])
+            dis += loc
+            
+        dis += "    File \"%s\", line %d, in %s\n" % (des["file"], des["line"], des["function"])       
+        dis += "        + function   : \"%s\"\n" % des["function"]
+        dis += "        + expression : \"%s\"\n" % des["expression"]
 
         if self.case:
             self.result[-1][self.ABORTED] += 1
         
+        self.write_stdout(dis)
         
     @trace
     def aborted(self, des):
-        sys.stdout.write("  Aborted\n")
         
         if self.case:
             self.result[-1][self.ABORTED] += 1
+        
+        self.write_stdout("  Aborted\n")
+        
           
 
     @trace
@@ -661,11 +685,12 @@ class ResultStandalone(Result):
     @trace
     def doc(self, des):
         import pydoc
-        sys.stdout.write("\n")
+        
+        self.write_stdout("\n")
 
-        sys.stdout.write("Name : %s\n" % des[pydoc.KEY_NAME])
-        sys.stdout.write("Type : %s\n" % des[pydoc.KEY_TYPE])
-        sys.stdout.write("Doc :\n%s\n" % des[pydoc.KEY_DOC])
+        self.write_stdout("Name : %s\n" % des[pydoc.KEY_NAME])
+        self.write_stdout("Type : %s\n" % des[pydoc.KEY_TYPE])
+        self.write_stdout("Doc :\n%s\n" % des[pydoc.KEY_DOC])
 
 
 

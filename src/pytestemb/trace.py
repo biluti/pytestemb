@@ -22,9 +22,8 @@ import logging.handlers
 
 
 
-import utils
-import gtime
-
+import pytestemb.utils as utils
+import pytestemb.gtime as gtime
 
 
 

@@ -12,12 +12,13 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-import result
+
+import pytestemb.result as result
+
 import UserDict
 
-
 class StdoutReaderError(Exception):
-    """ StdoutReaderError """
+    pass
 
     
 

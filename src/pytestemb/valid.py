@@ -17,8 +17,8 @@ import inspect
 
 
 import utils
-import result
-import pexception
+import pytestemb.result as result
+import pytestemb.pexception as pexception
 
 
 # redirect sys.stderr => sys.stdout

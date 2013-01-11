@@ -15,7 +15,7 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 class PytestembError(Exception):
-    "Exception raised by Pytestemb"
+    """Exception raised by Pytestemb"""
     def __init__(self, info):
         Exception.__init__(self)
         self.info = info

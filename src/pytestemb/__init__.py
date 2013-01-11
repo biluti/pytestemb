@@ -3,7 +3,7 @@
 
 
 
-VERSION_STRING = "1.7.0-dev"
+VERSION_STRING = "1.7.0-beta2"
 
 
 """
@@ -83,7 +83,6 @@ VERSION_STRING = "1.7.0-dev"
 * 1.2.5
     - trace config : add trace for lib, os, Python version and encoding sets
     - tag_value : new api to trace in result tag/value
-    
 """
 
 __author__      = "$Author: jmbeguinet $"
@@ -125,12 +124,12 @@ import platform
 
 
 
-import trace
-import valid
-import result
-import pydoc
-import pexception
-import utils
+import pytestemb.trace as trace
+import pytestemb.valid as valid
+import pytestemb.result as result
+import pytestemb.pydoc as pydoc
+import pytestemb.pexception as pexeception
+import pytestemb.utils as utils
 
 
 
