@@ -91,28 +91,6 @@ __license__     = "GPL"
 __email__       = "jm.beguinet@gmail.com"
 
 
-""" 
-
-
-Execution sequence :
-- create
-- setup
-- cases
-- cleanup
-- destroy
-
-create & destroy => for environment management
-setup & cleanup  => for test management
-
-
-Sequence :
-* assert, fail generate KO
-* fatal stop the execution following the mode : stop execution of the current case or stop all cases
-* abort stop the execution of script and just execute destroy
-
-
-"""
-
 
 
 
@@ -139,27 +117,27 @@ from optparse import OptionParser
 
 
 
-interface = {}
+INTERFACE = {}
 
 
 INTERFACE_DEFAULT = 0
 INTERFACE_LIST = 1
 
 
-interface["result"] = (("standalone"),
+INTERFACE["result"] = (("standalone"),
                        ("none", "standalone", "stdout"))
-interface["trace"] =  ([],
+INTERFACE["trace"] =  ([],
                        ("none", "octopylog", "txt"))
 
 
 parser = OptionParser()
 
 parser.add_option("-r", "--result",
-                    action="store", type="string", dest="result", default=interface["result"][INTERFACE_DEFAULT],
-                    help="set the interface for result, value can be : %s" % interface["result"][INTERFACE_LIST].__str__())
+                    action="store", type="string", dest="result", default=INTERFACE["result"][INTERFACE_DEFAULT],
+                    help="set the interface for result, value can be : %s" % INTERFACE["result"][INTERFACE_LIST].__str__())
 parser.add_option("-t", "--trace",
-                    action="append", type="string", dest="trace", default=interface["trace"][INTERFACE_DEFAULT],
-                    help="set the interface for trace, value can be : %s" % interface["trace"][INTERFACE_LIST].__str__())
+                    action="append", type="string", dest="trace", default=INTERFACE["trace"][INTERFACE_DEFAULT],
+                    help="set the interface for trace, value can be : %s" % INTERFACE["trace"][INTERFACE_LIST].__str__())
 parser.add_option("-p", "--path",
                     action="store", type="string", dest="path", default=None,
                     help="add path to Python path")
@@ -180,7 +158,7 @@ parser.add_option("-v", "--version",
 
 
 def checker(name, value):
-    for line in interface[name][INTERFACE_LIST] :
+    for line in INTERFACE[name][INTERFACE_LIST] :
         if line == value:
             break
     else :

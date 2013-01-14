@@ -60,7 +60,8 @@ class Trace:
     def trace_layer(self, scope, data):
         pass
 
-    def format_result(self, name, des):
+    @staticmethod
+    def format_result(name, des):
         line = []
 
         if    name == "assert_ko":
@@ -71,9 +72,9 @@ class Trace:
                 msg = ""
             line.append("%s : '%s'" % (name, msg))
 
-            for s in des["stack"]:
-                line.append("    File \"%s\", line %d, in %s" % (s["path"], s["line"], s["function"]))
-                line.append("        %s" % (s["code"]))
+            for i in des["stack"]:
+                line.append("    File \"%s\", line %d, in %s" % (i["path"], i["line"], i["function"]))
+                line.append("        %s" % (i["code"]))
                     
             line.append("    File \"%s\", line %d, in %s" % (des["file"], des["line"], des["function"]))
             line.append("        + function   : \"%s\"" % des["function"])
@@ -90,9 +91,9 @@ class Trace:
                 msg = ""
             line.append("%s : '%s'" % (name, msg))
 
-            for s in des["stack"]:
-                line.append("    File \"%s\", line %d, in %s" % (s["path"], s["line"], s["function"]))
-                line.append("        %s" % (s["code"]))
+            for i in des["stack"]:
+                line.append("    File \"%s\", line %d, in %s" % (i["path"], i["line"], i["function"]))
+                line.append("        %s" % (i["code"]))
                     
             line.append("    File \"%s\", line %d, in %s" % (des["file"], des["line"], des["function"]))
             line.append("        + function   : \"%s\"" % des["function"])
@@ -110,14 +111,14 @@ class Trace:
         elif  name == "py_exception":
             line.append("%s : time:'%s'" % (name, des["time"]))
             
-            for s in des["stack"]:
-                line.append("    File \"%s\", line %d, in %s" % (s["path"], s["line"], s["function"]))
-                line.append("        %s" % (s["code"]))
+            for i in des["stack"]:
+                line.append("    File \"%s\", line %d, in %s" % (i["path"], i["line"], i["function"]))
+                line.append("        %s" % (i["code"]))
             line.append("    %s" % (des["exception_class"]))
             line.append("    %s" % (des["exception_info"]))
 
         elif    name in ["case_start", "case_stop", "assert_ok", "script_start", "script_stop", "tag_value", "warning"]:
-            info = ", ".join(["%s:'%s'" % (k,v) for k,v in des.iteritems()])
+            info = ", ".join(["%s:'%s'" % (key, value) for key, value in des.iteritems()])
             line.append("%s : %s" % (name, info))                 
         else:
             line.append("%s : %s" % (name, utils.str_dict(des)))
@@ -205,10 +206,10 @@ class TraceOctopylog(Trace):
         else:
             self.started = True
             
-        socketHandler = logging.handlers.SocketHandler("localhost", logging.handlers.DEFAULT_TCP_LOGGING_PORT)
-        rootLogger = logging.getLogger("pytestemb")
-        rootLogger.setLevel(logging.INFO)
-        rootLogger.addHandler(socketHandler)
+        sockethandler = logging.handlers.SocketHandler("localhost", logging.handlers.DEFAULT_TCP_LOGGING_PORT)
+        rootlogger = logging.getLogger("pytestemb")
+        rootlogger.setLevel(logging.INFO)
+        rootlogger.addHandler(sockethandler)
 
         des = dict({"type":"octopylog"})
         self.result.trace_ctrl(des)
@@ -344,7 +345,8 @@ class TraceTxt(Trace):
         name_hash = md.hexdigest()[0:16].upper()
         return "%s_%s.pyt" % (name_script, name_hash)
 
-    def format(self, mtime, scope, msg):
+    @staticmethod
+    def format(mtime, scope, msg):
         mtime = mtime.ljust(16)
         scope = scope.ljust(24)
         return "%s%s%s\n"  % (mtime, scope, msg)
@@ -361,8 +363,8 @@ class TraceTxt(Trace):
         
         mtime = "%.6f          " % self.gtime.get_time()
         scope = scope.ljust(24)
-        for m in msg: 
-            self.file.write(u"%s%s%s\n" % (mtime, scope, m))
+        for i in msg: 
+            self.file.write(u"%s%s%s\n" % (mtime, scope, i))
         
         
         

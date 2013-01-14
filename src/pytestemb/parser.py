@@ -57,12 +57,12 @@ class StdoutReader:
             except StdoutReaderError, ex:
                 raise StdoutReaderError(ex.__str__() + ",line : %s" % line)
 
-
-    def conv_dict(self, data):
+    @staticmethod
+    def conv_dict(data):
         try:
             return UserDict.UserDict(eval(data))
         except SyntaxError, ex:
-            raise StdoutReaderError("Problem during parsing : exception '%s', data '%s'" % (ex.__str__() ,data))   
+            raise StdoutReaderError("Problem during parsing : exception '%s', data '%s'" % (ex.__str__(), data))   
     
     def process(self, key, value):
         pass
@@ -77,10 +77,10 @@ class ResultStdoutReader(StdoutReader):
 
 
     def __str__(self):
-        s = ""
+        dis = ""
         for scr in self.script:
-            s += "%s\n" % scr.__str__()
-        return s
+            dis += "%s\n" % scr.__str__()
+        return dis
     
     @staticmethod
     def create_resultcounter():
