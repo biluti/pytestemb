@@ -32,8 +32,10 @@ class StdoutReader:
     def new_script(self):
         self.script_started = False 
         self.case_started = False
-        
-    def check_started(self, state):
+    
+    
+    @staticmethod
+    def check_started(state):
         if state :
             return
         else :
@@ -53,7 +55,6 @@ class StdoutReader:
             try:
                 self.process(line[0:pos], line[pos+1:])
             except StdoutReaderError, ex:
-                raise
                 raise StdoutReaderError(ex.__str__() + ",line : %s" % line)
 
 
@@ -81,8 +82,8 @@ class ResultStdoutReader(StdoutReader):
             s += "%s\n" % scr.__str__()
         return s
     
-
-    def create_resultcounter(self):
+    @staticmethod
+    def create_resultcounter():
         obj = result.ResultCounter()
         obj.add_kind(result.ResultStdout.ERROR_IO)
         obj.add_kind(result.ResultStdout.ERROR_TEST)
@@ -122,24 +123,24 @@ class ResultStdoutReader(StdoutReader):
             self.check_started(not(self.case_started))
             if      key == result.ResultStdout.SETUP_START :
                 value = "setup"
-                t = None
+                timeex = None
             elif    key == result.ResultStdout.CLEANUP_START:
                 value = "cleanup"
-                t = None
+                timeex = None
             elif    key == result.ResultStdout.CREATE_START:
                 value = "create"
-                t = None
+                timeex = None
             elif    key == result.ResultStdout.DESTROY_START:
                 value = "destroy"
-                t = None                                
+                timeex = None                                
             else :
                 dic = self.conv_dict(value)
                 value = dic["name"]
-                t = dic["time"]
+                timeex = dic["time"]
                 
             obj = self.create_resultcounter()
             obj.name = value
-            obj.timeex = t
+            obj.timeex = timeex
             self.script[-1].case.append(obj)
             self.case_started = True
         # SETUP_STOP, CLEANUP_STOP, CASE_STOP
@@ -153,7 +154,6 @@ class ResultStdoutReader(StdoutReader):
             
             if key == result.ResultStdout.CASE_STOP:
                 dic = self.conv_dict(value)
-                t = dic["time"]
                 self.script[-1].case[-1].timeex = dic["time"] - self.script[-1].case[-1].timeex    
  
         # CASE_NOTEXECUTED

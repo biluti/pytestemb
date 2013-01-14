@@ -142,40 +142,40 @@ class TraceManager(Trace):
             pass
 
     def set_result(self, result):            
-        for t in self.l:
-            t.set_result(result)
+        for i in self.l:
+            i.set_result(result)
 
     def start(self):
-        for t in self.l:
-            t.start()            
+        for i in self.l:
+            i.start()            
 
     def trace_script(self, msg):
-        for t in self.l:
-            t.trace_script(msg)
+        for i in self.l:
+            i.trace_script(msg)
             
     def trace_io(self, interface, data):
-        for t in self.l:
-            t.trace_io(interface, data)     
+        for i in self.l:
+            i.trace_io(interface, data)     
             
     def trace_result(self, name, des):
-        for t in self.l:
-            t.trace_result(name, des)
+        for i in self.l:
+            i.trace_result(name, des)
 
     def trace_warning(self, msg):
-        for t in self.l:
-            t.trace_warning(msg)
+        for i in self.l:
+            i.trace_warning(msg)
 
     def trace_env(self, scope, data):
-        for t in self.l:
-            t.trace_env(scope, data)
+        for i in self.l:
+            i.trace_env(scope, data)
             
     def trace_layer(self, scope, data):
-        for t in self.l:
-            t.trace_layer(scope, data)
+        for i in self.l:
+            i.trace_layer(scope, data)
     
     def trace_report(self, msg):
-        for t in self.l:
-            t.trace_report(msg)     
+        for i in self.l:
+            i.trace_report(msg)     
 
     def add_traces(self, interfaces):
         for interface in interfaces:

@@ -30,8 +30,8 @@ sys.stderr = sys.stdout
 
 
 class Valid:
-    def __init__(self, result):
-        self.result = result
+    def __init__(self, inst_result):
+        self.result = inst_result
         self.setup      = self._nothing_
         self.cleanup    = self._nothing_
         self.create     = self._nothing_
@@ -86,8 +86,8 @@ class Valid:
         
         
 
-    def add_test_case(self, funcCase):
-        self.case.append(funcCase)
+    def add_test_case(self, funccase):
+        self.case.append(funccase)
 
 
     def get_case_name(self):

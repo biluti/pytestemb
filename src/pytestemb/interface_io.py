@@ -33,7 +33,7 @@ class Interface_io:
         self.name = name
 
     def trace_io(self, interface, data):
-        pytestemb.trace_io(interface, data)
+        pytestemb.trace_io(interface, "%s : %s" (self.name, data))
 
     def start(self):
         pass

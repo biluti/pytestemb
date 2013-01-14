@@ -15,7 +15,7 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-import utils
+import pytestemb.utils as utils
 
 
 TYPE_SCRIPT     = "script"

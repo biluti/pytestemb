@@ -30,8 +30,8 @@ class TestAbort(Exception):
 
 class Result:
 
-    def __init__(self, trace):
-        self.trace = trace
+    def __init__(self, inst_trace):
+        self.trace = inst_trace
         self.start_date = time.localtime()
         self.start_clock = time.clock()
         self.gtime = gtime.Gtime.create()
@@ -53,29 +53,31 @@ class Result:
     def get_time(self):
         return self.gtime.get_time()
 
-    def get_assert_caller(self, call_depth):
+
+    @staticmethod
+    def get_assert_caller(call_depth):
 
         DEFAULT = dict.fromkeys(["path", "line", "function", "code"], "no info")
         traceback = inspect.stack()
         dic = {}
         stack = []
-        try :
-            dic["file"]         = traceback[call_depth][1]
-            dic["line"]         = traceback[call_depth][2]
-            dic["function"]     = traceback[call_depth][3]
-            dic["expression"]   = traceback[call_depth][4][0].strip(" \t\n")
-            for index in range(call_depth+1, len(traceback)):
-                if          traceback[index][1].endswith("valid.py") \
-                    and     (traceback[index][3] == "run_case" or traceback[index][3] == "run_try") :
-                    break
-                stack.append(dict(DEFAULT))
-                stack[-1]["path"]      = traceback[index][1]
-                stack[-1]["line"]      = traceback[index][2]
-                stack[-1]["function"]  = traceback[index][3]
-                stack[-1]["code"]      = traceback[index][4][0].strip("\n")
-            stack.reverse()
-        finally:
-            return dic, stack
+
+        dic["file"]         = traceback[call_depth][1]
+        dic["line"]         = traceback[call_depth][2]
+        dic["function"]     = traceback[call_depth][3]
+        dic["expression"]   = traceback[call_depth][4][0].strip(" \t\n")
+        for index in range(call_depth+1, len(traceback)):
+            if          traceback[index][1].endswith("valid.py") \
+                and     (traceback[index][3] == "run_case" or traceback[index][3] == "run_try") :
+                break
+            stack.append(dict(DEFAULT))
+            stack[-1]["path"]      = traceback[index][1]
+            stack[-1]["line"]      = traceback[index][2]
+            stack[-1]["function"]  = traceback[index][3]
+            stack[-1]["code"]      = traceback[index][4][0].strip("\n")
+        stack.reverse()
+
+        return dic, stack
 
 
 
@@ -273,18 +275,20 @@ class ResultStdout(Result):
     TAGVALUE            = "TAGVALUE"
 
 
-    def __init__(self, trace):
-        Result.__init__(self, trace)
+    def __init__(self, inst_trace):
+        Result.__init__(self, inst_trace)
 
 
-    def write_no_arg(self, key):
+    @staticmethod
+    def write_no_arg( key):
         sys.stdout.write("%s%s\n" % (key, ResultStdout.SEPARATOR))
 
-    def write_one_arg(self, key, value):
+    @staticmethod
+    def write_one_arg( key, value):
         sys.stdout.write("%s%s%s\n" % (key, ResultStdout.SEPARATOR, value))
 
-
-    def write(self, opcode, arg):
+    @staticmethod
+    def write(opcode, arg):
         arg = arg.__str__().encode("utf-8")
         sys.stdout.write("%s%s%s\n" % (opcode, ResultStdout.SEPARATOR, arg))
 
@@ -412,8 +416,8 @@ class ResultStandalone(Result):
     ABORTED     = "ABORTED"
        
 
-    def __init__(self, trace):
-        Result.__init__(self, trace)
+    def __init__(self, inst_trace):
+        Result.__init__(self, inst_trace)
 
     @staticmethod
     def write_stdout(info):
@@ -654,9 +658,9 @@ class ResultStandalone(Result):
         dis = ""
         dis += "Abort : '%s'\n" % msg
         
-        for s in des["stack"]:
-            loc = "    File \"%s\", line %d, in %s\n" % (s["path"], s["line"], s["function"])
-            loc += "        %s\n" % (s["code"])
+        for i in des["stack"]:
+            loc = "    File \"%s\", line %d, in %s\n" % (i["path"], i["line"], i["function"])
+            loc += "        %s\n" % (i["code"])
             dis += loc
             
         dis += "    File \"%s\", line %d, in %s\n" % (des["file"], des["line"], des["function"])       
