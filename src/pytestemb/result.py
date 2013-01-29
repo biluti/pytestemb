@@ -31,6 +31,19 @@ class TestAbort(Exception):
 class Result:
     
     __single = None
+    
+    CASE_NOTEXECUTED    = "CASE_NOTEXECUTED"
+    ERROR_IO            = "ERROR_IO"
+    ERROR_TEST          = "ERROR_TEST"
+    WARNING             = "WARNING"
+    ASSERT_OK           = "ASSERT_OK"
+    ASSERT_KO           = "ASSERT_KO"
+    PY_EXCEPTION        = "PY_EXCEPTION"
+    ABORT               = "ABORT"
+    ABORTED             = "ABORTED"
+    TRACE               = "TRACE"
+    DOC                 = "DOC"
+    TAGVALUE            = "TAGVALUE"
 
     def __init__(self, inst_trace):
         self.trace = inst_trace
@@ -43,7 +56,13 @@ class Result:
         self.case = False
         self.result = []
         self.time_exec = None
-
+        
+        def nop(e):
+            pass
+        
+        self._report_callback = nop
+        
+        
 
 
     @classmethod
@@ -203,7 +222,6 @@ class Result:
     def case_not_executed(self, des):
         pass
 
-
     def error_io(self, des):
         pass
 
@@ -237,7 +255,136 @@ class Result:
     def trace_ctrl(self, des):
         # delay sending
         self.delay_trace_ctrl.append(des)
+            
+
+
+
+    def report_script_start(self, des):
+        self.time_exec = des["time"]
         
+
+    def report_add_callback(self, callback):
+        self._report_callback = callback
+
+    def report_trace(self, info):
+        self._report_callback(info)
+        self.trace.trace_report(info)
+        
+        
+    def report_add_line(self, col1, col2):
+        col1 = col1.ljust(60)
+        col2 = col2.ljust(32)
+        self.report_trace("| %s| %s|\n"  % (col1, col2))
+
+
+    def report_script_stop(self, des):
+        
+        SIZE = 95
+    
+        self.time_exec = des["time"] - self.time_exec     
+        
+        # | aborted |   ok    |   ko    | result
+        # +---------+---------+---------+--------
+        # |    0    |   0     |   0     |   ?  
+        # |    0    |   0     |   1     |   ko
+        # |    0    |   1     |   0     |   ok
+        # |    0    |   1     |   1     |   ko       
+        # |    1    |   0     |   0     |   aborted
+        # |    1    |   0     |   1     |   aborted
+        # |    1    |   1     |   0     |   aborted
+        # |    1    |   1     |   1     |   aborted
+        #
+        # result_aborted = aborted
+        # result_unknown = not(aborted or ok or ko)
+        # result_ok = ok and not(aborted) and not(ko)
+        # result_ko = ko and not(aborted)
+        ok      = False
+        ko      = False
+        aborted = False
+        
+        self.report_trace("\n+%s+\n" % ("-"*SIZE))
+        self.report_add_line("Script time execution" , "%.3f (sec)" % self.time_exec)
+        
+        self.report_trace("+%s+\n" % ("-"*SIZE))   
+        for case in self.result :
+            
+            if case[self.ABORTED] > 0 or aborted:
+                self.report_add_line("Case \"%s\"" % case["case"], "aborted")
+                aborted = True
+            elif    case[self.PY_EXCEPTION] != None :    
+                self.report_add_line("Case \"%s\"" % case["case"], case[self.PY_EXCEPTION])
+                ko = True
+            elif    case[self.ASSERT_KO] == 0 \
+                and case[self.ASSERT_OK] > 0:
+                self.report_add_line("Case \"%s\"" % case["case"], "ok")
+                ok = True
+            elif    case[self.ASSERT_KO] == 0 \
+                and case[self.ASSERT_OK] == 0:
+                self.report_add_line("Case \"%s\"" % case["case"], "??")       
+            else:
+                self.report_add_line("Case \"%s\"" % case["case"], "ko")
+                ko = True
+    
+        self.report_trace("+%s+\n" % ("-"*SIZE))    
+        if aborted :
+            self.report_add_line("Script \"%s\"" % des["name"] , "ABORTED")    
+        elif not(aborted or ok or ko):
+            self.report_add_line("Script \"%s\"" % des["name"] , "??")
+        elif ok and not(aborted) and not(ko) :
+            self.report_add_line("Script \"%s\"" % des["name"] , "OK")
+        elif ko and not(aborted):
+            self.report_add_line("Script \"%s\"" % des["name"] , "KO")
+        else:
+            raise Exception("assert")
+        
+        self.report_trace("+%s+\n" % ("-"*SIZE))
+
+
+    def report_case_start(self, des):
+        self.result.append({"case":des["name"]})
+        self.result[-1][self.ASSERT_OK] = 0
+        self.result[-1][self.ASSERT_KO] = 0
+        self.result[-1][self.PY_EXCEPTION] = None
+        self.result[-1][self.ABORTED]   = 0        
+        self.case = True
+
+    def report_case_stop(self):
+        self.case = False
+
+    def report_assert_ok(self, des):
+        self.result[-1][self.ASSERT_OK] += 1
+
+    def report_assert_ko(self, des):
+        if self.case :
+            self.result[-1][self.ASSERT_KO] += 1
+            
+    def report_py_exception(self, des):
+        if self.case:
+            self.result[-1][self.PY_EXCEPTION] = des["exception_class"]
+          
+    def report_abort(self, des):
+        if self.case:
+            self.result[-1][self.ABORTED] += 1
+        
+    def report_aborted(self, des):
+        if self.case:
+            self.result[-1][self.ABORTED] += 1
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -283,23 +430,11 @@ class ResultStdout(Result):
     CASE_START          = "CASE_START"
     CASE_STOP           = "CASE_STOP"
     
-    CASE_NOTEXECUTED    = "CASE_NOTEXECUTED"
-    ERROR_IO            = "ERROR_IO"
-    ERROR_TEST          = "ERROR_TEST"
-    WARNING             = "WARNING"
-    ASSERT_OK           = "ASSERT_OK"
-    ASSERT_KO           = "ASSERT_KO"
-    PY_EXCEPTION        = "PY_EXCEPTION"
-    ABORT               = "ABORT"
-    ABORTED             = "ABORTED"
-    TRACE               = "TRACE"
-    DOC                 = "DOC"
-    TAGVALUE            = "TAGVALUE"
+
 
 
     def __init__(self, inst_trace):
         Result.__init__(self, inst_trace)
-
 
     @staticmethod
     def write_no_arg( key):
@@ -320,6 +455,9 @@ class ResultStdout(Result):
         self.write(ResultStdout.SCRIPT_START, des)
         for item in self.delay_trace_ctrl:
             self.write(ResultStdout.TRACE, item)
+        
+        self.report_script_start(des)
+        
 
     @trace
     def create_start(self, des):
@@ -343,6 +481,7 @@ class ResultStdout(Result):
     @trace
     def script_stop(self, des):
         self.write(ResultStdout.SCRIPT_STOP, des)
+        self.report_script_stop(des)
 
     @trace
     def setup_start(self, des):
@@ -364,6 +503,7 @@ class ResultStdout(Result):
     @trace
     def case_start(self, des):
         self.write(ResultStdout.CASE_START, des)
+        self.report_case_start(des)
 
     @stamp
     @trace
@@ -395,26 +535,31 @@ class ResultStdout(Result):
     @trace
     def assert_ok(self, des):
         self.write(ResultStdout.ASSERT_OK, des)
+        self.report_assert_ok(des)
 
     @stamp
     @trace
     def assert_ko(self, des):
         self.write(ResultStdout.ASSERT_KO, des)
+        self.report_assert_ko(des)
 
     @stamp
     @trace
     def py_exception(self, des):
         self.write(ResultStdout.PY_EXCEPTION, des)
+        self.report_py_exception(des)
 
     @stamp
     @trace        
     def abort(self, des):
         self.write(ResultStdout.ABORT, des)        
+        self.report_abort(des)
 
     @stamp
     @trace        
     def aborted(self, des):
-        self.write(ResultStdout.ABORTED, des)    
+        self.write(ResultStdout.ABORTED, des)
+        self.report_aborted(des)    
     
     @trace
     def tag_value(self, des):
@@ -430,16 +575,22 @@ class ResultStdout(Result):
 
 
 
+
+
+
+
+
+
+
+
+
 class ResultStandalone(Result):
     
-    ASSERT_OK   = "ASSERT_OK"
-    ASSERT_KO   = "ASSERT_KO"
-    EXCEPTION   = "EXCEPTION"
-    ABORTED     = "ABORTED"
-       
 
     def __init__(self, inst_trace):
         Result.__init__(self, inst_trace)
+        
+        self.report_add_callback(ResultStandalone.write_stdout)
 
     @staticmethod
     def write_stdout(info):
@@ -449,100 +600,21 @@ class ResultStandalone(Result):
     @trace
     def script_start(self, des):
         
+        self.report_script_start(des)
+        
         dis = ""
         dis += "Start running '%s' ...\n" % des["name"]
         for item in self.delay_trace_ctrl:
             dis += "Trace : %s\n" % item
         dis += "\n"
-        self.time_exec = des["time"]
         
         self.write_stdout(dis)
 
-    @staticmethod
-    def magical(data, size):
-        return (len(data)-size)
-
-
-
-    def add_line(self, col1, col2):
-        col1 = col1.ljust(60)
-        col2 = col2.ljust(32)
-        self.trace_report("| %s| %s|\n"  % (col1, col2))
-
-
-    def trace_report(self, info):
-        self.write_stdout(info)
-        self.trace.trace_report(info)
-        
-
+       
     @stamp
     @trace
     def script_stop(self, des):
-        
-        SIZE = 95
-    
-        self.time_exec = des["time"] - self.time_exec     
-        
-        # | aborted |   ok    |   ko    | result
-        # +---------+---------+---------+--------
-        # |    0    |   0     |   0     |   ?  
-        # |    0    |   0     |   1     |   ko
-        # |    0    |   1     |   0     |   ok
-        # |    0    |   1     |   1     |   ko       
-        # |    1    |   0     |   0     |   aborted
-        # |    1    |   0     |   1     |   aborted
-        # |    1    |   1     |   0     |   aborted
-        # |    1    |   1     |   1     |   aborted
-        #
-        # result_aborted = aborted
-        # result_unknown = not(aborted or ok or ko)
-        # result_ok = ok and not(aborted) and not(ko)
-        # result_ko = ko and not(aborted)
-        ok      = False
-        ko      = False
-        aborted = False
-        
-        #self.trace_report("End running '%s'\n" % des["name"])
-        
-        
-        self.trace_report("\n+%s+\n" % ("-"*SIZE))
-        self.add_line("Script time execution" , "%.3f (sec)" % self.time_exec)
-        
-        self.trace_report("+%s+\n" % ("-"*SIZE))   
-        for case in self.result :
-            
-            if case[self.ABORTED] > 0 or aborted:
-                self.add_line("Case \"%s\"" % case["case"], "aborted")
-                aborted = True
-            elif    case[self.EXCEPTION] != None :    
-                self.add_line("Case \"%s\"" % case["case"], case[self.EXCEPTION])
-                ko = True
-            elif    case[self.ASSERT_KO] == 0 \
-                and case[self.ASSERT_OK] > 0:
-                self.add_line("Case \"%s\"" % case["case"], "ok")
-                ok = True
-            elif    case[self.ASSERT_KO] == 0 \
-                and case[self.ASSERT_OK] == 0:
-                self.add_line("Case \"%s\"" % case["case"], "??")       
-            else:
-                self.add_line("Case \"%s\"" % case["case"], "ko")
-                ko = True
-    
-        self.trace_report("+%s+\n" % ("-"*SIZE))    
-        if aborted :
-            self.add_line("Script \"%s\"" % des["name"] , "ABORTED")    
-        elif not(aborted or ok or ko):
-            self.add_line("Script \"%s\"" % des["name"] , "??")
-        elif ok and not(aborted) and not(ko) :
-            self.add_line("Script \"%s\"" % des["name"] , "OK")
-        elif ko and not(aborted):
-            self.add_line("Script \"%s\"" % des["name"] , "KO")
-        else:
-            raise Exception("assert")
-        
-        self.trace_report("+%s+\n" % ("-"*SIZE))
-
-
+        self.report_script_stop(des)
 
     @trace
     def create_start(self, des):
@@ -579,18 +651,9 @@ class ResultStandalone(Result):
     @stamp
     @trace
     def case_start(self, des):
-        self.result.append({"case":des["name"]})
-        self.result[-1][self.ASSERT_OK] = 0
-        self.result[-1][self.ASSERT_KO] = 0
-        self.result[-1][self.EXCEPTION] = None
-        self.result[-1][self.ABORTED]   = 0
-        
-        self.case = True
-        
+        self.report_case_start(des)
         self.write_stdout("Case    : '%s'\n" % des["name"])
         
-        
-
     @stamp
     @trace
     def case_stop(self, des):
@@ -627,6 +690,8 @@ class ResultStandalone(Result):
     @trace
     def assert_ko(self, des):
         
+        self.report_assert_ko(des)
+        
         if des.has_key("msg"):   
             msg = des["msg"]
         else:
@@ -642,18 +707,16 @@ class ResultStandalone(Result):
         dis += "        + function   : \"%s\"\n" % des["function"]
         dis += "        + expression : \"%s\"\n" % des["expression"]
         dis += "        + values     : \"%s\"\n" % des["values"]
-
         
-
-        if self.case :
-            self.result[-1][self.ASSERT_KO] += 1
-            
         self.write_stdout(dis)
         
       
     @stamp
     @trace
     def py_exception(self, des):
+        
+        self.report_py_exception(des)
+        
         dis = "Exception \n"
         for sline in des["stack"] :
             dis += "    File \"%s\", line %d, in %s\n" % (sline["path"], sline["line"], sline["function"])
@@ -661,10 +724,6 @@ class ResultStandalone(Result):
         dis += "    %s\n" % (des["exception_class"])
         dis += "    %s\n" % (des["exception_info"])
     
-        
-        if self.case:
-            self.result[-1][self.EXCEPTION] = des["exception_class"]
-        
         self.write_stdout(dis)
         
         
@@ -672,6 +731,9 @@ class ResultStandalone(Result):
     @stamp
     @trace        
     def abort(self, des):
+        
+        self.report_abort(des)
+        
         if des.has_key("msg"):   
             msg = des["msg"]
         else:
@@ -689,20 +751,14 @@ class ResultStandalone(Result):
         dis += "        + function   : \"%s\"\n" % des["function"]
         dis += "        + expression : \"%s\"\n" % des["expression"]
 
-        if self.case:
-            self.result[-1][self.ABORTED] += 1
-        
         self.write_stdout(dis)
-        
+
+
     @trace
     def aborted(self, des):
-        
-        if self.case:
-            self.result[-1][self.ABORTED] += 1
-        
+        self.report_aborted(des)
         self.write_stdout("  Aborted\n")
         
-          
 
     @trace
     def tag_value(self, des):
@@ -717,8 +773,6 @@ class ResultStandalone(Result):
         self.write_stdout("Name : %s\n" % des[pydoc.KEY_NAME])
         self.write_stdout("Type : %s\n" % des[pydoc.KEY_TYPE])
         self.write_stdout("Doc :\n%s\n" % des[pydoc.KEY_DOC])
-
-
 
 
 
@@ -777,17 +831,5 @@ class ResultScript:
 
 
 
-
-#
-#def create(interface, mtrace):
-#
-#    if   interface == "none" :
-#        return Result(mtrace)
-#    elif interface == "stdout" :
-#        return ResultStdout(mtrace)
-#    elif interface == "standalone" :
-#        return ResultStandalone(mtrace)
-#    else:
-#        assert False
 
 

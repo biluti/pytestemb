@@ -98,10 +98,8 @@ class ResultStdoutReader(StdoutReader):
     
     
     def process(self, key, value):
-        
         # SCRIPT_START
         if      key == result.ResultStdout.SCRIPT_START :
-            
             dic = self.conv_dict(value)
             self.check_started(not(self.script_started))
             self.script.append(result.ResultScript(dic["name"]))
@@ -120,18 +118,16 @@ class ResultStdoutReader(StdoutReader):
                 or  key == result.ResultStdout.DESTROY_START\
                 or  key == result.ResultStdout.CASE_START :
             self.check_started(not(self.case_started))
+            
+            timeex = None
             if      key == result.ResultStdout.SETUP_START :
                 value = "setup"
-                timeex = None
             elif    key == result.ResultStdout.CLEANUP_START:
                 value = "cleanup"
-                timeex = None
             elif    key == result.ResultStdout.CREATE_START:
                 value = "create"
-                timeex = None
             elif    key == result.ResultStdout.DESTROY_START:
-                value = "destroy"
-                timeex = None                                
+                value = "destroy"                          
             else :
                 dic = self.conv_dict(value)
                 value = dic["name"]

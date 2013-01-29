@@ -11,9 +11,10 @@ VERSION_STRING = "1.7.0-beta2"
 
 *1.7.0
     - improve general and trace performance (high improvement for trace)
-    - add exception description for standalone mode
+    - add exception description in report
     - add script report execution on trace
     - get script and case name
+    - fix for pylint code quality
 
 *1.6.1
     - fix regression on doc 
