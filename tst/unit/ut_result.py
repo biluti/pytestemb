@@ -475,15 +475,15 @@ class Test_ResultStdout(unittest.TestCase):
         #self.assertEqual(stub.buffer, "%s%stest\n" % (result.ResultStdout.SCRIPT_START, result.ResultStdout.SEPARATOR))
 
         # script_stop
-        res.script_stop({})
+        res.script_stop({"name":""})
         #self.assertEqual(stub.buffer, "%s%s\n" % (result.ResultStdout.SCRIPT_STOP, result.ResultStdout.SEPARATOR))
-        res.script_stop({"info":"test"})
+        res.script_stop({"info":"test", "name":""})
         #self.assertEqual(stub.buffer, "%s%stest\n" % (result.ResultStdout.SCRIPT_STOP, result.ResultStdout.SEPARATOR))
         
         # case_start
-        res.case_start({})
+        res.case_start({"name":""})
         #self.assertEqual(stub.buffer, "%s%s\n" % (result.ResultStdout.CASE_START, result.ResultStdout.SEPARATOR))
-        res.case_start({"info":"test"})
+        res.case_start({"info":"test", "name":""})
         #self.assertEqual(stub.buffer, "%s%scase\n" % (result.ResultStdout.CASE_START, result.ResultStdout.SEPARATOR))
 
         # case_stop

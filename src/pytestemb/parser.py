@@ -117,10 +117,14 @@ class ResultStdoutReader(StdoutReader):
                 or  key == result.ResultStdout.CASE_START :
             self.check_started(not(self.case_started))
             timeex = None
-            if      key == result.ResultStdout.SETUP_START :    value = "setup"
-            elif    key == result.ResultStdout.CLEANUP_START:   value = "cleanup"
-            elif    key == result.ResultStdout.CREATE_START:    value = "create"
-            elif    key == result.ResultStdout.DESTROY_START:   value = "destroy"                          
+            if      key == result.ResultStdout.SETUP_START :
+                value = "setup"
+            elif    key == result.ResultStdout.CLEANUP_START:   
+                value = "cleanup"
+            elif    key == result.ResultStdout.CREATE_START:    
+                value = "create"
+            elif    key == result.ResultStdout.DESTROY_START:   
+                value = "destroy"                          
             else :
                 dic = self.conv_dict(value)
                 value = dic["name"]
