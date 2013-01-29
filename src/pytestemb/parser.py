@@ -75,7 +75,6 @@ class ResultStdoutReader(StdoutReader):
         StdoutReader.__init__(self)
         self.script = []
 
-
     def __str__(self):
         dis = ""
         for scr in self.script:

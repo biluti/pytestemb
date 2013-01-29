@@ -211,7 +211,7 @@ class TraceOctopylog(Trace):
 
     def __init__(self):
         Trace.__init__(self)
-        self.scope = {}
+        self._scope = {}
 
     def start(self):
         if self.started:
@@ -236,11 +236,13 @@ class TraceOctopylog(Trace):
         
 
     def trace_scope(self, scope, msg):
+        
         try:
-            self.scope[scope].info(msg)
-        except Exception:
-            self.scope[scope] = logging.getLogger("pytestemb.%s" % scope)
-            self.scope[scope].info("%s" % msg)
+            self._scope[scope]
+        except KeyError:
+            self._scope[scope] = logging.getLogger("pytestemb.%s" % scope)
+        finally:
+            self._scope[scope].info(msg)
 
     def trace_script(self, msg):
         self.trace_scope("script", msg)
@@ -408,13 +410,6 @@ class TraceTxt(Trace):
 
     def trace_layer(self, scope, data):
         self.add_line(scope, [data])
-
-
-#def create(interfaces):
-#    tracemanager = TraceManager()
-#    tracemanager.add_traces(interfaces)
-#    return tracemanager
-
 
 
 

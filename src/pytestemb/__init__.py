@@ -165,21 +165,27 @@ def checker(name, value):
         parser.error("Interface %s is not valid, see --help" % value)
 
 
-(options, args) = parser.parse_args()
+def parse():
+    (options, args) = parser.parse_args()
+    if args != []:
+        parser.error("Argument invalid %s " % args.__str__())
+    checker("result", options.result)
+    for item in options.trace:
+        checker("trace", item)
+    return options
 
 
-if args != []:
-    parser.error("Argument invalid %s " % args.__str__())
-checker("result", options.result)
-for item in options.trace:
-    checker("trace", item)
 
 
-if options.path is not None:
-    sys.path.append(options.path)
+
+OPTIONS = parse()
 
 
-if options.ver :
+if OPTIONS.path is not None:
+    sys.path.append(OPTIONS.path)
+
+
+if OPTIONS.ver :
     sys.stdout.write("pytestemb\n")
     sys.stdout.write("Version   : %s\n" % VERSION_STRING)
     sys.stdout.write("Copyright : %s\n" % __copyright__)
@@ -191,15 +197,15 @@ if options.ver :
 
 
 
-if options.doc :
+if OPTIONS.doc :
     trace.TraceManager.create([])
     
     
-    result.Result.create(options.result, trace.TraceManager.get())
+    result.Result.create(OPTIONS.result, trace.TraceManager.get())
     pydoc.Pydoc.create(result.Result.get())
 else :
-    trace.TraceManager.create(options.trace)
-    result.Result.create(options.result, trace.TraceManager.get())
+    trace.TraceManager.create(OPTIONS.trace)
+    result.Result.create(OPTIONS.result, trace.TraceManager.get())
     valid.Valid.create(result.Result.get())
 
 
@@ -227,7 +233,7 @@ def add_trace(interfaces):
 
 def set_doc(doc):
     """ set script doc for doc generation """
-    if options.doc :
+    if OPTIONS.doc :
         pydoc.Pydoc.get().set_doc(doc)
 
 
@@ -238,7 +244,7 @@ def set_setup(func_setup):
     @return             : None
     @summary            : add a setup function to the script
     """
-    if options.doc :
+    if OPTIONS.doc :
         pydoc.Pydoc.get().set_setup(func_setup)
     else :
         valid.Valid.get().set_setup(func_setup)
@@ -250,7 +256,7 @@ def set_cleanup(func_cleanup):
     @return             : None
     @summary            : add a cleanup function to the script
     """
-    if options.doc :
+    if OPTIONS.doc :
         pydoc.Pydoc.get().set_cleanup(func_cleanup)
     else :
         valid.Valid.get().set_cleanup(func_cleanup)
@@ -265,7 +271,7 @@ def set_create(func_create):
     @return             : None
     @summary            : add a create function to the script
     """
-    if options.doc :
+    if OPTIONS.doc :
         pass
     else :
         valid.Valid.get().set_create(func_create)
@@ -278,7 +284,7 @@ def set_destroy(func_destroy):
     @return             : None
     @summary            : add a destroy function to the script
     """
-    if options.doc :
+    if OPTIONS.doc :
         pass
     else :
         valid.Valid.get().set_destroy(func_destroy)
@@ -292,7 +298,7 @@ def set_fatal_mode(stop_case_run=False):
     @return             : None
     @summary            : set mode for behavior when fatal : True abort all cases 
     """
-    if options.doc :
+    if OPTIONS.doc :
         pass
     else :
         valid.Valid.get().set_fatal_mode(stop_case_run)
@@ -307,7 +313,7 @@ def add_test_case(func_case):
     @return         : None
     @summary        : add a test case to the script
     """
-    if options.doc :
+    if OPTIONS.doc :
         pydoc.Pydoc.get().add_test_case(func_case)
     else :
         valid.Valid.get().add_test_case(func_case)
@@ -320,7 +326,7 @@ def run_script():
     @summary        : start the run of script
     @warning        : -
     """
-    if options.doc :
+    if OPTIONS.doc :
         pass
     else :
         valid.Valid.get().run_script()
@@ -336,11 +342,11 @@ def _create_des_(msg):
 
 
 def get_config():
-    return options.config
+    return OPTIONS.config
 
 
 def get_mode():
-    return options.mode
+    return OPTIONS.mode
 
 
 def get_script_name():
@@ -348,7 +354,7 @@ def get_script_name():
 
 
 def get_case_name():
-    if options.doc :
+    if OPTIONS.doc :
         pass
     else :
         return valid.Valid.get().get_case_name()
