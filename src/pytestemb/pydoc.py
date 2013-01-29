@@ -31,9 +31,21 @@ KEY_DOC  = "doc"
 
 class Pydoc:
     
+    __single = None
+    
     def __init__(self, result):
         self.result = result
+
+    @classmethod
+    def create(cls, result):
+        cls.__single = cls(result)
+        return cls.__single
+    
+    @classmethod
+    def get(cls):
+        return cls.__single 
         
+                
     
     def set_doc(self, doc):
         des = dict()

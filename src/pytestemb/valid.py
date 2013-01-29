@@ -30,120 +30,132 @@ sys.stderr = sys.stdout
 
 
 class Valid:
+    
+    __single = None
+    
     def __init__(self, inst_result):
-        self.result = inst_result
-        self.setup      = self._nothing_
-        self.cleanup    = self._nothing_
-        self.create     = self._nothing_
-        self.destroy    = self._nothing_
-        self.case = []
-        self.name = utils.get_script_name()
+        self._result = inst_result
+        self._setup      = self._nothing_
+        self._cleanup    = self._nothing_
+        self._create     = self._nothing_
+        self._destroy    = self._nothing_
+        self._case = []
+        self._name = utils.get_script_name()
         
-        self.aborted = False
+        self._aborted = False
         
-        self.abort_fatal_mode = False
-        self.abort_fatal = False
+        self._abort_fatal_mode = False
+        self._abort_fatal = False
         
-        self.case_name = None
-        
+        self._case_name = None
+
+    @classmethod
+    def create(cls, inst_result):
+        cls.__single = cls(inst_result)
+        return cls.__single
+    
+    @classmethod
+    def get(cls):
+        return cls.__single 
+            
 
     def _nothing_(self):
         pass
 
     def set_setup(self, funcsetup):
-        if self.setup == self._nothing_ :
-            self.setup = funcsetup
+        if self._setup == self._nothing_ :
+            self._setup = funcsetup
         else:
             # Avoid user mistake with two time function set
             raise pexception.PytestembError("Setup function already set")
 
 
     def set_cleanup(self, funccleanup):
-        if self.cleanup == self._nothing_ :
-            self.cleanup = funccleanup
+        if self._cleanup == self._nothing_ :
+            self._cleanup = funccleanup
         else:
             # Avoid user mistake with two time function set
             raise pexception.PytestembError("CleanUp function already set")
 
 
     def set_create(self, funccreate):
-        if self.create == self._nothing_ :
-            self.create = funccreate
+        if self._create == self._nothing_ :
+            self._create = funccreate
         else:
             # Avoid user mistake with two time function set
             raise pexception.PytestembError("funcCreate function already set")
         
 
     def set_destroy(self, funcdestroy):
-        if self.destroy == self._nothing_ :
-            self.destroy = funcdestroy
+        if self._destroy == self._nothing_ :
+            self._destroy = funcdestroy
         else:
             # Avoid user mistake with two time function set
             raise pexception.PytestembError("funcDestroy function already set")
     
     def set_fatal_mode(self, stop_case_run):
-        self.abort_fatal_mode = stop_case_run
+        self._abort_fatal_mode = stop_case_run
         
         
 
     def add_test_case(self, funccase):
-        self.case.append(funccase)
+        self._case.append(funccase)
 
 
     def get_case_name(self):
-        return self.case_name
+        return self._case_name
 
 
     def run_script(self):
-        self.result.script_start({"name":self.name})
+        self._result.script_start({"name":self._name})
         # Create 
-        if self.create == self._nothing_:
+        if self._create == self._nothing_:
             pass
         else:
-            self.result.create_start({})
-            self.run_try(self.create)
-            self.result.create_stop({})
+            self._result.create_start({})
+            self.run_try(self._create)
+            self._result.create_stop({})
         # Setup
-        if self.setup == self._nothing_:
+        if self._setup == self._nothing_:
             pass
         else:
-            self.result.setup_start({})
-            self.case_name = "setup"
-            self.run_try(self.setup)
-            self.result.setup_stop({})
-            self.case_name = None
+            self._result.setup_start({})
+            self._case_name = "setup"
+            self.run_try(self._setup)
+            self._result.setup_stop({})
+            self._case_name = None
         # Case
-        for acase in self.case :
+        for acase in self._case :
             name = acase.func_name
-            self.result.case_start({"name":name})
-            self.case_name = name
+            self._result.case_start({"name":name})
+            self._case_name = name
             self.run_case(acase)
-            self.result.case_stop({"name":name})
-            self.case_name = None
+            self._result.case_stop({"name":name})
+            self._case_name = None
         # Cleanup
-        if self.cleanup == self._nothing_:
+        if self._cleanup == self._nothing_:
             pass
         else:
-            self.result.cleanup_start({})
-            self.case_name = "cleanup"
-            self.run_try(self.cleanup)
-            self.result.cleanup_stop({})
-            self.case_name = None
+            self._result.cleanup_start({})
+            self._case_name = "cleanup"
+            self.run_try(self._cleanup)
+            self._result.cleanup_stop({})
+            self._case_name = None
         # Destroy    
-        if self.destroy == self._nothing_:
+        if self._destroy == self._nothing_:
             pass
         else:
-            self.result.destroy_start({})
-            self.run_try(self.destroy, force=True)
-            self.result.destroy_stop({})
+            self._result.destroy_start({})
+            self.run_try(self._destroy, force=True)
+            self._result.destroy_stop({})
     
-        self.result.script_stop({"name":self.name})
+        self._result.script_stop({"name":self._name})
 
 
     def run_try(self, func, force=False):
         
-        if self.aborted and not force:
-            self.result.aborted({})
+        if self._aborted and not force:
+            self._result.aborted({})
             return
 
         try:
@@ -151,23 +163,23 @@ class Valid:
         except result.TestErrorFatal:
             pass
         except result.TestAbort:
-            self.aborted = True                  
+            self._aborted = True                  
         except (Exception), (error):
             self.inspect_traceback(error)
 
 
     def run_case(self, case):
         
-        if self.aborted or self.abort_fatal:
-            self.result.aborted({})
+        if self._aborted or self._abort_fatal:
+            self._result.aborted({})
             return
         try:
             case()
         except result.TestErrorFatal:
-            if self.abort_fatal_mode:
-                self.abort_fatal = True          
+            if self._abort_fatal_mode:
+                self._abort_fatal = True          
         except result.TestAbort:
-            self.aborted = True        
+            self._aborted = True        
         except (Exception), (error):
             self.inspect_traceback(error)
  
@@ -192,7 +204,7 @@ class Valid:
         des["exception_info"]   = utils.to_unicode(exception)
         des["exception_class"]  = exception.__class__.__name__
 
-        self.result.py_exception(des)
+        self._result.py_exception(des)
 
 
 

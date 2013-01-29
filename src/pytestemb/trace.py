@@ -130,10 +130,23 @@ class Trace:
 
 
 class TraceManager(Trace):
+    
+    __single = None
+    
     def __init__(self):
         Trace.__init__(self)
         self.dictra = dict()
         self.l = list()
+        
+    @classmethod
+    def create(cls, interfaces):
+        cls.__single = cls()
+        cls.__single.add_traces(interfaces)
+        return cls.__single
+    
+    @classmethod
+    def get(cls):
+        return cls.__single 
         
     def add_trace(self, name, tra):
         if not self.dictra.has_key(name):
@@ -397,10 +410,10 @@ class TraceTxt(Trace):
         self.add_line(scope, [data])
 
 
-def create(interfaces):
-    tracemanager = TraceManager()
-    tracemanager.add_traces(interfaces)
-    return tracemanager
+#def create(interfaces):
+#    tracemanager = TraceManager()
+#    tracemanager.add_traces(interfaces)
+#    return tracemanager
 
 
 

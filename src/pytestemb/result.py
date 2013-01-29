@@ -29,6 +29,8 @@ class TestAbort(Exception):
 
 
 class Result:
+    
+    __single = None
 
     def __init__(self, inst_trace):
         self.trace = inst_trace
@@ -41,6 +43,26 @@ class Result:
         self.case = False
         self.result = []
         self.time_exec = None
+
+
+
+    @classmethod
+    def create(cls, interface, mtrace):
+    
+        if   interface == "none" :
+            res = Result(mtrace)
+        elif interface == "stdout" :
+            res = ResultStdout(mtrace)
+        elif interface == "standalone" :
+            res = ResultStandalone(mtrace)
+        else:
+            assert False
+        cls.__single = res
+        
+        
+    @classmethod
+    def get(cls):
+        return cls.__single 
         
                 
 
@@ -756,16 +778,16 @@ class ResultScript:
 
 
 
-
-def create(interface, mtrace):
-
-    if   interface == "none" :
-        return Result(mtrace)
-    elif interface == "stdout" :
-        return ResultStdout(mtrace)
-    elif interface == "standalone" :
-        return ResultStandalone(mtrace)
-    else:
-        assert False
+#
+#def create(interface, mtrace):
+#
+#    if   interface == "none" :
+#        return Result(mtrace)
+#    elif interface == "stdout" :
+#        return ResultStdout(mtrace)
+#    elif interface == "standalone" :
+#        return ResultStandalone(mtrace)
+#    else:
+#        assert False
 
 

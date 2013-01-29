@@ -190,54 +190,45 @@ if options.ver :
 
 
 
-__trace__   = None
-__result__  = None
-__pydoc__   = None
-
-
-
-
-
 
 if options.doc :
-    # doc generation
-    __trace__   = trace.create([]) # no trace
-    __result__  = result.create(options.result, __trace__ )
-    __pydoc__   = pydoc.Pydoc(__result__)
+    trace.TraceManager.create([])
+    
+    
+    result.Result.create(options.result, trace.TraceManager.get())
+    pydoc.Pydoc.create(result.Result.get())
 else :
-    # test execution
-    __trace__   = trace.create(options.trace)
-    __result__  = result.create(options.result, __trace__ )
-    __valid__   = valid.Valid(__result__)
+    trace.TraceManager.create(options.trace)
+    result.Result.create(options.result, trace.TraceManager.get())
+    valid.Valid.create(result.Result.get())
 
 
-__trace__.set_result(__result__)
-__trace__.start()
+trace.TraceManager.get().set_result(result.Result.get())
+trace.TraceManager.get().start()
 
 
 
 # Configuration management
 SCOPE_CF = "CF"
-__trace__.trace_env(SCOPE_CF, "Library version : pytestemb %s" % VERSION_STRING)
-__trace__.trace_env(SCOPE_CF, "Python-version : %s" % platform.python_version())
-__trace__.trace_env(SCOPE_CF, "Plateform : %s" % platform.platform(terse=True))
-__trace__.trace_env(SCOPE_CF, "Default encoding : %s" % sys.getdefaultencoding())
+trace.TraceManager.get().trace_env(SCOPE_CF, "Library version : pytestemb %s" % VERSION_STRING)
+trace.TraceManager.get().trace_env(SCOPE_CF, "Python-version : %s" % platform.python_version())
+trace.TraceManager.get().trace_env(SCOPE_CF, "Plateform : %s" % platform.platform(terse=True))
+trace.TraceManager.get().trace_env(SCOPE_CF, "Default encoding : %s" % sys.getdefaultencoding())
 
 
 
 
 
 def add_trace(interfaces):
-    global __trace__
-    __trace__.add_traces(interfaces)
-    __trace__.set_result(__result__)
-    __trace__.start()
+    trace.TraceManager.get().add_traces(interfaces)
+    trace.TraceManager.get().set_result(result.Result.get())
+    trace.TraceManager.get().start()
 
 
 def set_doc(doc):
     """ set script doc for doc generation """
     if options.doc :
-        __pydoc__.set_doc(doc)
+        pydoc.Pydoc.get().set_doc(doc)
 
 
 def set_setup(func_setup):
@@ -248,9 +239,9 @@ def set_setup(func_setup):
     @summary            : add a setup function to the script
     """
     if options.doc :
-        __pydoc__.set_setup(func_setup)
+        pydoc.Pydoc.get().set_setup(func_setup)
     else :
-        __valid__.set_setup(func_setup)
+        valid.Valid.get().set_setup(func_setup)
 
 def set_cleanup(func_cleanup):
     """
@@ -260,9 +251,9 @@ def set_cleanup(func_cleanup):
     @summary            : add a cleanup function to the script
     """
     if options.doc :
-        __pydoc__.set_cleanup(func_cleanup)
+        pydoc.Pydoc.get().set_cleanup(func_cleanup)
     else :
-        __valid__.set_cleanup(func_cleanup)
+        valid.Valid.get().set_cleanup(func_cleanup)
 
 
 
@@ -277,7 +268,7 @@ def set_create(func_create):
     if options.doc :
         pass
     else :
-        __valid__.set_create(func_create)
+        valid.Valid.get().set_create(func_create)
         
 
 def set_destroy(func_destroy):
@@ -290,7 +281,7 @@ def set_destroy(func_destroy):
     if options.doc :
         pass
     else :
-        __valid__.set_destroy(func_destroy)
+        valid.Valid.get().set_destroy(func_destroy)
 
 
 
@@ -304,7 +295,7 @@ def set_fatal_mode(stop_case_run=False):
     if options.doc :
         pass
     else :
-        __valid__.set_fatal_mode(stop_case_run)
+        valid.Valid.get().set_fatal_mode(stop_case_run)
         
         
 
@@ -317,9 +308,9 @@ def add_test_case(func_case):
     @summary        : add a test case to the script
     """
     if options.doc :
-        __pydoc__.add_test_case(func_case)
+        pydoc.Pydoc.get().add_test_case(func_case)
     else :
-        __valid__.add_test_case(func_case)
+        valid.Valid.get().add_test_case(func_case)
 
 
 def run_script():
@@ -332,7 +323,7 @@ def run_script():
     if options.doc :
         pass
     else :
-        __valid__.run_script()
+        valid.Valid.get().run_script()
 
 
 
@@ -360,7 +351,7 @@ def get_case_name():
     if options.doc :
         pass
     else :
-        return __valid__.get_case_name()
+        return valid.Valid.get().get_case_name()
 
 def assert_true(exp, msg=None):
     """
@@ -370,7 +361,7 @@ def assert_true(exp, msg=None):
     @return         : None
     @summary        : assert a "True" value
     """
-    __result__.assert_true(exp, _create_des_(msg))
+    result.Result.get().assert_true(exp, _create_des_(msg))
 
 
 def assert_false(exp, msg=None):
@@ -381,7 +372,7 @@ def assert_false(exp, msg=None):
     @return         : None
     @summary        : assert a "False" value
     """
-    __result__.assert_false(exp, _create_des_(msg))
+    result.Result.get().assert_false(exp, _create_des_(msg))
 
 
 def assert_true_fatal(exp, msg=None):
@@ -392,7 +383,7 @@ def assert_true_fatal(exp, msg=None):
     @return         : None
     @summary        : assert a "True" value, if assertion is False execution of test case is finished
     """
-    __result__.assert_true_fatal(exp, _create_des_(msg))
+    result.Result.get().assert_true_fatal(exp, _create_des_(msg))
 
 
 def assert_false_fatal(exp, msg=None):
@@ -403,7 +394,7 @@ def assert_false_fatal(exp, msg=None):
     @return         : None
     @summary        : assert a "False" value, if assertion is False execution of test case is finished
     """
-    __result__.assert_false_fatal(exp, _create_des_(msg))
+    result.Result.get().assert_false_fatal(exp, _create_des_(msg))
 
 
 def assert_equal(exp1, exp2, msg=None):
@@ -415,7 +406,7 @@ def assert_equal(exp1, exp2, msg=None):
     @return         : None
     @summary        : assert that exp1 is equal to exp2
     """
-    __result__.assert_equal(exp1, exp2, _create_des_(msg))
+    result.Result.get().assert_equal(exp1, exp2, _create_des_(msg))
 
 
 def assert_equal_fatal(exp1, exp2, msg=None):
@@ -427,7 +418,7 @@ def assert_equal_fatal(exp1, exp2, msg=None):
     @return         : None
     @summary        : assert that exp1 is equal to exp2, if assertion is False execution of test case is finished
     """
-    __result__.assert_equal_fatal(exp1, exp2, _create_des_(msg))
+    result.Result.get().assert_equal_fatal(exp1, exp2, _create_des_(msg))
 
 
 
@@ -440,7 +431,7 @@ def assert_notequal(exp1, exp2, msg=None):
     @return         : None
     @summary        : assert that exp1 is not equal to exp2
     """
-    __result__.assert_notequal(exp1, exp2, _create_des_(msg))
+    result.Result.get().assert_notequal(exp1, exp2, _create_des_(msg))
 
 
 
@@ -454,7 +445,7 @@ def assert_notequal_fatal(exp1, exp2, msg=None):
     @return         : None
     @summary        : assert that exp1 is not equal to exp2, if assertion is False execution of test case is finished
     """
-    __result__.assert_notequal_fatal(exp1, exp2, _create_des_(msg))
+    result.Result.get().assert_notequal_fatal(exp1, exp2, _create_des_(msg))
 
 
 
@@ -465,7 +456,7 @@ def warning(msg=None):
     @return         : None
     @summary        : generate a warning
     """
-    __result__.warning(_create_des_(msg))
+    result.Result.get().warning(_create_des_(msg))
 
 
 
@@ -478,7 +469,7 @@ def success(msg=None):
     @return         : None
     @summary        : generate a success
     """
-    __result__.success(_create_des_(msg))
+    result.Result.get().success(_create_des_(msg))
 
 
 def fail(msg=None):
@@ -488,7 +479,7 @@ def fail(msg=None):
     @return         : None
     @summary        : generate a fail
     """
-    __result__.fail(_create_des_(msg))
+    result.Result.get().fail(_create_des_(msg))
 
 def fail_fatal(msg=None):
     """
@@ -497,7 +488,7 @@ def fail_fatal(msg=None):
     @return         : None
     @summary        : generate a fail and execution of test case is finished
     """
-    __result__.fail_fatal(_create_des_(msg))
+    result.Result.get().fail_fatal(_create_des_(msg))
 
 def abort(msg=None):
     """
@@ -506,7 +497,7 @@ def abort(msg=None):
     @return         : None
     @summary        : generate an abortion of script
     """
-    __result__.abort_test(_create_des_(msg))
+    result.Result.get().abort_test(_create_des_(msg))
 
 
 def tag_value(tag, value):
@@ -517,7 +508,7 @@ def tag_value(tag, value):
     @return         : None
     @summary        : generate a tag value
     """
-    __result__.tag_value({tag:value})
+    result.Result.get().tag_value({tag:value})
 
 
 
@@ -529,7 +520,7 @@ def trace_env(scope, data):
     @return         : None
     @summary        : trace data towards environment trace type
     """
-    __trace__.trace_env(scope, utils.to_unicode(data))
+    trace.TraceManager.get().trace_env(scope, utils.to_unicode(data))
 
 def trace_io(interface, data):
     """
@@ -539,7 +530,7 @@ def trace_io(interface, data):
     @return         : None
     @summary        : trace data towards io trace type
     """
-    __trace__.trace_io(interface, utils.to_unicode(data))
+    trace.TraceManager.get().trace_io(interface, utils.to_unicode(data))
 
 
 def trace_script(msg):
@@ -549,7 +540,7 @@ def trace_script(msg):
     @return         : None
     @summary        : trace message, for script application
     """
-    __trace__.trace_script(utils.to_unicode(msg))
+    trace.TraceManager.get().trace_script(utils.to_unicode(msg))
 
 
 def trace_layer(scope, data):
@@ -560,7 +551,7 @@ def trace_layer(scope, data):
     @return         : None
     @summary        : trace data towards layer trace type
     """
-    __trace__.trace_layer(scope, utils.to_unicode(data))
+    trace.TraceManager.get().trace_layer(scope, utils.to_unicode(data))
     
 
 
