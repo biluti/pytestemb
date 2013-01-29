@@ -374,7 +374,7 @@ class TraceTxt(Trace):
         self.file.write(dis)
 
     
-    def add_line(self, scope, msg=[]):
+    def add_line(self, scope, msg):
         
         mtime = "%.6f          " % self.gtime.get_time()
         scope = scope.ljust(24)

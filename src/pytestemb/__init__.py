@@ -3,7 +3,7 @@
 
 
 
-VERSION_STRING = "1.7.0-beta2"
+VERSION_STRING = "1.7.0-beta3"
 
 
 """
@@ -14,7 +14,7 @@ VERSION_STRING = "1.7.0-beta2"
     - add exception description in report
     - add script report execution on trace
     - get script and case name
-    - fix for pylint code quality
+    - improve code quality for Pylint
 
 *1.6.1
     - fix regression on doc 
@@ -131,34 +131,12 @@ INTERFACE["trace"] =  ([],
                        ("none", "octopylog", "txt"))
 
 
-parser = OptionParser()
-
-parser.add_option("-r", "--result",
-                    action="store", type="string", dest="result", default=INTERFACE["result"][INTERFACE_DEFAULT],
-                    help="set the interface for result, value can be : %s" % INTERFACE["result"][INTERFACE_LIST].__str__())
-parser.add_option("-t", "--trace",
-                    action="append", type="string", dest="trace", default=INTERFACE["trace"][INTERFACE_DEFAULT],
-                    help="set the interface for trace, value can be : %s" % INTERFACE["trace"][INTERFACE_LIST].__str__())
-parser.add_option("-p", "--path",
-                    action="store", type="string", dest="path", default=None,
-                    help="add path to Python path")
-parser.add_option("-c", "--config",
-                    action="store", type="string", dest="config", default=None,
-                    help="add config general purpose string (flag, filename ...)")
-parser.add_option("-m", "--mode",
-                    action="store", type="string", dest="mode", default=None,
-                    help="add mode general purpose string (debug, ...)")
-parser.add_option("-d", "--doc",
-                    action="store_true", dest="doc", default=False,
-                    help="add path to Python path")
-parser.add_option("-v", "--version",
-                    action="store_true", dest="ver", default=False,
-                    help="version of software")
 
 
 
 
-def checker(name, value):
+
+def checker(parser, name, value):
     for line in INTERFACE[name][INTERFACE_LIST] :
         if line == value:
             break
@@ -167,12 +145,38 @@ def checker(name, value):
 
 
 def parse():
+    
+    parser = OptionParser()
+    
+    parser.add_option("-r", "--result",
+                        action="store", type="string", dest="result", default=INTERFACE["result"][INTERFACE_DEFAULT],
+                        help="set the interface for result, value can be : %s" % INTERFACE["result"][INTERFACE_LIST].__str__())
+    parser.add_option("-t", "--trace",
+                        action="append", type="string", dest="trace", default=INTERFACE["trace"][INTERFACE_DEFAULT],
+                        help="set the interface for trace, value can be : %s" % INTERFACE["trace"][INTERFACE_LIST].__str__())
+    parser.add_option("-p", "--path",
+                        action="store", type="string", dest="path", default=None,
+                        help="add path to Python path")
+    parser.add_option("-c", "--config",
+                        action="store", type="string", dest="config", default=None,
+                        help="add config general purpose string (flag, filename ...)")
+    parser.add_option("-m", "--mode",
+                        action="store", type="string", dest="mode", default=None,
+                        help="add mode general purpose string (debug, ...)")
+    parser.add_option("-d", "--doc",
+                        action="store_true", dest="doc", default=False,
+                        help="add path to Python path")
+    parser.add_option("-v", "--version",
+                        action="store_true", dest="ver", default=False,
+                        help="version of software")    
+    
     (options, args) = parser.parse_args()
+    
     if args != []:
         parser.error("Argument invalid %s " % args.__str__())
-    checker("result", options.result)
+    checker(parser, "result", options.result)
     for item in options.trace:
-        checker("trace", item)
+        checker(parser, "trace", item)
     return options
 
 

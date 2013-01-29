@@ -112,22 +112,15 @@ class ResultStdoutReader(StdoutReader):
             self.script_started = False
             self.script[-1].time_exec = dic["time"] - self.script[-1].time_exec 
         # SETUP_START, CLEANUP_START, CASE_START
-        elif        key == result.ResultStdout.SETUP_START\
-                or  key == result.ResultStdout.CLEANUP_START\
-                or  key == result.ResultStdout.CREATE_START\
-                or  key == result.ResultStdout.DESTROY_START\
+        elif        key == result.ResultStdout.SETUP_START or  key == result.ResultStdout.CLEANUP_START\
+                or  key == result.ResultStdout.CREATE_START or  key == result.ResultStdout.DESTROY_START\
                 or  key == result.ResultStdout.CASE_START :
             self.check_started(not(self.case_started))
-            
             timeex = None
-            if      key == result.ResultStdout.SETUP_START :
-                value = "setup"
-            elif    key == result.ResultStdout.CLEANUP_START:
-                value = "cleanup"
-            elif    key == result.ResultStdout.CREATE_START:
-                value = "create"
-            elif    key == result.ResultStdout.DESTROY_START:
-                value = "destroy"                          
+            if      key == result.ResultStdout.SETUP_START :    value = "setup"
+            elif    key == result.ResultStdout.CLEANUP_START:   value = "cleanup"
+            elif    key == result.ResultStdout.CREATE_START:    value = "create"
+            elif    key == result.ResultStdout.DESTROY_START:   value = "destroy"                          
             else :
                 dic = self.conv_dict(value)
                 value = dic["name"]
@@ -139,10 +132,8 @@ class ResultStdoutReader(StdoutReader):
             self.script[-1].case.append(obj)
             self.case_started = True
         # SETUP_STOP, CLEANUP_STOP, CASE_STOP
-        elif        key == result.ResultStdout.SETUP_STOP\
-                or  key == result.ResultStdout.CLEANUP_STOP\
-                or  key == result.ResultStdout.CREATE_STOP\
-                or  key == result.ResultStdout.DESTROY_STOP\
+        elif        key == result.ResultStdout.SETUP_STOP or  key == result.ResultStdout.CLEANUP_STOP\
+                or  key == result.ResultStdout.CREATE_STOP or  key == result.ResultStdout.DESTROY_STOP\
                 or  key == result.ResultStdout.CASE_STOP :
             self.check_started(self.case_started)
             self.case_started = False
@@ -163,14 +154,11 @@ class ResultStdoutReader(StdoutReader):
             self.check_started(self.script_started)
             self.script[-1].trace.append(self.conv_dict(value))
         # CASE_XX
-        elif        key == result.ResultStdout.ERROR_IO\
-                or  key == result.ResultStdout.ERROR_TEST\
+        elif        key == result.ResultStdout.ERROR_IO or  key == result.ResultStdout.ERROR_TEST\
                 or  key == result.ResultStdout.WARNING\
-                or  key == result.ResultStdout.ASSERT_OK\
-                or  key == result.ResultStdout.ASSERT_KO\
+                or  key == result.ResultStdout.ASSERT_OK or  key == result.ResultStdout.ASSERT_KO\
                 or  key == result.ResultStdout.PY_EXCEPTION\
-                or  key == result.ResultStdout.ABORT\
-                or  key == result.ResultStdout.ABORTED:
+                or  key == result.ResultStdout.ABORT or  key == result.ResultStdout.ABORTED:
             self.check_started(self.case_started)
             dic = self.conv_dict(value)
             self.script[-1].case[-1].add_result(key, dic)
@@ -181,10 +169,6 @@ class ResultStdoutReader(StdoutReader):
             self.script[-1].case[-1].add_result(key, {tv[0]:tv[2]})                              
         else :
             pass
-            #print "key=%s value=%s" % (key, value)
-            
-            
-
 
 
 class DocStdoutReader(StdoutReader):

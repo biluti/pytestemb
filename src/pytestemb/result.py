@@ -57,10 +57,8 @@ class Result:
         self.result = []
         self.time_exec = None
         
-        def nop(e):
-            pass
         
-        self._report_callback = nop
+        self._report_callback = None
         
         
 
@@ -267,7 +265,8 @@ class Result:
         self._report_callback = callback
 
     def report_trace(self, info):
-        self._report_callback(info)
+        if self._report_callback is not None:
+            self._report_callback(info)
         self.trace.trace_report(info)
         
         
@@ -351,10 +350,10 @@ class Result:
     def report_case_stop(self):
         self.case = False
 
-    def report_assert_ok(self, des):
+    def report_assert_ok(self):
         self.result[-1][self.ASSERT_OK] += 1
 
-    def report_assert_ko(self, des):
+    def report_assert_ko(self):
         if self.case :
             self.result[-1][self.ASSERT_KO] += 1
             
@@ -362,11 +361,11 @@ class Result:
         if self.case:
             self.result[-1][self.PY_EXCEPTION] = des["exception_class"]
           
-    def report_abort(self, des):
+    def report_abort(self):
         if self.case:
             self.result[-1][self.ABORTED] += 1
         
-    def report_aborted(self, des):
+    def report_aborted(self):
         if self.case:
             self.result[-1][self.ABORTED] += 1
         
@@ -535,13 +534,13 @@ class ResultStdout(Result):
     @trace
     def assert_ok(self, des):
         self.write(ResultStdout.ASSERT_OK, des)
-        self.report_assert_ok(des)
+        self.report_assert_ok()
 
     @stamp
     @trace
     def assert_ko(self, des):
         self.write(ResultStdout.ASSERT_KO, des)
-        self.report_assert_ko(des)
+        self.report_assert_ko()
 
     @stamp
     @trace
@@ -553,13 +552,13 @@ class ResultStdout(Result):
     @trace        
     def abort(self, des):
         self.write(ResultStdout.ABORT, des)        
-        self.report_abort(des)
+        self.report_abort()
 
     @stamp
     @trace        
     def aborted(self, des):
         self.write(ResultStdout.ABORTED, des)
-        self.report_aborted(des)    
+        self.report_aborted()    
     
     @trace
     def tag_value(self, des):
@@ -690,7 +689,7 @@ class ResultStandalone(Result):
     @trace
     def assert_ko(self, des):
         
-        self.report_assert_ko(des)
+        self.report_assert_ko()
         
         if des.has_key("msg"):   
             msg = des["msg"]
@@ -732,7 +731,7 @@ class ResultStandalone(Result):
     @trace        
     def abort(self, des):
         
-        self.report_abort(des)
+        self.report_abort()
         
         if des.has_key("msg"):   
             msg = des["msg"]
@@ -756,7 +755,7 @@ class ResultStandalone(Result):
 
     @trace
     def aborted(self, des):
-        self.report_aborted(des)
+        self.report_aborted()
         self.write_stdout("  Aborted\n")
         
 
