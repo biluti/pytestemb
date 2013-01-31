@@ -113,8 +113,7 @@ class ResultStdoutReader(StdoutReader):
             self.script[-1].time_exec = dic["time"] - self.script[-1].time_exec 
         # SETUP_START, CLEANUP_START, CASE_START
         elif        key == result.ResultStdout.SETUP_START or  key == result.ResultStdout.CLEANUP_START\
-                or  key == result.ResultStdout.CREATE_START or  key == result.ResultStdout.DESTROY_START\
-                or  key == result.ResultStdout.CASE_START :
+                or  key == result.ResultStdout.CREATE_START or  key == result.ResultStdout.DESTROY_START or  key == result.ResultStdout.CASE_START :
             self.check_started(not(self.case_started))
             timeex = None
             if      key == result.ResultStdout.SETUP_START :
@@ -137,8 +136,7 @@ class ResultStdoutReader(StdoutReader):
             self.case_started = True
         # SETUP_STOP, CLEANUP_STOP, CASE_STOP
         elif        key == result.ResultStdout.SETUP_STOP or  key == result.ResultStdout.CLEANUP_STOP\
-                or  key == result.ResultStdout.CREATE_STOP or  key == result.ResultStdout.DESTROY_STOP\
-                or  key == result.ResultStdout.CASE_STOP :
+                or  key == result.ResultStdout.CREATE_STOP or  key == result.ResultStdout.DESTROY_STOP or  key == result.ResultStdout.CASE_STOP :
             self.check_started(self.case_started)
             self.case_started = False
             
@@ -159,13 +157,10 @@ class ResultStdoutReader(StdoutReader):
             self.script[-1].trace.append(self.conv_dict(value))
         # CASE_XX
         elif        key == result.ResultStdout.ERROR_IO or  key == result.ResultStdout.ERROR_TEST\
-                or  key == result.ResultStdout.WARNING\
-                or  key == result.ResultStdout.ASSERT_OK or  key == result.ResultStdout.ASSERT_KO\
-                or  key == result.ResultStdout.PY_EXCEPTION\
-                or  key == result.ResultStdout.ABORT or  key == result.ResultStdout.ABORTED:
+                or  key == result.ResultStdout.WARNING or  key == result.ResultStdout.ASSERT_OK or  key == result.ResultStdout.ASSERT_KO\
+                or  key == result.ResultStdout.PY_EXCEPTION or  key == result.ResultStdout.ABORT or  key == result.ResultStdout.ABORTED:
             self.check_started(self.case_started)
-            dic = self.conv_dict(value)
-            self.script[-1].case[-1].add_result(key, dic)
+            self.script[-1].case[-1].add_result(key, self.conv_dict(value))
         # TAGVALUE
         elif        key == result.ResultStdout.TAGVALUE:
             self.check_started(self.script_started)

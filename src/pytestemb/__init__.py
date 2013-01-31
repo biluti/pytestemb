@@ -3,7 +3,7 @@
 
 
 
-VERSION_STRING = "1.7.0-beta3"
+VERSION_STRING = "1.7.0"
 
 
 """
@@ -80,11 +80,11 @@ VERSION_STRING = "1.7.0-beta3"
 * 1.2.6
     - tag_value : result is managed by test case now (before by script)
     
-
 * 1.2.5
     - trace config : add trace for lib, os, Python version and encoding sets
-    - tag_value : new api to trace in result tag/value
-"""
+    - tag_value : new api to trace in result tag/value """
+
+
 
 __author__      = "$Author: jmbeguinet $"
 __copyright__   = "Copyright 2009, The PyTestEmb Project"

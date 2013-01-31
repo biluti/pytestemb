@@ -63,15 +63,15 @@ class Test_ResultReader(unittest.TestCase):
                                             {"name":"script_01", "time":1}))
                 
                 
-        #reader.add_line("%s%sscript_01\n" % (result.ResultStdout.SCRIPT_START, result.ResultStdout.SEPARATOR))
-        reader.add_line("%s%s\n" % (result.ResultStdout.SETUP_START, result.ResultStdout.SEPARATOR))
-        reader.add_line("%s%s\n" % (result.ResultStdout.SETUP_STOP, result.ResultStdout.SEPARATOR))
+        #reader.add_line("%s%sscript_01\n" % (result.ResultStdout.SCRIPT_START, result.ResultStdout.SEPARATOR, {}))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.SETUP_START, result.ResultStdout.SEPARATOR, {}))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.SETUP_STOP, result.ResultStdout.SEPARATOR, {}))
 
 
-        reader.add_line("%s%s\n" % (result.ResultStdout.CLEANUP_START, result.ResultStdout.SEPARATOR))
-        reader.add_line("%s%s\n" % (result.ResultStdout.CLEANUP_STOP, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.CLEANUP_START, result.ResultStdout.SEPARATOR, {}))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.CLEANUP_STOP, result.ResultStdout.SEPARATOR, {}))
 
-        #reader.add_line("%s%sscript_01\n" % (result.ResultStdout.SCRIPT_STOP, result.ResultStdout.SEPARATOR))
+        #reader.add_line("%s%sscript_01\n" % (result.ResultStdout.SCRIPT_STOP, result.ResultStdout.SEPARATOR, {}))
         
         reader.add_line("%s%s%s\n" %    (   result.ResultStdout.SCRIPT_STOP,\
                                             result.ResultStdout.SEPARATOR,\
@@ -97,8 +97,8 @@ class Test_ResultReader(unittest.TestCase):
                                             result.ResultStdout.SEPARATOR,\
                                             {"name":"script_01", "time":1}))
                 
-        reader.add_line("%s%s\n" % (result.ResultStdout.SETUP_START, result.ResultStdout.SEPARATOR))
-        reader.add_line("%s%s\n" % (result.ResultStdout.SETUP_STOP, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.SETUP_START, result.ResultStdout.SEPARATOR, {}))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.SETUP_STOP, result.ResultStdout.SEPARATOR, {}))
 
         reader.add_line("%s%s%s\n" %    (   result.ResultStdout.CASE_START,\
                                             result.ResultStdout.SEPARATOR,\
@@ -169,8 +169,8 @@ class Test_ResultReader(unittest.TestCase):
                                             result.ResultStdout.SEPARATOR,\
                                             {"name":"case_02", "time":2.0}))        
         
-        reader.add_line("%s%s\n" % (result.ResultStdout.CLEANUP_START, result.ResultStdout.SEPARATOR))
-        reader.add_line("%s%s\n" % (result.ResultStdout.CLEANUP_STOP, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.CLEANUP_START, result.ResultStdout.SEPARATOR, {}))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.CLEANUP_STOP, result.ResultStdout.SEPARATOR, {}))
 
         reader.add_line("%s%s%s\n" %    (   result.ResultStdout.SCRIPT_STOP,\
                                             result.ResultStdout.SEPARATOR,\
@@ -227,7 +227,7 @@ class Test_ResultReader(unittest.TestCase):
                                             {"name":"script_01", "time":1}))
         
         
-        reader.add_line("%s%s\n" % (result.ResultStdout.SETUP_START, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.SETUP_START, result.ResultStdout.SEPARATOR, {}))
 
         reader.add_line("%s%s%s\n" %    (   result.ResultStdout.ASSERT_OK,\
                                             result.ResultStdout.SEPARATOR,\
@@ -255,10 +255,10 @@ class Test_ResultReader(unittest.TestCase):
                                             result.ResultStdout.SEPARATOR,\
                                             create_des("py_exception_01")))             
         
-        reader.add_line("%s%s\n" % (result.ResultStdout.SETUP_STOP, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.SETUP_STOP, result.ResultStdout.SEPARATOR, {}))
         
         
-        reader.add_line("%s%s\n" % (result.ResultStdout.CLEANUP_START, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.CLEANUP_START, result.ResultStdout.SEPARATOR, {}))
         
         reader.add_line("%s%s%s\n" %    (   result.ResultStdout.ASSERT_OK,\
                                             result.ResultStdout.SEPARATOR,\
@@ -286,7 +286,7 @@ class Test_ResultReader(unittest.TestCase):
                                             result.ResultStdout.SEPARATOR,\
                                             create_des("py_exception_01")))           
         
-        reader.add_line("%s%s\n" % (result.ResultStdout.CLEANUP_STOP, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.CLEANUP_STOP, result.ResultStdout.SEPARATOR, {}))
 
         reader.add_line("%s%s%s\n" %    (   result.ResultStdout.SCRIPT_STOP,\
                                             result.ResultStdout.SEPARATOR,\
@@ -318,7 +318,7 @@ class Test_ResultReader(unittest.TestCase):
                                             {"name":"script_01", "time":1}))
         
         try :
-            reader.add_line("%s%s\n" % (result.ResultStdout.SETUP_STOP, result.ResultStdout.SEPARATOR))
+            reader.add_line("%s%s%s\n" % (result.ResultStdout.SETUP_STOP, result.ResultStdout.SEPARATOR, {}))
         except :
             return
         self.fail()
@@ -333,10 +333,10 @@ class Test_ResultReader(unittest.TestCase):
                                             result.ResultStdout.SEPARATOR,\
                                             {"name":"script_01", "time":1}))
         
-        reader.add_line("%s%s\n" % (result.ResultStdout.SETUP_START, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.SETUP_START, result.ResultStdout.SEPARATOR, {}))
 
         try :
-            reader.add_line("%s%s\n" % (result.ResultStdout.CLEANUP_START, result.ResultStdout.SEPARATOR))
+            reader.add_line("%s%s%s\n" % (result.ResultStdout.CLEANUP_START, result.ResultStdout.SEPARATOR, {}))
         except :
             return
         self.fail()
@@ -350,12 +350,12 @@ class Test_ResultReader(unittest.TestCase):
                                             result.ResultStdout.SEPARATOR,\
                                             {"name":"script_01", "time":1}))
                 
-        reader.add_line("%s%s\n" % (result.ResultStdout.SETUP_START, result.ResultStdout.SEPARATOR))
-        reader.add_line("%s%s\n" % (result.ResultStdout.SETUP_STOP, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.SETUP_START, result.ResultStdout.SEPARATOR, {}))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.SETUP_STOP, result.ResultStdout.SEPARATOR, {}))
 
 
-        reader.add_line("%s%s\n" % (result.ResultStdout.CLEANUP_START, result.ResultStdout.SEPARATOR))
-        reader.add_line("%s%s\n" % (result.ResultStdout.CLEANUP_STOP, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.CLEANUP_START, result.ResultStdout.SEPARATOR, {}))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.CLEANUP_STOP, result.ResultStdout.SEPARATOR, {}))
 
         reader.add_line("%s%s%s\n" %    (   result.ResultStdout.SCRIPT_STOP,\
                                             result.ResultStdout.SEPARATOR,\
@@ -375,7 +375,7 @@ class Test_ResultReader(unittest.TestCase):
         reader.add_line("%s%s%s\n" %    (   result.ResultStdout.SCRIPT_START,\
                                             result.ResultStdout.SEPARATOR,\
                                             {"name":"script_01", "time":1}))
-        reader.add_line("%s%s\n" % (result.ResultStdout.SETUP_START, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.SETUP_START, result.ResultStdout.SEPARATOR, {}))
 
 
 
@@ -389,12 +389,12 @@ class Test_ResultReader(unittest.TestCase):
         
         self.assertRaises(parser.StdoutReaderError, reader.add_line, s)
                 
-        reader.add_line("%s%s\n" % (result.ResultStdout.SETUP_STOP, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.SETUP_STOP, result.ResultStdout.SEPARATOR, {}))
 
 
 
-        reader.add_line("%s%s\n" % (result.ResultStdout.CLEANUP_START, result.ResultStdout.SEPARATOR))
-        reader.add_line("%s%s\n" % (result.ResultStdout.CLEANUP_STOP, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.CLEANUP_START, result.ResultStdout.SEPARATOR, {}))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.CLEANUP_STOP, result.ResultStdout.SEPARATOR, {}))
 
         reader.add_line("%s%s%s\n" %    (   result.ResultStdout.SCRIPT_STOP,\
                                             result.ResultStdout.SEPARATOR,\
@@ -411,7 +411,7 @@ class Test_ResultReader(unittest.TestCase):
                                             result.ResultStdout.SEPARATOR,\
                                             {"name":"script_01", "time":1}))
         
-        reader.add_line("%s%s{}\n" % (result.ResultStdout.CREATE_START, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.CREATE_START, result.ResultStdout.SEPARATOR, {}))
         
         
         exp= PY_EXCEPTION="""{'exception_info': u'', 'exception_class': 'Exception', 'stack': [{'function': 'destroy', 'path': '/home/jmb/workspace/pytestemb_git/tst/script/script_destroy_02.py', 'line': 37, 'code': '    raise Exception()'}], 'time': 0.21273398399353027}"""
@@ -419,9 +419,9 @@ class Test_ResultReader(unittest.TestCase):
         
 
 
-        reader.add_line("%s%s{}\n" % (result.ResultStdout.CREATE_STOP, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.CREATE_STOP, result.ResultStdout.SEPARATOR, {}))
         
-        reader.add_line("%s%s\n" % (result.ResultStdout.SETUP_START, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.SETUP_START, result.ResultStdout.SEPARATOR, {}))
 
 
         error_data = "{'info':'assert_ok_01'"
@@ -433,14 +433,14 @@ class Test_ResultReader(unittest.TestCase):
         
         self.assertRaises(parser.StdoutReaderError, reader.add_line, s)
                 
-        reader.add_line("%s%s\n" % (result.ResultStdout.SETUP_STOP, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.SETUP_STOP, result.ResultStdout.SEPARATOR, {}))
 
 
-        reader.add_line("%s%s\n" % (result.ResultStdout.CLEANUP_START, result.ResultStdout.SEPARATOR))
-        reader.add_line("%s%s\n" % (result.ResultStdout.CLEANUP_STOP, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.CLEANUP_START, result.ResultStdout.SEPARATOR, {}))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.CLEANUP_STOP, result.ResultStdout.SEPARATOR, {}))
 
-        reader.add_line("%s%s{}\n" % (result.ResultStdout.DESTROY_START, result.ResultStdout.SEPARATOR))
-        reader.add_line("%s%s{}\n" % (result.ResultStdout.DESTROY_STOP, result.ResultStdout.SEPARATOR))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.DESTROY_START, result.ResultStdout.SEPARATOR, {}))
+        reader.add_line("%s%s%s\n" % (result.ResultStdout.DESTROY_STOP, result.ResultStdout.SEPARATOR, {}))
         
         reader.add_line("%s%s%s\n" %    (   result.ResultStdout.SCRIPT_STOP,\
                                             result.ResultStdout.SEPARATOR,\
@@ -470,27 +470,27 @@ class Test_ResultStdout(unittest.TestCase):
         
         # script_start
         res.script_start({})
-        #self.assertEqual(stub.buffer, "%s%s\n" % (result.ResultStdout.SCRIPT_START, result.ResultStdout.SEPARATOR))
+        #self.assertEqual(stub.buffer, "%s%s%s\n" % (result.ResultStdout.SCRIPT_START, result.ResultStdout.SEPARATOR, {}))
         res.script_start({"info":"test"})
-        #self.assertEqual(stub.buffer, "%s%stest\n" % (result.ResultStdout.SCRIPT_START, result.ResultStdout.SEPARATOR))
+        #self.assertEqual(stub.buffer, "%s%stest\n" % (result.ResultStdout.SCRIPT_START, result.ResultStdout.SEPARATOR, {}))
 
         # script_stop
         res.script_stop({"name":""})
-        #self.assertEqual(stub.buffer, "%s%s\n" % (result.ResultStdout.SCRIPT_STOP, result.ResultStdout.SEPARATOR))
+        #self.assertEqual(stub.buffer, "%s%s%s\n" % (result.ResultStdout.SCRIPT_STOP, result.ResultStdout.SEPARATOR, {}))
         res.script_stop({"info":"test", "name":""})
-        #self.assertEqual(stub.buffer, "%s%stest\n" % (result.ResultStdout.SCRIPT_STOP, result.ResultStdout.SEPARATOR))
+        #self.assertEqual(stub.buffer, "%s%stest\n" % (result.ResultStdout.SCRIPT_STOP, result.ResultStdout.SEPARATOR, {}))
         
         # case_start
         res.case_start({"name":""})
-        #self.assertEqual(stub.buffer, "%s%s\n" % (result.ResultStdout.CASE_START, result.ResultStdout.SEPARATOR))
+        #self.assertEqual(stub.buffer, "%s%s%s\n" % (result.ResultStdout.CASE_START, result.ResultStdout.SEPARATOR, {}))
         res.case_start({"info":"test", "name":""})
-        #self.assertEqual(stub.buffer, "%s%scase\n" % (result.ResultStdout.CASE_START, result.ResultStdout.SEPARATOR))
+        #self.assertEqual(stub.buffer, "%s%scase\n" % (result.ResultStdout.CASE_START, result.ResultStdout.SEPARATOR, {}))
 
         # case_stop
         res.case_stop({})
-        #self.assertEqual(stub.buffer, "%s%s\n" % (result.ResultStdout.CASE_STOP, result.ResultStdout.SEPARATOR))
+        #self.assertEqual(stub.buffer, "%s%s%s\n" % (result.ResultStdout.CASE_STOP, result.ResultStdout.SEPARATOR, {}))
         res.case_stop({"info":"test"})
-        #self.assertEqual(stub.buffer, "%s%stest\n" % (result.ResultStdout.CASE_STOP, result.ResultStdout.SEPARATOR))        
+        #self.assertEqual(stub.buffer, "%s%stest\n" % (result.ResultStdout.CASE_STOP, result.ResultStdout.SEPARATOR, {}))        
 
         
         
