@@ -3,11 +3,13 @@
 
 
 
-VERSION_STRING = "1.7.0"
+VERSION_STRING = "1.7.1-dev"
 
 
 """
  Historic :
+
+*1.7.1
 
 *1.7.0
     - improve general and trace performance (high improvement for trace)
@@ -30,7 +32,7 @@ VERSION_STRING = "1.7.0"
 
 *1.5.0
     - add abort script (test.abort)
-    - add success (test.success / test.fail)
+    - add success (test.success & test.fail)
     - add fatal mode : on fatal abort all remaining cases
     - rework execution sequencer
     - rework standalone execution mode : more information during execution and result report    
@@ -82,7 +84,8 @@ VERSION_STRING = "1.7.0"
     
 * 1.2.5
     - trace config : add trace for lib, os, Python version and encoding sets
-    - tag_value : new api to trace in result tag/value """
+    - tag_value : new api to trace in result tag value
+    """
 
 
 
