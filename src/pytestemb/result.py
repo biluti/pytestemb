@@ -81,7 +81,8 @@ class Result:
     def get(cls):
         return cls.__single 
         
-                
+    def trace_trace(self, des):
+        pass          
 
     def trace_result(self, name, des):
         self.trace.trace_result(name, des)
@@ -453,10 +454,13 @@ class ResultStdout(Result):
     def script_start(self, des):
         self.write(ResultStdout.SCRIPT_START, des)
         for item in self.delay_trace_ctrl:
-            self.write(ResultStdout.TRACE, item)
-        
+            #self.write(ResultStdout.TRACE, item)
+            self.trace_trace(item)
         self.report_script_start(des)
         
+
+    def trace_trace(self, des):
+        self.write(ResultStdout.TRACE, des)
 
     @trace
     def create_start(self, des):

@@ -33,9 +33,14 @@ class Trace:
         self.gtime = gtime.Gtime.create()
         self.result = None
         self.started = False
+           
 
     def set_result(self, result):
         self.result = result
+        
+        
+    def get_ueid(self):
+        pass
 
 
     def start(self):
@@ -137,6 +142,17 @@ class TraceManager(Trace):
         Trace.__init__(self)
         self.dictra = dict()
         self.l = list()
+        self._ueid = self._gen_ueid() # unique execution id
+
+
+    def _gen_ueid(self):
+        md = hashlib.md5()
+        md.update(utils.get_script_name())
+        md.update(time.strftime("%d_%m_%Y_%H_%M_%S", self.gtime.start_date))
+        return md.hexdigest()[0:16].upper()
+
+    def get_ueid(self):
+        return self._ueid
         
     @classmethod
     def create(cls, interfaces):
@@ -232,6 +248,7 @@ class TraceOctopylog(Trace):
     def trace_header(self):
         self.trace_scope("trace", "#"*64)
         self.trace_scope("trace", "# %s" % time.strftime("Start %d/%m/%Y @ %H:%M:%S", self.gtime.start_date))
+        self.trace_scope("trace", "# UEID : '%s'" % TraceManager.get().get_ueid())
         self.trace_scope("trace", "#"*64)
         
 
@@ -353,11 +370,8 @@ class TraceTxt(Trace):
         self.add_header()
 
     def gen_file_name(self):
-        md = hashlib.md5()
-        md.update(sys.argv[0])
-        md.update(time.strftime("%d_%m_%Y_%H_%M_%S", self.gtime.start_date))
         name_script = utils.get_script_name()
-        name_hash = md.hexdigest()[0:16].upper()
+        name_hash = TraceManager.get().get_ueid()
         return "%s_%s.pyt" % (name_script, name_hash)
 
     @staticmethod

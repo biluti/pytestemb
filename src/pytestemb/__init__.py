@@ -15,7 +15,7 @@ VERSION_STRING = "1.7.1-dev"
 #    Historic :
 #    
 #    *1.7.1
-#        - 
+#        - add ueid (unique execution id) for trace
 #    
 #    *1.7.0
 #        - improve general and trace performance (high improvement for trace)
@@ -366,6 +366,15 @@ def get_case_name():
         pass
     else :
         return valid.Valid.get().get_case_name()
+
+
+def get_uedi():
+    return trace.TraceManager.get().get_ueid()
+
+
+def trace_trace(des):
+    result.Result.get().trace_trace(des)
+
 
 def assert_true(exp, msg=None):
     """
