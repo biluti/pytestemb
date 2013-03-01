@@ -9,13 +9,15 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "1.7.1-dev"
+VERSION_STRING = "1.7.1"
 
 
 #    Historic :
 #    
 #    *1.7.1
 #        - add ueid (unique execution id) for trace
+#        - add trace_trace for generic trace reference
+#        - improve code quality for Pylint
 #    
 #    *1.7.0
 #        - improve general and trace performance (high improvement for trace)

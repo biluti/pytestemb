@@ -369,7 +369,8 @@ class TraceTxt(Trace):
         self.result.trace_ctrl(des)
         self.add_header()
 
-    def gen_file_name(self):
+    @staticmethod
+    def gen_file_name():
         name_script = utils.get_script_name()
         name_hash = TraceManager.get().get_ueid()
         return "%s_%s.pyt" % (name_script, name_hash)
