@@ -1,0 +1,5 @@
+*.pyc
+*~
+/gen/pytestemb/disutil/dist
+/gen/pytestemb/disutil/pytestemb.egg-info
+
