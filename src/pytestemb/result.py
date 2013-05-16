@@ -106,15 +106,20 @@ class Result:
         dic["line"]         = traceback[call_depth][2]
         dic["function"]     = traceback[call_depth][3]
         dic["expression"]   = traceback[call_depth][4][0].strip(" \t\n")
-        for index in range(call_depth+1, len(traceback)):
-            if          traceback[index][1].endswith("valid.py") \
-                and     (traceback[index][3] == "run_case" or traceback[index][3] == "run_try") :
-                break
-            stack.append(dict(DEFAULT))
-            stack[-1]["path"]      = traceback[index][1]
-            stack[-1]["line"]      = traceback[index][2]
-            stack[-1]["function"]  = traceback[index][3]
-            stack[-1]["code"]      = traceback[index][4][0].strip("\n")
+        
+        try:
+            for index in range(call_depth+1, len(traceback)):
+                if          traceback[index][1].endswith("valid.py") \
+                    and     (traceback[index][3] == "run_case" or traceback[index][3] == "run_try") :
+                    break
+                stack.append(dict(DEFAULT))
+                stack[-1]["path"]      = traceback[index][1]
+                stack[-1]["line"]      = traceback[index][2]
+                stack[-1]["function"]  = traceback[index][3]
+                stack[-1]["code"]      = traceback[index][4][0].strip("\n")
+        except Exception:
+            pass 
+            
         stack.reverse()
 
         return dic, stack

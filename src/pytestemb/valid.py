@@ -192,12 +192,15 @@ class Valid:
         stack = []
         
 
-        for index in range(CALL_DEPTH, len(traceback)):
-            stack.append(dict(DEFAULT))
-            stack[-1]["path"]      = traceback[index][1]
-            stack[-1]["line"]      = traceback[index][2]
-            stack[-1]["function"]  = traceback[index][3]
-            stack[-1]["code"]      = utils.to_unicode(traceback[index][4][0].strip("\n"))
+        try :
+            for index in range(CALL_DEPTH, len(traceback)):
+                stack.append(dict(DEFAULT))
+                stack[-1]["path"]      = traceback[index][1]
+                stack[-1]["line"]      = traceback[index][2]
+                stack[-1]["function"]  = traceback[index][3]
+                stack[-1]["code"]      = utils.to_unicode(traceback[index][4][0].strip("\n"))
+        except Exception:
+            pass
 
         des = {}
         des["stack"]            = stack

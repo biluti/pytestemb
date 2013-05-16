@@ -9,7 +9,7 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "1.7.2"
+VERSION_STRING = "1.7.2-debug"
 
 
 #    Historic :
