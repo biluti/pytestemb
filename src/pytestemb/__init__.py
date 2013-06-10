@@ -9,12 +9,13 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "1.7.2-debug"
+VERSION_STRING = "1.7.2"
 
 
 #    Historic :
 #    *1.7.2
 #        - add get path
+#        - improve robustness of callstack parsing
 #    
 #    *1.7.1
 #        - add ueid (unique execution id) for trace
