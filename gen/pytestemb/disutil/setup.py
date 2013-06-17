@@ -8,7 +8,7 @@ from distutils.core import setup
 
 
 
-VERSION = "1.7.2"
+VERSION = "1.7.3"
 PACKAGES = ["pytestemb"]
 
 
