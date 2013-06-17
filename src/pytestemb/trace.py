@@ -138,11 +138,28 @@ class TraceManager(Trace):
     
     __single = None
     
+    
+    TRACE_OCTOPYLOG = "octopylog"
+    TRACE_STDOUT    = "stdout"
+    TRACE_TXT       = "txt"
+    TRACE_NONE      = "none"
+    
+                   
+    
     def __init__(self):
         Trace.__init__(self)
         self.dictra = dict()
         self.l = list()
         self._ueid = self._gen_ueid() # unique execution id
+
+
+    def get_trace_file(self):
+        
+        if self.dictra.has_key(self.TRACE_TXT):
+            return self.dictra[self.TRACE_TXT].get_filename()
+        else:
+            return None 
+        
 
 
     def _gen_ueid(self):
@@ -209,13 +226,13 @@ class TraceManager(Trace):
 
     def add_traces(self, interfaces):
         for interface in interfaces:
-            if interface == "octopylog":
-                self.add_trace("octopylog", TraceOctopylog())
-            elif interface == "stdout":
-                self.add_trace("stdout",    TraceStdout())
-            elif interface == "txt":
-                self.add_trace("txt",       TraceTxt())
-            elif interface == "none":
+            if interface == self.TRACE_OCTOPYLOG:
+                self.add_trace(self.TRACE_OCTOPYLOG, TraceOctopylog())
+            elif interface == self.TRACE_STDOUT:
+                self.add_trace(self.TRACE_STDOUT,    TraceStdout())
+            elif interface == self.TRACE_TXT:
+                self.add_trace(self.TRACE_TXT,       TraceTxt())
+            elif interface == self.TRACE_NONE:
                 pass
             else:
                 raise Exception("Invalid interfaces")
@@ -346,6 +363,14 @@ class TraceTxt(Trace):
     def __init__(self):
         Trace.__init__(self)
         self.file = None
+
+
+    def get_filename(self):
+        if self.file is None:
+            return self.file
+        else:
+            self.file.flush()
+            return self.file.name
 
 
     def start(self):

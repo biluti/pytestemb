@@ -9,10 +9,15 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "1.7.2"
+VERSION_STRING = "1.7.3"
 
 
 #    Historic :
+
+
+#    *1.7.3
+#        - add get trace filename
+#
 #    *1.7.2
 #        - add get path
 #        - improve robustness of callstack parsing
@@ -368,6 +373,11 @@ def get_path():
 
 def get_script_name():
     return utils.get_script_name()
+
+
+def get_trace_filename():
+    
+    return trace.TraceManager.get().get_trace_file()
 
 
 def get_case_name():
