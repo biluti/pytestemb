@@ -9,12 +9,14 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "1.7.3"
+VERSION_STRING = "1.7.4"
 
 
 #    Historic :
 
-
+#    *1.7.4
+#        - improve robustness for unicode management
+#
 #    *1.7.3
 #        - add get trace filename
 #
