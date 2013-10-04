@@ -10,6 +10,8 @@ vector = [      u"abcééé".encode("latin_1"),
                 u"abcééé".encode("cp1250"),
                 u"abcééé".encode("iso8859"),
                 u"abcééé".encode("utf_32"),
+                "\xC3",
+                u"\xC3",
             ]
 
 
@@ -18,6 +20,7 @@ def test_assert():
     for itm in vector:
         test.assert_true(True,  itm)
         test.assert_true(False, itm)
+        test.success(itm)
 
 
 
@@ -28,6 +31,8 @@ def test_trace():
         test.trace_env("env",       itm)
         test.trace_io("io",         itm)
         test.trace_layer("layer",   itm)
+        test.tag_value("test",      itm)
+        
 
 
 def test_assert_equal():
@@ -43,7 +48,7 @@ def test_assert_equal():
 
 if __name__ == "__main__":
 
-
+    test.add_trace(["txt"])
     test.add_test_case(test_assert)
     test.add_test_case(test_trace)
     test.add_test_case(test_assert_equal)

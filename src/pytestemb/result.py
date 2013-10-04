@@ -105,7 +105,7 @@ class Result:
         dic["file"]         = traceback[call_depth][1]
         dic["line"]         = traceback[call_depth][2]
         dic["function"]     = traceback[call_depth][3]
-        dic["expression"]   = traceback[call_depth][4][0].strip(" \t\n")
+        dic["expression"]   = utils.to_unicode(traceback[call_depth][4][0]).strip(" \t\n")
         
         try:
             for index in range(call_depth+1, len(traceback)):
@@ -116,13 +116,15 @@ class Result:
                 stack[-1]["path"]      = traceback[index][1]
                 stack[-1]["line"]      = traceback[index][2]
                 stack[-1]["function"]  = traceback[index][3]
-                stack[-1]["code"]      = traceback[index][4][0].strip("\n")
+                stack[-1]["code"]      = utils.to_unicode(traceback[index][4][0]).strip("\n")
         except Exception:
             pass 
             
         stack.reverse()
 
         return dic, stack
+
+
 
 
 
@@ -156,19 +158,19 @@ class Result:
         self._assert_(False, True, des)
 
     def assert_true(self, exp, des):
-        values = "%s" % exp
+        values = "%s" % utils.to_unicode(exp)
         self._assert_(exp, False, des, values)
 
     def assert_false(self, exp, des):
-        values = "%s" % exp
+        values = "%s" % utils.to_unicode(exp)
         self._assert_(not(exp), False, des, values)
 
     def assert_true_fatal(self, exp, des):
-        values = "%s" % exp
+        values = "%s" % utils.to_unicode(exp)
         self._assert_(exp, True, des, values)
 
     def assert_false_fatal(self, exp, des):
-        values = "%s" % exp
+        values = "%s" % utils.to_unicode(exp)
         self._assert_(not(exp), True, des, values)
 
     def assert_equal(self, exp1, exp2, des):

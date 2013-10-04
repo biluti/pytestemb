@@ -550,7 +550,7 @@ def tag_value(tag, value):
     @return         : None
     @summary        : generate a tag value
     """
-    result.Result.get().tag_value({tag:value})
+    result.Result.get().tag_value({tag:utils.to_unicode(value)})
 
 
 

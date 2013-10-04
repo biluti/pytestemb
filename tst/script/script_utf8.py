@@ -17,6 +17,8 @@ vector = [  "предыстория",
             "\xd8\xa7\xd9\x84\xd8\xa5\xd9\x86\xd9\x83\xd9\x84\xd9\x8a\xd8\xb2\xd9\x8a\xd8\xa9",
             "",
             u"",
+            "\xC3",
+            u"\xC3",
             ]
 
 
@@ -47,7 +49,7 @@ def test_trace():
 
 if __name__ == "__main__":
 
-
+    test.add_trace(["txt"])
     test.add_test_case(test_assert)
     test.add_test_case(test_trace)
     test.add_test_case(test_assert_equal)
