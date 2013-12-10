@@ -47,7 +47,7 @@ def case_03():
 
 if __name__ == "__main__":
     
-
+    test.add_trace(["txt"])
     test.set_setup(setup)
     test.set_create(create)
     test.add_test_case(case_01)
