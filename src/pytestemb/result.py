@@ -53,7 +53,10 @@ class Result:
         self.delay_trace_ctrl = []
         
         # report
-        self.case = False
+        self.case       = False
+        self.setup      = False
+        self.cleanup    = False
+        
         self.result = []
         self.time_exec = None
         
@@ -314,29 +317,33 @@ class Result:
         
         self.report_trace("+%s+\n" % ("-"*SIZE))   
         for case in self.result :
+            if case["case"] in ["setup", "cleanup"]:
+                name = "%s" % case["case"].capitalize()
+            else:
+                name = "Case '%s'" % case["case"]
             
             if case[self.ABORTED] > 0 or aborted:
-                self.report_add_line("Case \"%s\"" % case["case"], "aborted")
+                self.report_add_line(name, "aborted")
                 aborted = True
             elif    case[self.PY_EXCEPTION] != None :    
-                self.report_add_line("Case \"%s\"" % case["case"], case[self.PY_EXCEPTION])
+                self.report_add_line(name, case[self.PY_EXCEPTION])
                 ko = True
             elif    case[self.ASSERT_KO] == 0 \
                 and case[self.ASSERT_OK] > 0:
-                self.report_add_line("Case \"%s\"" % case["case"], "ok")
+                self.report_add_line(name, "OK")
                 ok = True
             elif    case[self.ASSERT_KO] == 0 \
                 and case[self.ASSERT_OK] == 0:
-                self.report_add_line("Case \"%s\"" % case["case"], "??")       
+                self.report_add_line(name, "?")       
             else:
-                self.report_add_line("Case \"%s\"" % case["case"], "ko")
+                self.report_add_line(name, "KO")
                 ko = True
     
         self.report_trace("+%s+\n" % ("-"*SIZE))    
         if aborted :
             self.report_add_line("Script \"%s\"" % des["name"] , "ABORTED")    
         elif not(aborted or ok or ko):
-            self.report_add_line("Script \"%s\"" % des["name"] , "??")
+            self.report_add_line("Script \"%s\"" % des["name"] , "?")
         elif ok and not(aborted) and not(ko) :
             self.report_add_line("Script \"%s\"" % des["name"] , "OK")
         elif ko and not(aborted):
@@ -349,32 +356,57 @@ class Result:
 
     def report_case_start(self, des):
         self.result.append({"case":des["name"]})
-        self.result[-1][self.ASSERT_OK] = 0
-        self.result[-1][self.ASSERT_KO] = 0
-        self.result[-1][self.PY_EXCEPTION] = None
-        self.result[-1][self.ABORTED]   = 0        
+        self.result[-1][self.ASSERT_OK]     = 0
+        self.result[-1][self.ASSERT_KO]     = 0
+        self.result[-1][self.PY_EXCEPTION]  = None
+        self.result[-1][self.ABORTED]       = 0        
         self.case = True
 
     def report_case_stop(self):
         self.case = False
 
+
+    def report_setup_start(self):
+        self.result.append({"case":"setup"})
+        self.result[-1][self.ASSERT_OK]     = 0
+        self.result[-1][self.ASSERT_KO]     = 0
+        self.result[-1][self.PY_EXCEPTION]  = None
+        self.result[-1][self.ABORTED]       = 0               
+        self.setup = True
+
+    def report_setup_stop(self):
+        self.setup = False
+
+
+    def report_cleanup_start(self):
+        self.result.append({"case":"cleanup"})
+        self.result[-1][self.ASSERT_OK]     = 0
+        self.result[-1][self.ASSERT_KO]     = 0
+        self.result[-1][self.PY_EXCEPTION]  = None
+        self.result[-1][self.ABORTED]       = 0                      
+        self.cleanup = True
+
+    def report_cleanup_stop(self):
+        self.cleanup = False                                
+    
+
     def report_assert_ok(self):
         self.result[-1][self.ASSERT_OK] += 1
 
     def report_assert_ko(self):
-        if self.case :
+        if self.case or self.setup or self.setup :
             self.result[-1][self.ASSERT_KO] += 1
             
     def report_py_exception(self, des):
-        if self.case:
+        if self.case or self.setup or self.setup:
             self.result[-1][self.PY_EXCEPTION] = des["exception_class"]
           
     def report_abort(self):
-        if self.case:
+        if self.case or self.setup or self.setup:
             self.result[-1][self.ABORTED] += 1
         
     def report_aborted(self):
-        if self.case:
+        if self.case or self.setup or self.setup:
             self.result[-1][self.ABORTED] += 1
         
 
@@ -496,6 +528,7 @@ class ResultStdout(Result):
     @trace
     def setup_start(self, des):
         self.write(ResultStdout.SETUP_START, des)
+        self.report_setup_start()
 
     @trace
     def setup_stop(self, des):
@@ -504,6 +537,7 @@ class ResultStdout(Result):
     @trace
     def cleanup_start(self, des):
         self.write(ResultStdout.CLEANUP_START, des)
+        self.report_cleanup_start()
 
     @trace
     def cleanup_stop(self, des):
@@ -644,6 +678,7 @@ class ResultStandalone(Result):
 
     @trace
     def setup_start(self, des):
+        self.report_setup_start()
         self.write_stdout("Setup   :\n")
 
     @trace
@@ -652,6 +687,7 @@ class ResultStandalone(Result):
 
     @trace
     def cleanup_start(self, des):
+        self.report_cleanup_start()
         self.write_stdout("Cleanup :\n")
 
     @trace
