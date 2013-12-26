@@ -21,9 +21,29 @@ import pytestemb.result as result
 import pytestemb.pexception as pexception
 
 
+import pytestemb
+
+
 # redirect sys.stderr => sys.stdout
 sys.stderr = sys.stdout
 
+
+#
+# create  => create, init, start env, data connection 
+# setup   => set/check SUT state to be ready to execute case 
+# case_a  => test case
+# case_b  => test case
+# cleanup => set/restore SUT state after case execution
+# destroy => destroy ressource allocated in create (always executed)
+#
+#
+# abort => stop execution
+# fatal => end of case
+#
+# option : 
+#  - all assert are fatal
+#  - setup failed (exception/assert) => cleanup
+#
 
 
 
@@ -121,7 +141,7 @@ class Valid:
         else:
             self._result.setup_start({})
             self._case_name = "setup"
-            self.run_try(self._setup)
+            self.run_abort(self._setup)
             self._result.setup_stop({})
             self._case_name = None
         # Case
@@ -168,6 +188,23 @@ class Valid:
             self.inspect_traceback(error)
 
 
+    def run_abort(self, func):
+        
+        if self._aborted:
+            self._result.aborted({})
+            return
+
+        try:
+            func()
+        except result.TestErrorFatal:
+            self._aborted = True
+        except result.TestAbort:
+            self._aborted = True                  
+        except (Exception), (error):
+            self.inspect_traceback(error)
+            self._aborted = True
+
+
     def run_case(self, case):
         
         if self._aborted or self._abort_fatal:
@@ -211,6 +248,97 @@ class Valid:
 
 
 
+    
+    
+
+
+    @classmethod
+    def retrieve_test_class(cls, name="__main__"):
+        module = __import__(name)
+        cla = []
+        for n in dir(module):
+            c  = getattr(module, n)
+            try:
+                if issubclass(c, pytestemb.Test):
+                    cla.append(c)
+                else:
+                    continue
+            except TypeError:
+                continue # tested object was not a class
+        return cla
+    
+    
+    
+    @classmethod
+    def retrieve_test_method(cls, test_inst):
+        METHOD_SKIP     = ["__doc__", "__init__", "__module__"]
+        METHOD_FORDBID  = ["create", "destroy"] 
+        
+        setup   = None
+        cases   = []
+        cleanup = None
+        
+        for met in dir(test_inst):
+            
+            if met in METHOD_FORDBID:
+                raise Exception("Invalid method name : '%s'" % met)
+            
+            if met in METHOD_SKIP:
+                continue
+            
+            if met == "setup":
+                setup = met
+            elif met == "cleanup":
+                cleanup = met
+            else:
+                cases.append(met)
+
+        return setup, cases, cleanup
+
+
+    @classmethod
+    def scan(cls):
+        
+        
+        testclasses = cls.retrieve_test_class()
+        
+        if len(testclasses) == 0:
+            return # nothing to add
+        elif len(testclasses) == 1:
+            testclass = testclasses[0]
+        else:
+            raise Exception("Only one Test class supported")
+        
+
+        inst = testclass()        
+        setup, cases, cleanup = cls.retrieve_test_method(inst)
+        
+
+        if setup is None:
+            pass
+        else:
+            func_setup = getattr(inst, setup)
+            pytestemb.set_setup(func_setup)
+    
+            
+        for func_name in cases:
+            func_case = getattr(inst, func_name)
+            pytestemb.add_test_case(func_case)
+
+        if cleanup is None:
+            pass
+        else:
+            func_cleanup = getattr(inst, cleanup)
+            pytestemb.set_cleanup(func_cleanup)
+            
+
+
+
+
+
+    
+    
+    
 
 
 
