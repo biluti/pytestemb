@@ -268,6 +268,21 @@ class Valid:
         return cla
     
     
+    @classmethod
+    def retrieve_test_class_(cls, module):
+        cla = []
+        for n in dir(module):
+            c  = getattr(module, n)
+            try:
+                if issubclass(c, pytestemb.Test):
+                    cla.append(c)
+                else:
+                    continue
+            except TypeError:
+                continue # tested object was not a class
+        return cla
+    
+        
     
     @classmethod
     def retrieve_test_method(cls, test_inst):
