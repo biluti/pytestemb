@@ -1,18 +1,21 @@
 
 
 
-import pytestemb as test
+import pytestemb
 
 
-        
-class MyRun(test.Test):
-            
+
+
+class MyRun(pytestemb.Test):
+    
+   
     def setup(self):
         pass
-    
-    def func_case(self):
-        test.success("")
-            
+        
+    def case_0(self):
+        pytestemb.fail("")
+
+
     def cleanup(self):
         pass
 
@@ -22,8 +25,9 @@ class MyRun(test.Test):
 
 if __name__ == "__main__":
     
-
-    test.run()
+    
+    
+    pytestemb.run()
 
     
     

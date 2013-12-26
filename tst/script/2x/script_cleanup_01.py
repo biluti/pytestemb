@@ -4,15 +4,18 @@
 import pytestemb as test
 
 
-        
-def func_setup():
-    pass
 
-def func_case():
-    test.success("")
-        
-def func_cleanup():
-    raise Exception("")
+
+
+class MyRun(test.Test):        
+    def setup(self):
+        pass
+    
+    def func_case(self):
+        test.success("")
+            
+    def cleanup(self):
+        raise Exception("")
 
 
 
@@ -21,10 +24,7 @@ def func_cleanup():
 if __name__ == "__main__":
     
 
-    test.set_setup(func_setup)
-    test.add_test_case(func_case)
-    test.set_cleanup(func_cleanup)
-    test.run_script()
+    test.run()
 
     
     

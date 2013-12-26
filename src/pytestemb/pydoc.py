@@ -85,6 +85,77 @@ class Pydoc:
         return doc
 
         
+import sys
+import importlib
+import pytestemb.valid as valid
+
+
+class DocGen:
+    
+    def __init__(self, basepath):
+        self.basepath = basepath
+        sys.path.append(self.basepath)
+    
+    
+    
+    def project(self, sub):
         
+        import os
+        
+        directory = os.path.join(self.basepath, sub)
+        
+        lscript = []
+        
+        for root, dirs, files in os.walk(directory):
+            for file in files:
+                if file.endswith(".py") and file not in ["__init__.py"]:
+                    
+                    #print root
+                    #print os.path.relpath(os.path.join(root, file), self.basepath)
+                    lscript.append(os.path.relpath(os.path.join(root, file), self.basepath))
+                    #print os.path.join(root, file)
+        
+        for l in lscript:
+            l = l.replace("/", ".")
+            l = l.strip(".py")
+            self.script_doc(l)
+    
+    
+    
+    def script_doc(self, name):
+        
+        dm = importlib.import_module(name)
+        
+        
+        tc = valid.Valid.retrieve_test_class_(dm)
+        if len(tc) != 1:
+            raise Exception("One class Test expected")
+        else:
+            pass
+        
+        setup, cases, cleanup =  valid.Valid.retrieve_test_method(tc[0]())
+        
+        print ""
+        print name 
+        print "\n".join(cases)
+        
+        
+        
+         
+    
+    
+    
+        
+        
+        
+
+    
+    
+    
+    
+    
+    
+        
+    
         
     
