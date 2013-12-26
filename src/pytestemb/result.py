@@ -113,7 +113,7 @@ class Result:
         try:
             for index in range(call_depth+1, len(traceback)):
                 if          traceback[index][1].endswith("valid.py") \
-                    and     (traceback[index][3] == "run_case" or traceback[index][3] == "run_try") :
+                    and     (traceback[index][3] == "run_case" or traceback[index][3] == "run_try" or traceback[index][3] == "run_abort") :
                     break
                 stack.append(dict(DEFAULT))
                 stack[-1]["path"]      = traceback[index][1]
@@ -330,7 +330,7 @@ class Result:
                 ko = True
             elif    case[self.ASSERT_KO] == 0 \
                 and case[self.ASSERT_OK] > 0:
-                self.report_add_line(name, "OK")
+                self.report_add_line(name, "ok")
                 ok = True
             elif    case[self.ASSERT_KO] == 0 \
                 and case[self.ASSERT_OK] == 0:
