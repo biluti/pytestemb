@@ -9,100 +9,22 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "1.7.4"
+VERSION_STRING = "2.0.0-beta1"
 
 
 #    Historic :
-
-#    *1.7.4
-#        - improve robustness for unicode management
 #
-#    *1.7.3
-#        - add get trace filename
+#    * 2.0.0
+#        - setup/cleanup in report      => done
+#        - setup strategy               => done
+#        - rework execution strategy    => todo
+#        - new parser for doc           => todo
+#        - introspection                => todo
+#        - object model                 => in progress
+#        - compatibilty with 1.x        => in progress
 #
-#    *1.7.2
-#        - add get path
-#        - improve robustness of callstack parsing
-#    
-#    *1.7.1
-#        - add ueid (unique execution id) for trace
-#        - add trace_trace for generic trace reference
-#        - improve code quality for Pylint
-#    
-#    *1.7.0
-#        - improve general and trace performance (high improvement for trace)
-#        - add exception description in report
-#        - add script report execution on trace
-#        - get script and case name
-#        - improve code quality for Pylint
-#    
-#    *1.6.1
-#        - fix regression on doc 
-#    
-#    *1.6.0
-#        - remove config by stdin system (API non compatibility) 
-#        - update command line parameter 'config': string
-#        - new command line parameter 'mode' : string 
-#        - fix regression on print parsing
-#     
-#    *1.5.1
-#        - add script time execution feature
-#    
-#    *1.5.0
-#        - add abort script (test.abort)
-#        - add success (test.success & test.fail)
-#        - add fatal mode : on fatal abort all remaining cases
-#        - rework execution sequencer
-#        - rework standalone execution mode : more information during execution and result report    
-#    
-#    *1.4.3
-#        - add create callback
-#        - update parser for create and destroy 
-#    
-#    *1.4.2
-#        - fix regression on cleanup callback
-#    
-#    *1.4.1
-#        - add destroy callback
-#    
-#    *1.4.0
-#        - change log extension to '*.pyt'
-#        - improve Assert KO formating
-#        - add header with date and hour in Octopylog trace 
-#    
-#    *1.3.4
-#        - tag_value : remove timestamp
-#    
-#    *1.3.3
-#        - parser : add testcase time execution
-#    
-#    * 1.3.2
-#        - parser improve robustness
-#        - parser improve exception description
-#    
-#    * 1.3.1
-#        - fix for string encoding 
-#        - trace formating improvement for assert
-#        - trace for warning
-#        
-#    * 1.3.0
-#        - traceback for assertion
-#        - trace formating improvement
-#        - string encoding : improve unicode robustness conversion 
-#    
-#    * 1.2.8 
-#        - trace_layer : trace layer
-#    
-#    * 1.2.7
-#        - add_trace  : add dynamically trace
-#        - time-stamp : fix Linux issue for txt time-stamp    
-#    
-#    * 1.2.6
-#        - tag_value : result is managed by test case now (before by script)
-#        
-#    * 1.2.5
-#        - trace config : add trace for lib, os, Python version and encoding sets
-#        - tag_value : new api to trace in result tag value
+#
+#
 
 
 
@@ -339,7 +261,7 @@ def add_test_case(func_case):
         valid.Valid.get().add_test_case(func_case)
 
 
-def run_script():
+def run():
     """
     @function       : run_script()
     @return         : None
@@ -349,8 +271,8 @@ def run_script():
     if OPTIONS.doc :
         pass
     else :
+        valid.Valid.get().scan()
         valid.Valid.get().run_script()
-
 
 
 
@@ -597,6 +519,38 @@ def trace_layer(scope, data):
     """
     trace.TraceManager.get().trace_layer(scope, utils.to_unicode(data))
     
+
+
+
+
+
+class Test():
+    def __init__(self):
+        pass
+
+    
+#    def setup(self):
+#        pass
+#    
+#    def cleanup(self):
+#        pass
+#    
+#    
+#    def case(self):
+#        pass
+#    
+#    def case(self):
+#        pass
+
+
+
+###########################################
+# Compatibility with Pytestemb 1.x
+###########################################
+
+# alias
+run_script = run
+
 
 
 
