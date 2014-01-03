@@ -21,7 +21,6 @@ import pytestemb.result as result
 import pytestemb.pexception as pexception
 
 
-import pytestemb
 
 
 # redirect sys.stderr => sys.stdout
@@ -47,6 +46,11 @@ sys.stderr = sys.stdout
 
 
 
+class Test():
+
+    def __init__(self):
+        pass
+    
 
 
 class Valid:
@@ -259,7 +263,7 @@ class Valid:
         for nn in dir(module):
             cc  = getattr(module, nn)
             try:
-                if issubclass(cc, pytestemb.Test):
+                if issubclass(cc, Test):
                     cla.append(cc)
                 else:
                     continue
@@ -274,7 +278,7 @@ class Valid:
         for nn in dir(module):
             cc  = getattr(module, nn)
             try:
-                if issubclass(cc, pytestemb.Test):
+                if issubclass(cc, Test):
                     cla.append(cc)
                 else:
                     continue
@@ -329,18 +333,18 @@ class Valid:
             pass
         else:
             func_setup = getattr(inst, setup)
-            pytestemb.set_setup(func_setup)
+            Valid.get().set_setup(func_setup)
     
             
         for func_name in cases:
             func_case = getattr(inst, func_name)
-            pytestemb.add_test_case(func_case)
+            Valid.get().add_test_case(func_case)
 
         if cleanup is None:
             pass
         else:
             func_cleanup = getattr(inst, cleanup)
-            pytestemb.set_cleanup(func_cleanup)
+            Valid.get().set_cleanup(func_cleanup)
             
 
 

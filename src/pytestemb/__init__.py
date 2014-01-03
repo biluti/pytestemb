@@ -9,19 +9,29 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "2.0.0-beta3"
+VERSION_STRING = "2.0.0-beta4"
 
 
 #    Historic :
 #
 #    * 2.0.0
+#        - compatibility with 1.x       => done
 #        - setup/cleanup in report      => done
 #        - setup strategy               => done
 #        - object model                 => done
-#        - compatibility with 1.x       => done
 #        - new parser for doc           => done
-#        - introspection                => todo
+#        - introspection                => done
 #        - rework execution strategy    => todo
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #
 #
 
@@ -318,6 +328,7 @@ def trace_trace(des):
     result.Result.get().trace_trace(des)
 
 
+
 def assert_true(exp, msg=None):
     """
     @function       : assert_true(exp, msg=None)
@@ -521,12 +532,19 @@ def trace_layer(scope, data):
 
 
 
+def is_assert():
+    return result.Result.get().is_assert()
 
 
-class Test():
 
-    def __init__(self):
-        pass
+
+from pytestemb.valid import Test
+
+
+#class Test():
+#
+#    def __init__(self):
+#        pass
 #
 #    
 #    def setup(self):
