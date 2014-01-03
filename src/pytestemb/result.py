@@ -16,6 +16,7 @@ import time
 import inspect
 
 
+import pytestemb.pexception as pexception
 import pytestemb.utils as utils
 import pytestemb.gtime as gtime
 
@@ -266,6 +267,15 @@ class Result:
         self.delay_trace_ctrl.append(des)
             
 
+
+    def is_assert(self):
+        
+        
+        try:
+            return (self.result[-1][self.ASSERT_KO] > 0)
+        except IndexError:
+            raise pexception.PytestembError("Invalid use of is_assert, allowed only in setup/cleanup and case")
+        
 
 
     def report_script_start(self, des):

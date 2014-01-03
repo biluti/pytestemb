@@ -256,11 +256,11 @@ class Valid:
     def retrieve_test_class(cls, name="__main__"):
         module = __import__(name)
         cla = []
-        for n in dir(module):
-            c  = getattr(module, n)
+        for nn in dir(module):
+            cc  = getattr(module, nn)
             try:
-                if issubclass(c, pytestemb.Test):
-                    cla.append(c)
+                if issubclass(cc, pytestemb.Test):
+                    cla.append(cc)
                 else:
                     continue
             except TypeError:
@@ -271,11 +271,11 @@ class Valid:
     @classmethod
     def retrieve_test_class_(cls, module):
         cla = []
-        for n in dir(module):
-            c  = getattr(module, n)
+        for nn in dir(module):
+            cc  = getattr(module, nn)
             try:
-                if issubclass(c, pytestemb.Test):
-                    cla.append(c)
+                if issubclass(cc, pytestemb.Test):
+                    cla.append(cc)
                 else:
                     continue
             except TypeError:
@@ -318,7 +318,7 @@ class Valid:
         elif len(testclasses) == 1:
             testclass = testclasses[0]
         else:
-            raise Exception("Only one Test class supported")
+            raise pexception.PytestembError("Only one Test class supported")
         
 
         inst = testclass()        

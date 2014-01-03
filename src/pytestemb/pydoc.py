@@ -102,20 +102,6 @@ class DocGen:
         self.basepath = basepath
         sys.path.append(self.basepath)
     
-#    
-#    @staticmethod
-#    def compatibility_1x():
-#        
-#        
-#        tc = valid.Valid.retrieve_test_class_(dm)
-#        
-#        if len(tc) == 1:
-#            pd = Pydoc.get()
-#            pd.set_doc("")
-#        else:
-#            pass
-#        
-
     
     def scan_project(self, sub):
         directory = os.path.join(self.basepath, sub)
@@ -138,7 +124,7 @@ class DocGen:
                 try:
                     key, value = line.strip(" \t").split(":")
                     res[key.strip(" \t")] = value.strip(" \n")
-                except Exception, ex:
+                except (IndexError, ValueError) as ex:
                     res["error line=%d" % count] = "except : %s, value : '%s'" % (ex, line)
                 count += 1
         return res
