@@ -12,9 +12,12 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
+import os        
+import sys
+import importlib
 
 
-
+import pytestemb.valid as valid
 import pytestemb.utils as utils
 
 
@@ -84,61 +87,85 @@ class Pydoc:
         doc = doc.strip("\n")
         return doc
 
-        
-import sys
-import importlib
-import pytestemb.valid as valid
+
+
 
 
 class DocGen:
+    
+    SCRIPT  = "script"
+    CASE    = "case"
+    NAME    = "name"
+    DOC     = "doc"
     
     def __init__(self, basepath):
         self.basepath = basepath
         sys.path.append(self.basepath)
     
+#    
+#    @staticmethod
+#    def compatibility_1x():
+#        
+#        
+#        tc = valid.Valid.retrieve_test_class_(dm)
+#        
+#        if len(tc) == 1:
+#            pd = Pydoc.get()
+#            pd.set_doc("")
+#        else:
+#            pass
+#        
+
     
-    
-    def project(self, sub):
-        
-        import os
-        
+    def scan_project(self, sub):
         directory = os.path.join(self.basepath, sub)
-        
         lscript = []
-        
-        for root, dirs, files in os.walk(directory):
-            for file in files:
-                if file.endswith(".py") and file not in ["__init__.py"]:
-                    
-                    #print root
-                    #print os.path.relpath(os.path.join(root, file), self.basepath)
-                    lscript.append(os.path.relpath(os.path.join(root, file), self.basepath))
-                    #print os.path.join(root, file)
-        
-        for l in lscript:
-            l = l.replace("/", ".")
-            l = l.strip(".py")
-            self.script_doc(l)
+        for root, _dirs, files in os.walk(directory):
+            for filen in files:
+                if filen.endswith(".py") and filen not in ["__init__.py"]:
+                    lscript.append(os.path.relpath(os.path.join(root, filen), self.basepath))
+        return [ll.replace("/", ".").strip(".py") for ll in lscript ]        
+   
     
+    @staticmethod
+    def _parse_class_doc(doc_str):
+        res = {}
+        if doc_str is None:
+            pass
+        else:
+            count = 0
+            for line in doc_str.splitlines():
+                try:
+                    key, value = line.strip(" \t").split(":")
+                    res[key.strip(" \t")] = value.strip(" \n")
+                except Exception, ex:
+                    res["error line=%d" % count] = "except : %s, value : '%s'" % (ex, line)
+                count += 1
+        return res
+        
     
     
     def script_doc(self, name):
-        
+        res = {self.SCRIPT:name, self.DOC:[], self.CASE:[]}
         dm = importlib.import_module(name)
-        
-        
         tc = valid.Valid.retrieve_test_class_(dm)
+        
         if len(tc) != 1:
-            raise Exception("One class Test expected")
+            raise Exception("One class 'Test' expected")
         else:
             pass
         
-        setup, cases, cleanup =  valid.Valid.retrieve_test_method(tc[0]())
+        inst = tc[0]()
         
-        print ""
-        print name 
-        print "\n".join(cases)
+        res[self.DOC] = self._parse_class_doc(inst.__doc__)
         
+        _setup, cases, _cleanup =  valid.Valid.retrieve_test_method(inst)
+
+        for case in cases:
+            res[self.CASE].append({self.NAME:case})
+            
+        return res
+
         
         
          

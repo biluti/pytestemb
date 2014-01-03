@@ -9,7 +9,7 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "2.0.0-beta1"
+VERSION_STRING = "2.0.0-beta3"
 
 
 #    Historic :
@@ -17,12 +17,11 @@ VERSION_STRING = "2.0.0-beta1"
 #    * 2.0.0
 #        - setup/cleanup in report      => done
 #        - setup strategy               => done
-#        - rework execution strategy    => todo
-#        - new parser for doc           => todo
+#        - object model                 => done
+#        - compatibility with 1.x       => done
+#        - new parser for doc           => done
 #        - introspection                => todo
-#        - object model                 => in progress
-#        - compatibilty with 1.x        => in progress
-#
+#        - rework execution strategy    => todo
 #
 #
 
@@ -141,10 +140,9 @@ if OPTIONS.ver :
 
 if OPTIONS.doc :
     trace.TraceManager.create([])
-    
-    
     result.Result.create(OPTIONS.result, trace.TraceManager.get())
     pydoc.Pydoc.create(result.Result.get())
+    valid.Valid.create(result.Result.get())
 else :
     trace.TraceManager.create(OPTIONS.trace)
     result.Result.create(OPTIONS.result, trace.TraceManager.get())
@@ -268,10 +266,11 @@ def run():
     @summary        : start the run of script
     @warning        : -
     """
+    
+    valid.Valid.get().scan()
     if OPTIONS.doc :
         pass
     else :
-        valid.Valid.get().scan()
         valid.Valid.get().run_script()
 
 
@@ -525,10 +524,11 @@ def trace_layer(scope, data):
 
 
 class Test():
+
     def __init__(self):
         pass
-
-    
+#
+#    
 #    def setup(self):
 #        pass
 #    

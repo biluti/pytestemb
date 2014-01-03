@@ -294,20 +294,16 @@ class Valid:
         cleanup = None
         
         for met in dir(test_inst):
-            
             if met in METHOD_FORDBID:
                 raise Exception("Invalid method name : '%s'" % met)
-            
             if met in METHOD_SKIP:
                 continue
-            
             if met == "setup":
                 setup = met
             elif met == "cleanup":
                 cleanup = met
             else:
                 cases.append(met)
-
         return setup, cases, cleanup
 
 
