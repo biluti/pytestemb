@@ -16,9 +16,10 @@ import time
 import inspect
 
 
-import pytestemb.pexception as pexception
+
 import pytestemb.utils as utils
 import pytestemb.gtime as gtime
+import pytestemb.pexception as pexception
 
 
 class TestErrorFatal(Exception):
@@ -47,10 +48,10 @@ class Result:
     TAGVALUE            = "TAGVALUE"
 
     def __init__(self, inst_trace):
-        self.trace = inst_trace
-        self.start_date = time.localtime()
-        self.start_clock = time.clock()
-        self.gtime = gtime.Gtime.create()
+        self.trace          = inst_trace
+        self.start_date     = time.localtime()
+        self.start_clock    = time.clock()
+        self.gtime          = gtime.Gtime.create()
         self.delay_trace_ctrl = []
         
         # report
@@ -58,8 +59,8 @@ class Result:
         self.setup      = False
         self.cleanup    = False
         
-        self.result = []
-        self.time_exec = None
+        self.result     = []
+        self.time_exec  = None
         
         
         self._report_callback = None
@@ -822,13 +823,10 @@ class ResultStandalone(Result):
         
     @trace
     def doc(self, des):
-        import pytestemb.pydoc as pydoc
-        
         self.write_stdout("\n")
-
-        self.write_stdout("Name : %s\n" % des[pydoc.KEY_NAME])
-        self.write_stdout("Type : %s\n" % des[pydoc.KEY_TYPE])
-        self.write_stdout("Doc :\n%s\n" % des[pydoc.KEY_DOC])
+        self.write_stdout("Name : %s\n" % des["name"])
+        self.write_stdout("Type : %s\n" % des["type"])
+        self.write_stdout("Doc :\n%s\n" % des["doc"])
 
 
 
