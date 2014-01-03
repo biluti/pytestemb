@@ -9,36 +9,40 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "2.0.0-beta4"
+VERSION_STRING = "2.0.0"
 
 
 #    Historic :
 #
 #    * 2.0.0
-#        - compatibility with 1.x       => done
-#        - setup/cleanup in report      => done
-#        - setup strategy               => done
-#        - object model                 => done
-#        - new parser for doc           => done
-#        - introspection                => done
-#        - rework execution strategy    => todo
+#        - full compatibility with Pytestemb 1.x      
+#        - object model with automatic setup/case/cleanup discover
+#        - setup/cleanup status is displayed in report     
+#        - setup strategy : if exception occurs in setup, script is aborted              
+#        - new dynamic parser for object model          
+#        - get if assert has been generated during setup/case/cleanup execution               
+#
+# 
+#   
+#    class Test():
+#
+#        def setup(self):
+#            pass
+#    
+#        def cleanup(self):
+#            pass
+#    
+#        def case(self):
+#            pass
+#    
+#        def case(self):
+#            pass
 #
 #
+#    if __name__ == "__main__":
+#    
+#        pytestemb.run()
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-
-
-
-
-
 
 
 
@@ -59,9 +63,7 @@ import pytestemb.utils as utils
 
 
 from optparse import OptionParser
-
-
-
+from pytestemb.valid import Test
 
 
 INTERFACE = {}
@@ -75,10 +77,6 @@ INTERFACE["result"] = (("standalone"),
                        ("none", "standalone", "stdout"))
 INTERFACE["trace"] =  ([],
                        ("none", "octopylog", "txt"))
-
-
-
-
 
 
 
@@ -538,27 +536,6 @@ def is_assert():
 
 
 
-from pytestemb.valid import Test
-
-
-#class Test():
-#
-#    def __init__(self):
-#        pass
-#
-#    
-#    def setup(self):
-#        pass
-#    
-#    def cleanup(self):
-#        pass
-#    
-#    
-#    def case(self):
-#        pass
-#    
-#    def case(self):
-#        pass
 
 
 
