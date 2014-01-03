@@ -29,8 +29,8 @@ if __name__ == "__main__":
     
     test.run_script()
 
-#    import cProfile 
-#    cProfile.run('test.run_script()')
+    import cProfile 
+    cProfile.run('test.run_script()')
 
 
 

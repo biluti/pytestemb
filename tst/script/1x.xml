@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project Name="test">
+    <XMLProjectVersion Version="2.2"/>
+    <MetaCampaigns>
+        <MetaCampaign Info="" Jenkins="False" Disable="False" Name="all">
+            <Campaign Info="" Jenkins="False" Disable="False" Name="automatic"/>
+            <Campaign Info="" Jenkins="False" Disable="False" Name="env"/>
+            <Campaign Info="" Jenkins="False" Disable="False" Name="abort"/>
+        </MetaCampaign>
+    </MetaCampaigns>
+    <Campaigns>
+        <Campaign Info="" Jenkins="False" Disable="False" Name="automatic">
+            <Script Info="" Path="1x.folder_01" Disable="False" Type="TST" Name="script_01"/>
+            <Script Info="" Path="1x.folder_01" Disable="False" Type="TST" Name="script_02"/>
+            <Script Info="" Path="1x.folder_01" Disable="False" Type="TST" Name="script_03"/>
+            <Script Info="" Path="1x.folder_01" Disable="False" Type="TST" Name="script_04"/>
+            <Script Info="" Path="1x.folder_01" Disable="False" Type="TST" Name="script_01"/>
+            <Script Info="" Path="1x.folder_01" Disable="False" Type="TST" Name="script_02"/>
+            <Script Info="" Path="1x.folder_01" Disable="False" Type="TST" Name="script_03"/>
+            <Script Info="" Path="1x.folder_01" Disable="False" Type="TST" Name="script_04"/>
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="interface_echo"/>
+            <Script Info="" Path="1x.folder_01" Disable="False" Type="TST" Name="script_01"/>
+            <Script Info="" Path="1x.folder_01" Disable="False" Type="TST" Name="script_02"/>
+            <Script Info="" Path="1x.folder_01" Disable="False" Type="TST" Name="script_03"/>
+            <Script Info="" Path="1x.folder_01" Disable="False" Type="TST" Name="script_04"/>
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_all"/>
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_arg"/>
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_cases"/>
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_doc"/>
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_encoding"/>
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_exception_01"/>
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_exception_02"/>
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_exception_encoding"/>
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_format"/>
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_io_echo"/>
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_traceback"/>
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_utf8"/>
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_fatal_00"/>
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_fatal_01"/>
+        </Campaign>
+        <Campaign Info="" Jenkins="False" Disable="False" Name="env">
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_create_01"/>
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_create_02"/>
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_destroy_01"/>
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_destroy_02"/>
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_cleanup_01"/>
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_cleanup_02"/>
+        </Campaign>
+        <Campaign Info="" Jenkins="False" Disable="False" Name="abort">
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_abort_00"/>
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_abort_01"/>
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_abort_02"/>
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_abort_03"/>
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_abort_04"/>
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_abort_05"/>
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_abort_06"/>
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_abort_07"/>
+        </Campaign>
+        <Campaign Info="" Jenkins="False" Disable="False" Name="performance">
+            <Script Info="" Path="1x" Disable="False" Type="TST" Name="script_performance"/>
+        </Campaign>
+    </Campaigns>
+</Project>
