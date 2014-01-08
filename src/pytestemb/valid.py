@@ -13,6 +13,7 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 import sys
+import types 
 import inspect
 
 
@@ -46,7 +47,7 @@ sys.stderr = sys.stdout
 
 
 
-class Test():
+class Test(object):
 
     def __init__(self):
         pass
@@ -290,7 +291,7 @@ class Valid:
     
     @classmethod
     def retrieve_test_method(cls, test_inst):
-        METHOD_SKIP     = ["__doc__", "__init__", "__module__"]
+        METHOD_SKIP     = ["__init__"]
         METHOD_FORDBID  = ["create", "destroy"] 
         
         setup   = None
@@ -298,6 +299,8 @@ class Valid:
         cleanup = None
         
         for met in dir(test_inst):
+            if type(getattr(test_inst, met)) != types.MethodType:
+                continue
             if met in METHOD_FORDBID:
                 raise Exception("Invalid method name : '%s'" % met)
             if met in METHOD_SKIP:
@@ -351,7 +354,33 @@ class Valid:
 
 
 
+
+
     
+#class X(object):
+#    A = 0
+#    
+#    
+#    def __init__(self):
+#        pass
+#    
+#    def a(self):
+#        pass
+#
+#    @staticmethod
+#    def b():
+#        pass
+#    
+#        
+#    
+#x = X()
+#
+#
+#n = type(x.A)
+#print type(x.A)
+#print type(x.a)
+#print type(X.b)
+
     
     
 

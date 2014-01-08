@@ -9,10 +9,13 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "2.0.0"
+VERSION_STRING = "2.0.1"
 
 
 #    Historic :
+#
+#    * 2.0.1
+#        - fix issues with model object       
 #
 #    * 2.0.0
 #        - full compatibility with Pytestemb 1.x      
