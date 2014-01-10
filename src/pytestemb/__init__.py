@@ -9,10 +9,14 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "2.0.1"
+VERSION_STRING = "2.0.2"
 
 
 #    Historic :
+#
+#
+#    * 2.0.2
+#        - fix Unicode issue on trace function (scope, tag and interface parameter)
 #
 #    * 2.0.1
 #        - fix issues with model object       
@@ -485,7 +489,7 @@ def tag_value(tag, value):
     @return         : None
     @summary        : generate a tag value
     """
-    result.Result.get().tag_value({tag:utils.to_unicode(value)})
+    result.Result.get().tag_value({utils.to_unicode(tag):utils.to_unicode(value)})
 
 
 
@@ -497,7 +501,7 @@ def trace_env(scope, data):
     @return         : None
     @summary        : trace data towards environment trace type
     """
-    trace.TraceManager.get().trace_env(scope, utils.to_unicode(data))
+    trace.TraceManager.get().trace_env(utils.to_unicode(scope), utils.to_unicode(data))
 
 def trace_io(interface, data):
     """
@@ -507,7 +511,7 @@ def trace_io(interface, data):
     @return         : None
     @summary        : trace data towards io trace type
     """
-    trace.TraceManager.get().trace_io(interface, utils.to_unicode(data))
+    trace.TraceManager.get().trace_io(utils.to_unicode(interface), utils.to_unicode(data))
 
 
 def trace_script(msg):
@@ -528,7 +532,7 @@ def trace_layer(scope, data):
     @return         : None
     @summary        : trace data towards layer trace type
     """
-    trace.TraceManager.get().trace_layer(scope, utils.to_unicode(data))
+    trace.TraceManager.get().trace_layer(utils.to_unicode(scope), utils.to_unicode(data))
     
 
 

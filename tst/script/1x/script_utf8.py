@@ -37,13 +37,17 @@ def test_assert_equal():
 
 
 def test_trace():
+    # msg
     for itm in vector:
         test.trace_script(          itm)
         test.trace_env("env",       itm)
         test.trace_io("io",         itm)
         test.trace_layer("layer",   itm)
-
-
+    # scope
+    for itm in vector:
+        test.trace_env(itm, "env")
+        test.trace_io(itm, "io")
+        test.trace_layer(itm, "layer")
 
 
 
