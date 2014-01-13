@@ -9,11 +9,13 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "2.0.2"
+VERSION_STRING = "2.0.3"
 
 
 #    Historic :
 #
+#    * 2.0.3
+#        - object model : skip method that starts with '_' (private & disable)
 #
 #    * 2.0.2
 #        - fix Unicode issue on trace function (scope, tag and interface parameter)

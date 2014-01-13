@@ -301,6 +301,8 @@ class Valid:
         for met in dir(test_inst):
             if type(getattr(test_inst, met)) != types.MethodType:
                 continue
+            if met.startswith("_"):
+                continue
             if met in METHOD_FORDBID:
                 raise Exception("Invalid method name : '%s'" % met)
             if met in METHOD_SKIP:

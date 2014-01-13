@@ -6,15 +6,26 @@ import pytestemb
 
 
 
-class MyRun(pytestemb.Test):
+class MyRun0(pytestemb.Test):
     
     
     a = 0
+    _A = 1
+    __A__ = 2
     
-        
     def setup(self):
         pass
-        
+    
+    def __private_0(self):
+        pass
+
+    def _private_1(self):
+        pass
+
+    @staticmethod
+    def case_staticmethod():
+        pass
+
     def case_0(self):
         pytestemb.success("")
 
@@ -24,14 +35,10 @@ class MyRun(pytestemb.Test):
     def case_2(self):
         pytestemb.success("")
 
-    @staticmethod
-    def case_3():
-        pytestemb.success("")
-
-
-
     def cleanup(self):
         pass
+
+
 
 
 
@@ -41,7 +48,12 @@ if __name__ == "__main__":
 
     
     
-
+    
+    
+    
+    
+    
+    
     
     
 
