@@ -9,10 +9,13 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "2.0.3"
+VERSION_STRING = "2.0.4"
 
 
 #    Historic :
+#
+#    * 2.0.4
+#        - object model : skip method that starts with '_' (private & disable)
 #
 #    * 2.0.3
 #        - object model : skip method that starts with '_' (private & disable)
