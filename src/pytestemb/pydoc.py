@@ -93,10 +93,11 @@ class Pydoc:
 
 class DocGen:
     
-    SCRIPT  = "script"
-    CASE    = "case"
-    NAME    = "name"
-    DOC     = "doc"
+    CASE_DOC = "case_doc"
+    SCRIPT   = "script"
+    CASE     = "case"
+    NAME     = "name"
+    DOC      = "doc"
     
     def __init__(self, basepath):
         self.basepath = basepath
@@ -148,7 +149,8 @@ class DocGen:
         _setup, cases, _cleanup =  valid.Valid.retrieve_test_method(inst)
 
         for case in cases:
-            res[self.CASE].append({self.NAME:case})
+            func_case = getattr(inst, case)
+            res[self.CASE].append({self.NAME:func_case.func_name, self.CASE_DOC:func_case.func_doc})
             
         return res
 
