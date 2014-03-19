@@ -85,9 +85,15 @@ class Result:
     @classmethod
     def get(cls):
         return cls.__single 
-        
-    def trace_trace(self, des):
-        pass          
+    
+    def _trace_trace_(self, des):
+        pass
+    
+    def trace_trace(self, dic_des):
+        if isinstance(dic_des, dict):
+            self._trace_trace_({utils.to_unicode(key):utils.to_unicode(value) for key, value in dic_des.iteritems()})
+        else:
+            raise pexception.PytestembError("Parameter 'dic_des' must be a dict")           
 
     def trace_result(self, name, des):
         self.trace.trace_result(name, des)
@@ -504,12 +510,11 @@ class ResultStdout(Result):
     def script_start(self, des):
         self.write(ResultStdout.SCRIPT_START, des)
         for item in self.delay_trace_ctrl:
-            #self.write(ResultStdout.TRACE, item)
             self.trace_trace(item)
         self.report_script_start(des)
         
 
-    def trace_trace(self, des):
+    def _trace_trace_(self, des):
         self.write(ResultStdout.TRACE, des)
 
     @trace

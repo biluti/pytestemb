@@ -9,10 +9,13 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "2.0.4"
+VERSION_STRING = "2.0.5"
 
 
 #    Historic :
+#    * 2.0.5
+#        - add multilines for trace io/env/script/layer
+#        - add parameter check on trace_trace function
 #
 #    * 2.0.4
 #        - object model : skip method that starts with '_' (private & disable)
@@ -334,8 +337,11 @@ def get_uedi():
     return trace.TraceManager.get().get_ueid()
 
 
-def trace_trace(des):
-    result.Result.get().trace_trace(des)
+def trace_trace(dic_des):
+    """ reserved 
+        @param des : dictionary
+    """    
+    result.Result.get().trace_trace(dic_des)
 
 
 

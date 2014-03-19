@@ -278,11 +278,33 @@ class TraceOctopylog(Trace):
         finally:
             self._scope[scope].info(msg)
 
-    def trace_script(self, msg):
-        self.trace_scope("script", msg)
 
-    def trace_io(self, interface, data):
-        self.trace_scope("io.%s" % interface, data)
+    def _trace_multiline(self, scope, msg):
+        ALIGN = 13
+        
+        msg = msg.strip("\n\r")
+        msg = msg.splitlines()
+        if len(msg) == 1 :
+            self.trace_scope(scope, msg[0])
+        else :
+            self.trace_scope(scope, "# Start multiline trace #")
+            self.trace_scope(scope, "")
+            self.trace_scope(scope, "%s| Message" % "Line number ".ljust(ALIGN-1))
+            for index, line in enumerate(msg):
+                ln = "%d" % index
+                ln = ln.ljust(ALIGN)
+                self.trace_scope(scope, "%s%s" % (ln, line))
+            self.trace_scope(scope, "")
+            self.trace_scope(scope, "# Stop multiline trace #")         
+        
+        
+
+    def trace_script(self, msg):
+        self._trace_multiline("script", msg)
+
+
+    def trace_io(self, interface, data):        
+        self._trace_multiline("io.%s" % interface, data)
 
     def trace_result(self, name, des):      
         if      name == "assert_ko":
@@ -296,10 +318,10 @@ class TraceOctopylog(Trace):
         self.trace_scope("warning", des["msg"])
 
     def trace_env(self, scope, data):
-        self.trace_scope("env.%s" % scope, data)
+        self._trace_multiline("env.%s" % scope, data)
 
     def trace_layer(self, scope, data):
-        self.trace_scope("layer.%s" % scope, data)
+        self._trace_multiline("layer.%s" % scope, data)
 
     def trace_report(self, msg):
         self.trace_scope("report", msg.replace("\n", ""))
@@ -420,14 +442,40 @@ class TraceTxt(Trace):
         scope = scope.ljust(24)
         for i in msg: 
             self.file.write(u"%s%s%s\n" % (mtime, scope, i))
+
+
+    def _trace_multiline(self, scope, msg):
+        ALIGN = 13
         
+        msg = msg.strip("\n\r")
+        msg = msg.splitlines()
+        if len(msg) == 1 :
+            self.add_line(scope, msg)
+        else :
+            data = []
+            data.append("# Start multiline trace #")
+            
+            data.append("")
+            data.append("%s| Message" % "Line number ".ljust(ALIGN-1))
+            for index, line in enumerate(msg):
+                ln = "%d" % index
+                ln = ln.ljust(ALIGN)
+                data.append("%s%s" % (ln, line))
+            data.append("")
+            data.append("# Stop multiline trace #")      
+            
+            self.add_line(scope, data)    
         
         
     def trace_script(self, msg):
-        self.add_line("Script", [msg])
+        self._trace_multiline("script", msg)
+               
+
+        
+        
 
     def trace_io(self, interface, data):
-        self.add_line(interface, [data])
+        self._trace_multiline(interface, data)
 
     def trace_result(self, name, des):
         try:
@@ -446,10 +494,10 @@ class TraceTxt(Trace):
         self.add_line("Warning", [des["msg"]])
         
     def trace_env(self, scope, data):
-        self.add_line(scope, [data])
+        self._trace_multiline(scope, data)
 
     def trace_layer(self, scope, data):
-        self.add_line(scope, [data])
+        self._trace_multiline(scope, data)
 
 
 
