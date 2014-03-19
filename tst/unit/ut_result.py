@@ -447,9 +447,32 @@ class Test_ResultReader(unittest.TestCase):
                                             {"name":"script_01", "time":1}))
 
 
- 
-        
-        
+    def test_case_07(self):
+
+        vector = """SCRIPT_START={'name': 'script_2trace', 'time': 0.24220800399780273}
+        TRACE={u'type': u'octopylog'}
+        TRACE={u'type': u'pyt', u'file': u'/tmp/pytestemb/script_2trace_0740B8B009ED6FD5.pyt'}
+        CASE_START={'name': 'test_trace', 'time': 0.24247503280639648}
+        TRACE={u'\u043f\u0440\u0435\u0434\u044b\u0441\u0442\u043e\u0440\u0438\u044f': u'\u043f\u0440\u0435\u0434\u044b\u0441\u0442\u043e\u0440\u0438\u044f'}
+        TRACE={u'\u0627\u0644\u0625\u0646\u0643\u0644\u064a\u0632\u064a\u0629': u'\u0627\u0644\u0625\u0646\u0643\u0644\u064a\u0632\u064a\u0629'}
+        TRACE={u'\u043f\u0440\u0435\u0434\u044b\u0441\u0442\u043e\u0440\u0438\u044f': u'\u043f\u0440\u0435\u0434\u044b\u0441\u0442\u043e\u0440\u0438\u044f'}
+        TRACE={u'\u0627\u0644\u0625\u0646\u0643\u0644\u064a\u0632\u064a\u0629': u'\u0627\u0644\u0625\u0646\u0643\u0644\u064a\u0632\u064a\u0629'}
+        TRACE={u'ascii': u'ascii'}
+        TRACE={u'ascii': u'ascii'}
+        TRACE={u'\u0627\u0644\u0625\u0646\u0643\u0644\u064a\u0632\u064a\u0629\\u0627\\u0644\\u0625\\u0646\\u0643\\u0644\\u064a\\u0632\\u064a\\u0629\xd8\xa7\xd9\x84\xd8\xa5\xd9\x86\xd9\x83\xd9\x84\xd9\x8a\xd8\xb2\xd9\x8a\xd8\xa9': u'\u0627\u0644\u0625\u0646\u0643\u0644\u064a\u0632\u064a\u0629\\u0627\\u0644\\u0625\\u0646\\u0643\\u0644\\u064a\\u0632\\u064a\\u0629\xd8\xa7\xd9\x84\xd8\xa5\xd9\x86\xd9\x83\xd9\x84\xd9\x8a\xd8\xb2\xd9\x8a\xd8\xa9'}
+        TRACE={u'\u0627\u0644\u0625\u0646\u0643\u0644\u064a\u0632\u064a\u0629': u'\u0627\u0644\u0625\u0646\u0643\u0644\u064a\u0632\u064a\u0629'}
+        TRACE={u'': u''}
+        TRACE={u'': u''}
+        TRACE={u'\\xc3': u'\\xc3'}
+        TRACE={u'\xc3': u'\xc3'}
+        TRACE={u"'353530392d31354133093065450100ea/fs/1/84o3q@ms4hoW`Xn0PaNDo5Hc8n@`FF4noAu4nnRd4`al54haon', u'ParentId': u'353530392d31354133093065450100ea/fs/1/88A@nIAo2Gh4`o@o8n@`RDa44cl8`@`nFooiutn`e', u'Type': u'Item', u'URI': u'http://192.168.4.1:57135/PulsarServerPlugin/i/MzUzNTMwMzkyZDMxMzU0MTMzMDkzMDY1NDUwMTAwZWEvZnMvMS84NG8zcUBtczRob1dgWG4wUGFORG81SGM4bkBgRkY0bm9BdTRublJkNGBhbDU0aGFvbg%3D%3D.mp3', [^] u'Title': u'01 - Assassin'": u"'353530392d31354133093065450100ea/fs/1/84o3q@ms4hoW`Xn0PaNDo5Hc8n@`FF4noAu4nnRd4`al54haon', u'ParentId': u'353530392d31354133093065450100ea/fs/1/88A@nIAo2Gh4`o@o8n@`RDa44cl8`@`nFooiutn`e', u'Type': u'Item', u'URI': u'http://192.168.4.1:57135/PulsarServerPlugin/i/MzUzNTMwMzkyZDMxMzU0MTMzMDkzMDY1NDUwMTAwZWEvZnMvMS84NG8zcUBtczRob1dgWG4wUGFORG81SGM4bkBgRkY0bm9BdTRublJkNGBhbDU0aGFvbg%3D%3D.mp3', [^] u'Title': u'01 - Assassin'"}
+        CASE_STOP={'name': 'test_trace', 'time': 0.2430438995361328}
+        SCRIPT_STOP={'name': 'script_2trace', 'time': 0.24316787719726562}"""
+
+        reader = parser.ResultStdoutReader()
+        for l in vector.splitlines():
+            reader.add_line(l)
+    
         
                 
 # stub stdout
