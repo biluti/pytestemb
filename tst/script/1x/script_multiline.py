@@ -53,7 +53,7 @@ def stop():
 
 if __name__ == "__main__":
     
-    
+    test.add_trace(["txt"])
     test.set_setup(start)
     test.add_test_case(multi_100)
     test.add_test_case(multi_utf8)
