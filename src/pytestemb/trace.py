@@ -438,7 +438,8 @@ class TraceTxt(Trace):
     
     def add_line(self, scope, msg):
         
-        mtime = "%.6f          " % self.gtime.get_time()
+        mtime = "%.6f" % self.gtime.get_time()
+        mtime = mtime.ljust(16)
         scope = scope.ljust(24)
         for i in msg: 
             self.file.write(u"%s%s%s\n" % (mtime, scope, i))

@@ -9,10 +9,14 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "2.0.5"
+VERSION_STRING = "2.0.6"
 
 
 #    Historic :
+#
+#    * 2.0.6
+#        - trace txt fix timestamp alignement
+#
 #    * 2.0.5
 #        - add multilines for trace io/env/script/layer
 #        - add parameter check on trace_trace function
