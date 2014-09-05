@@ -64,6 +64,7 @@ class Valid:
         self._cleanup    = self._nothing_
         self._create     = self._nothing_
         self._destroy    = self._nothing_
+        self._tracecase  = self._nothing_
         self._case = []
         self._name = utils.get_script_name()
         
@@ -117,6 +118,27 @@ class Valid:
         else:
             # Avoid user mistake with two time function set
             raise pexception.PytestembError("funcDestroy function already set")
+
+
+
+    def set_tracecase(self, functracecase):
+        if self._tracecase == self._nothing_ :
+            self._tracecase = functracecase
+        else:
+            # Avoid user mistake with two time function set
+            raise pexception.PytestembError("functracecase function already set")
+        
+    
+    def tracecase(self, name):
+        if self._tracecase != self._nothing_ :
+            try:
+                self._tracecase(utils.get_script_name(), name)
+            except Exception, ex:
+                raise pexception.PytestembError("Callback tracecase exception : '%s' => %s" % (ex.__class__.__name__, ex))
+        else:
+            pass
+            
+    
     
     def set_fatal_mode(self, stop_case_run):
         self._abort_fatal_mode = stop_case_run
@@ -146,6 +168,7 @@ class Valid:
         else:
             self._result.setup_start({})
             self._case_name = "setup"
+            self.tracecase(self._case_name)
             self.run_abort(self._setup)
             self._result.setup_stop({})
             self._case_name = None
@@ -153,6 +176,7 @@ class Valid:
         for acase in self._case :
             name = acase.func_name
             self._result.case_start({"name":name})
+            self.tracecase(name)
             self._case_name = name
             self.run_case(acase)
             self._result.case_stop({"name":name})
@@ -163,6 +187,7 @@ class Valid:
         else:
             self._result.cleanup_start({})
             self._case_name = "cleanup"
+            self.tracecase(self._case_name)
             self.run_try(self._cleanup)
             self._result.cleanup_stop({})
             self._case_name = None
