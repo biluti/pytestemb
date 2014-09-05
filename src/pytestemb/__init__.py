@@ -9,10 +9,15 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "2.0.6"
+VERSION_STRING = "2.1.0"
 
 
 #    Historic :
+#    * 2.1.0
+#        - pytestemb lib mode enable in arg '--pytestemb_lib_mode'
+#
+#    * 2.0.7
+#        - add set_tracecase callback for case name tracing in SUT trace
 #
 #    * 2.0.6
 #        - trace txt fix timestamp alignement
@@ -144,49 +149,39 @@ def parse():
 
 
 
-
-
-OPTIONS = parse()
-
-
-if OPTIONS.path is not None:
-    sys.path.append(OPTIONS.path)
-
-
-if OPTIONS.ver :
-    sys.stdout.write("pytestemb\n")
-    sys.stdout.write("Version   : %s\n" % VERSION_STRING)
-    sys.stdout.write("Copyright : %s\n" % __copyright__)
-    sys.stdout.write("Copyright : %s\n" % __license__)
-    sys.stdout.write("Contact   : %s\n" % __email__)
-    sys.exit(0)
-
-
-
-
-
-if OPTIONS.doc :
-    trace.TraceManager.create([])
-    result.Result.create(OPTIONS.result, trace.TraceManager.get())
-    pydoc.Pydoc.create(result.Result.get())
-    valid.Valid.create(result.Result.get())
-else :
-    trace.TraceManager.create(OPTIONS.trace)
-    result.Result.create(OPTIONS.result, trace.TraceManager.get())
-    valid.Valid.create(result.Result.get())
-
-
-trace.TraceManager.get().set_result(result.Result.get())
-trace.TraceManager.get().start()
-
-
-
-# Configuration management
-SCOPE_CF = "CF"
-trace.TraceManager.get().trace_env(SCOPE_CF, "Library version : pytestemb %s" % VERSION_STRING)
-trace.TraceManager.get().trace_env(SCOPE_CF, "Python-version : %s" % platform.python_version())
-trace.TraceManager.get().trace_env(SCOPE_CF, "Plateform : %s" % platform.platform(terse=True))
-trace.TraceManager.get().trace_env(SCOPE_CF, "Default encoding : %s" % sys.getdefaultencoding())
+# detect if pytestemb in lib_mode
+if sys.argv[1:].count("--pytestemb_lib_mode") == 1:
+    pass
+else:
+    OPTIONS = parse()
+    if OPTIONS.path is not None:
+        sys.path.append(OPTIONS.path)
+    if OPTIONS.ver :
+        sys.stdout.write("pytestemb\n")
+        sys.stdout.write("Version   : %s\n" % VERSION_STRING)
+        sys.stdout.write("Copyright : %s\n" % __copyright__)
+        sys.stdout.write("Copyright : %s\n" % __license__)
+        sys.stdout.write("Contact   : %s\n" % __email__)
+        sys.exit(0)
+    if OPTIONS.doc :
+        trace.TraceManager.create([])
+        result.Result.create(OPTIONS.result, trace.TraceManager.get())
+        pydoc.Pydoc.create(result.Result.get())
+        valid.Valid.create(result.Result.get())
+    else :
+        trace.TraceManager.create(OPTIONS.trace)
+        result.Result.create(OPTIONS.result, trace.TraceManager.get())
+        valid.Valid.create(result.Result.get())
+    
+    trace.TraceManager.get().set_result(result.Result.get())
+    trace.TraceManager.get().start()
+    
+    # Configuration management
+    SCOPE_CF = "CF"
+    trace.TraceManager.get().trace_env(SCOPE_CF, "Library version : pytestemb %s" % VERSION_STRING)
+    trace.TraceManager.get().trace_env(SCOPE_CF, "Python-version : %s" % platform.python_version())
+    trace.TraceManager.get().trace_env(SCOPE_CF, "Plateform : %s" % platform.platform(terse=True))
+    trace.TraceManager.get().trace_env(SCOPE_CF, "Default encoding : %s" % sys.getdefaultencoding())
 
 
 
@@ -255,6 +250,20 @@ def set_destroy(func_destroy):
         pass
     else :
         valid.Valid.get().set_destroy(func_destroy)
+
+
+
+def set_tracecase(func_tracecase):
+    """
+    @function           : set_tracecase(func_tracecase)
+    @param func_destroy : (function) a trace function with two string parameter (script_name, case_name)
+    @return             : None
+    @summary            : add a tracecase name function to the script
+    """
+    if OPTIONS.doc :
+        pass
+    else :
+        valid.Valid.get().set_tracecase(func_tracecase)
 
 
 
@@ -567,8 +576,6 @@ def is_assert():
 
 # alias
 run_script = run
-
-
 
 
 
