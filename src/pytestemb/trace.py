@@ -28,7 +28,7 @@ import pytestemb.gtime as gtime
 
 
 
-class Trace:
+class Trace(object):
     def __init__(self):
         self.gtime = gtime.Gtime.create()
         self.result = None
@@ -149,7 +149,7 @@ class TraceManager(Trace):
     def __init__(self):
         Trace.__init__(self)
         self.dictra = dict()
-        self.l = list()
+        self.lm = list()
         self._ueid = self._gen_ueid() # unique execution id
 
 
@@ -184,44 +184,44 @@ class TraceManager(Trace):
     def add_trace(self, name, tra):
         if not self.dictra.has_key(name):
             self.dictra[name] = tra
-            self.l.append(tra)
+            self.lm.append(tra)
         else:
             pass
 
     def set_result(self, result):            
-        for i in self.l:
+        for i in self.lm:
             i.set_result(result)
 
     def start(self):
-        for i in self.l:
+        for i in self.lm:
             i.start()            
 
     def trace_script(self, msg):
-        for i in self.l:
+        for i in self.lm:
             i.trace_script(msg)
             
     def trace_io(self, interface, data):
-        for i in self.l:
+        for i in self.lm:
             i.trace_io(interface, data)     
             
     def trace_result(self, name, des):
-        for i in self.l:
+        for i in self.lm:
             i.trace_result(name, des)
 
     def trace_warning(self, msg):
-        for i in self.l:
+        for i in self.lm:
             i.trace_warning(msg)
 
     def trace_env(self, scope, data):
-        for i in self.l:
+        for i in self.lm:
             i.trace_env(scope, data)
             
     def trace_layer(self, scope, data):
-        for i in self.l:
+        for i in self.lm:
             i.trace_layer(scope, data)
     
     def trace_report(self, msg):
-        for i in self.l:
+        for i in self.lm:
             i.trace_report(msg)     
 
     def add_traces(self, interfaces):
@@ -311,8 +311,8 @@ class TraceOctopylog(Trace):
             scope = "result_ko"
         else:
             scope = "result"
-        for l in self.format_result(name, des):
-            self.trace_scope(scope, l)
+        for ll in self.format_result(name, des):
+            self.trace_scope(scope, ll)
 
     def trace_warning(self, des):
         self.trace_scope("warning", des["msg"])
@@ -484,8 +484,8 @@ class TraceTxt(Trace):
         except KeyError:
             scope = "sequence"
 
-        l = self.format_result(name, des)
-        self.add_line(scope, l)
+        ll = self.format_result(name, des)
+        self.add_line(scope, ll)
                       
                       
     def trace_report(self, msg):

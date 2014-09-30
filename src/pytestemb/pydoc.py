@@ -32,7 +32,7 @@ KEY_DOC  = "doc"
 
 
 
-class Pydoc:
+class Pydoc(object):
     
     __single = None
     
@@ -91,7 +91,7 @@ class Pydoc:
 
 
 
-class DocGen:
+class DocGen(object):
     
     CASE_DOC = "case_doc"
     SCRIPT   = "script"

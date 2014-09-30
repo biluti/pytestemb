@@ -37,8 +37,8 @@ def get_script_name():
 def str_dict(d):
     res = []
     for key, value in d.iteritems():
-        l = u"'%s':'%s'" % (unicode(key), unicode(value))
-        res.append(l)
+        ll = u"'%s':'%s'" % (unicode(key), unicode(value))
+        res.append(ll)
     return u"{%s}" % ", ".join(res)
 
 

@@ -54,7 +54,7 @@ class Test(object):
     
 
 
-class Valid:
+class Valid(object):
     
     __single = None
     

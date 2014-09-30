@@ -30,7 +30,7 @@ class TestAbort(Exception):
 
 
 
-class Result:
+class Result(object):
     
     __single = None
     
@@ -836,7 +836,7 @@ class ResultStandalone(Result):
 
 
 
-class ResultCounter:
+class ResultCounter(object):
     """ class to count result
     a limit is implemented (usefull for test instanciate for endurance )
     counter works as cyclic after limit is reach
@@ -864,13 +864,13 @@ class ResultCounter:
 
     def __str__(self):
         sstr = "%s\n" % self.name
-        for k, v in self.counter.iteritems():
-            sstr += "%s:%s\n" % (k, v)
+        for key, value in self.counter.iteritems():
+            sstr += "%s:%s\n" % (key, value)
         return sstr
 
 
 
-class ResultScript:
+class ResultScript(object):
     def __init__(self, name):
         self.name = name
         self.time_exec = None

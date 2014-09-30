@@ -26,7 +26,7 @@ class InterfaceError(Exception):
 
  
 
-class Interface_io:
+class Interface_io(object):
     """ base class for interfaceIO """
 
     def __init__(self, name=""):

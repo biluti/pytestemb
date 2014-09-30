@@ -23,7 +23,7 @@ class StdoutReaderError(Exception):
     
 
 
-class StdoutReader:
+class StdoutReader(object):
     
     def __init__(self):
         self.script_started = False 
