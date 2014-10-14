@@ -19,7 +19,7 @@ import time
 
         
 def setup():
-    test.abort("abort")
+    test.abort("xzp")
 
 def cleanup():
     pass

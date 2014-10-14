@@ -69,6 +69,7 @@ class Valid(object):
         self._name = utils.get_script_name()
         
         self._aborted = False
+        self._aborted_msg = None
         
         self._abort_fatal_mode = False
         self._abort_fatal = False
@@ -153,6 +154,10 @@ class Valid(object):
         return self._case_name
 
 
+    def _set_aborted(self, exc):
+        self._aborted = True  
+        self._aborted_msg = "in '%s', msg='%s'" % (self.get_case_name(), exc)
+
     def run_script(self):
         self._result.script_start({"name":self._name})
         # Create 
@@ -160,6 +165,7 @@ class Valid(object):
             pass
         else:
             self._result.create_start({})
+            self._case_name = "create"
             self.run_try(self._create)
             self._result.create_stop({})
         # Setup
@@ -196,6 +202,7 @@ class Valid(object):
             pass
         else:
             self._result.destroy_start({})
+            self._case_name = "destroy"
             self.run_try(self._destroy, force=True)
             self._result.destroy_stop({})
     
@@ -205,15 +212,15 @@ class Valid(object):
     def run_try(self, func, force=False):
         
         if self._aborted and not force:
-            self._result.aborted({})
+            self._result.aborted({"msg":self._aborted_msg})
             return
 
         try:
             func()
         except result.TestErrorFatal:
             pass
-        except result.TestAbort:
-            self._aborted = True                  
+        except result.TestAbort, ex:
+            self._set_aborted(ex)
         except (Exception), (error):
             self.inspect_traceback(error)
 
@@ -221,15 +228,15 @@ class Valid(object):
     def run_abort(self, func):
         
         if self._aborted:
-            self._result.aborted({})
+            self._result.aborted({"msg":self._aborted_msg})
             return
 
         try:
             func()
         except result.TestErrorFatal:
             self._aborted = True
-        except result.TestAbort:
-            self._aborted = True                  
+        except result.TestAbort, ex:
+            self._set_aborted(ex)  
         except (Exception), (error):
             self.inspect_traceback(error)
             self._aborted = True
@@ -237,16 +244,21 @@ class Valid(object):
 
     def run_case(self, case):
         
-        if self._aborted or self._abort_fatal:
-            self._result.aborted({})
+        if self._aborted:
+            self._result.aborted({"msg":self._aborted_msg})
             return
+        
+        if self._abort_fatal:
+            self._result.aborted({})
+            return        
+        
         try:
             case()
         except result.TestErrorFatal:
             if self._abort_fatal_mode:
                 self._abort_fatal = True          
-        except result.TestAbort:
-            self._aborted = True        
+        except result.TestAbort, ex:
+            self._set_aborted(ex)
         except (Exception), (error):
             self.inspect_traceback(error)
  

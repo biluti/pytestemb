@@ -156,7 +156,11 @@ class Result(object):
         des["stack"] = stack
         des.update(info)
         self.abort(des)
-        raise TestAbort
+        try:
+            msg = des["msg"]
+        except KeyError:
+            msg = ""
+        raise TestAbort(msg)
         
 
     def success(self, des):
@@ -819,7 +823,11 @@ class ResultStandalone(Result):
     @trace
     def aborted(self, des):
         self.report_aborted()
-        self.write_stdout("  Aborted\n")
+        if des.has_key("msg"):   
+            msg = des["msg"]
+        else:
+            msg = ""  
+        self.write_stdout("  Aborted : '%s'\n" % msg)
         
 
     @trace

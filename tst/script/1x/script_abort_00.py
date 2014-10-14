@@ -26,7 +26,7 @@ def cleanup():
 
 
 def func():
-    test.abort("abort")
+    test.abort()
 
 
 def case_01():

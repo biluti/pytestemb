@@ -9,10 +9,14 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "2.1.0"
+VERSION_STRING = "2.2.0"
 
 
 #    Historic :
+#
+#    * 2.2.0
+#        - improve abortion info reporting : msg and case
+#
 #    * 2.1.0
 #        - pytestemb lib mode enable in arg '--pytestemb_lib_mode'
 #
