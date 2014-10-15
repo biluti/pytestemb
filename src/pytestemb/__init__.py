@@ -9,10 +9,13 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "2.2.0"
+VERSION_STRING = "2.2.1"
 
 
 #    Historic :
+#
+#    * 2.2.1
+#        - improve abortion during 'setup'
 #
 #    * 2.2.0
 #        - improve abortion info reporting : msg and case

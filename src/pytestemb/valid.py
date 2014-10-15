@@ -233,13 +233,17 @@ class Valid(object):
 
         try:
             func()
-        except result.TestErrorFatal:
-            self._aborted = True
+        except result.TestErrorFatal, ex:
+            self._set_aborted(ex)
+            self._result.abort_in_setup("Fatal")
         except result.TestAbort, ex:
-            self._set_aborted(ex)  
+            self._set_aborted(ex)
+            #self._result.abort_in_setup()
         except (Exception), (error):
             self.inspect_traceback(error)
-            self._aborted = True
+            self._set_aborted(error) 
+            self._result.abort_in_setup("Exception")
+            
 
 
     def run_case(self, case):

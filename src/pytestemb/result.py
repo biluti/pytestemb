@@ -132,10 +132,7 @@ class Result(object):
             pass 
             
         stack.reverse()
-
         return dic, stack
-
-
 
 
 
@@ -149,7 +146,12 @@ class Result(object):
             des.update(info)
             self.assert_ko(des)
             if fatal :
-                raise TestErrorFatal
+                try:
+                    msg = des["msg"]
+                except KeyError:
+                    msg = ""
+                raise TestErrorFatal(msg)
+
 
     def abort_test(self, des):
         info, stack = self.get_assert_caller(3)
@@ -161,8 +163,8 @@ class Result(object):
         except KeyError:
             msg = ""
         raise TestAbort(msg)
-        
-
+    
+    
     def success(self, des):
         self.assert_ok(des)
     
@@ -266,6 +268,9 @@ class Result(object):
 
     def aborted(self, des):
         pass
+
+    def abort_in_setup(self, name):
+        pass    
     
     def tag_value(self, des):
         pass    
@@ -280,8 +285,6 @@ class Result(object):
 
 
     def is_assert(self):
-        
-        
         try:
             return (self.result[-1][self.ASSERT_KO] > 0)
         except IndexError:
@@ -624,7 +627,11 @@ class ResultStdout(Result):
     def aborted(self, des):
         self.write(ResultStdout.ABORTED, des)
         self.report_aborted()    
-    
+
+
+    def abort_in_setup(self, name):
+        self.write(ResultStdout.ABORT, {"msg": "'%s' during Setup" % name})    
+        
     @trace
     def tag_value(self, des):
         self.write(ResultStdout.TAGVALUE, "%s=%s" % (des.keys()[0], des.values()[0]))
@@ -792,7 +799,11 @@ class ResultStandalone(Result):
     
         self.write_stdout(dis)
         
-        
+
+
+    def abort_in_setup(self, name):
+        self.write_stdout("Abort : '%s' during Setup\n" % name)
+                
 
     @stamp
     @trace        
