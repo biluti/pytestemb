@@ -16,6 +16,7 @@ import time
 import codecs
 import hashlib
 import platform
+import datetime
 
 
 import logging.handlers
@@ -370,6 +371,10 @@ class TraceStdout(Trace):
 
 class TraceTxt(Trace):
     
+    SIZE_ATIME = 28
+    SIZE_MTIME = 12
+    SIZE_SCOPE = 24
+    
     SCOPE_MAPPING = {"assert_ko":"result",
                          "assert_ok":"result",
                          "py_exception":"exception",
@@ -423,26 +428,30 @@ class TraceTxt(Trace):
         return "%s_%s.pyt" % (name_script, name_hash)
 
     @staticmethod
-    def format(mtime, scope, msg):
-        mtime = mtime.ljust(16)
-        scope = scope.ljust(24)
-        return "%s%s%s\n"  % (mtime, scope, msg)
+    def format(atime, mtime, scope, msg):
+        atime = atime.ljust(TraceTxt.SIZE_ATIME)
+        mtime = mtime.ljust(TraceTxt.SIZE_MTIME)
+        scope = scope.ljust(TraceTxt.SIZE_SCOPE)
+        return "%s%s%s%s\n"  % (atime, mtime, scope, msg)
 
+    
+    
     def add_header(self):
         dis = ""
         dis += "Script file    : %s\n" % sys.argv[0]
         dis += "Date           : %s\n" % time.strftime("%d/%m/%Y %H:%M:%S", self.gtime.start_date)
-        dis += "\n%s\n" % self.format("Time(s)", "Scope", "Info")
+        dis += "\n%s\n" % self.format("System time", "Timestamp", "Scope", "Info")
         self.file.write(dis)
 
     
     def add_line(self, scope, msg):
-        
+        atime =  datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S.%f")
+        atime = atime.ljust(TraceTxt.SIZE_ATIME)
         mtime = "%.6f" % self.gtime.get_time()
-        mtime = mtime.ljust(16)
-        scope = scope.ljust(24)
+        mtime = mtime.ljust(TraceTxt.SIZE_MTIME)
+        scope = scope.ljust(TraceTxt.SIZE_SCOPE)
         for i in msg: 
-            self.file.write(u"%s%s%s\n" % (mtime, scope, i))
+            self.file.write(u"%s%s%s%s\n" % (atime, mtime, scope, i))
 
 
     def _trace_multiline(self, scope, msg):
