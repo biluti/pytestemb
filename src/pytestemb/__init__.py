@@ -9,10 +9,13 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "2.2.1"
+VERSION_STRING = "2.2.2"
 
 
 #    Historic :
+#
+#    * 2.2.2
+#        - add system time in txt trace
 #
 #    * 2.2.1
 #        - improve abortion during 'setup'
