@@ -34,7 +34,7 @@ def multi_100():
 
 def multi_utf8():     
        
-    msg = u"\n".join(vector)
+    msg = u"\n".join(u"%s" % vector)
     test.trace_script(msg)
     test.trace_io("io", msg)
     test.trace_env("env", msg)
