@@ -46,6 +46,9 @@ class Trace(object):
 
     def start(self):
         pass
+    
+    def stop(self):
+        pass
 
     def trace_script(self, msg):
         pass
@@ -196,6 +199,10 @@ class TraceManager(Trace):
     def start(self):
         for i in self.lm:
             i.start()            
+    
+    def stop(self):
+        for i in self.lm:
+            i.stop()    
 
     def trace_script(self, msg):
         for i in self.lm:
@@ -253,14 +260,23 @@ class TraceOctopylog(Trace):
         else:
             self.started = True
             
-        sockethandler = logging.handlers.SocketHandler("localhost", logging.handlers.DEFAULT_TCP_LOGGING_PORT)
-        rootlogger = logging.getLogger("pytestemb")
-        rootlogger.setLevel(logging.INFO)
-        rootlogger.addHandler(sockethandler)
+        self.sockethandler = logging.handlers.SocketHandler("localhost", logging.handlers.DEFAULT_TCP_LOGGING_PORT)
+        self.rootlogger = logging.getLogger("pytestemb")
+        self.rootlogger.setLevel(logging.INFO)
+        self.rootlogger.addHandler(self.sockethandler)
 
         des = dict({"type":"octopylog"})
         self.result.trace_ctrl(des)
         self.trace_header()
+    
+    
+    def stop(self):
+        if self.started:
+            self.rootlogger.removeHandler(self.rootlogger)
+            self.sockethandler.close()
+            self.started = False        
+        else:
+            return
     
     
     def trace_header(self):
@@ -340,6 +356,12 @@ class TraceStdout(Trace):
             self.started = True        
         des = dict({"type":"stdout"})
         self.result.trace_ctrl(des)
+        
+    def stop(self):
+        if self.started:
+            self.started = False        
+        else:
+            return
 
 
     @staticmethod
@@ -420,6 +442,14 @@ class TraceTxt(Trace):
             des["error"] = error.__str__()
         self.result.trace_ctrl(des)
         self.add_header()
+
+
+    def stop(self):
+        if self.started:
+            self.file.close()
+            self.started = False        
+        else:
+            return
 
     @staticmethod
     def gen_file_name():

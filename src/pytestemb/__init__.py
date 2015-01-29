@@ -9,10 +9,13 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "2.2.2"
+VERSION_STRING = "2.3.0"
 
 
 #    Historic :
+#
+#    * 2.3.0
+#        - close trace ressources at end of script execution
 #
 #    * 2.2.2
 #        - add system time in txt trace
@@ -318,6 +321,7 @@ def run():
         pass
     else :
         valid.Valid.get().run_script()
+        trace.TraceManager.get().stop()
 
 
 
