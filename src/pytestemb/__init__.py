@@ -9,10 +9,17 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "2.3.0"
+VERSION_STRING = "3.0.0-beta1"
 
 
 #    Historic :
+#
+#    * 3.0.0
+#       - add logstash json trace
+#       - remove doc option 
+#
+#
+#
 #
 #    * 2.3.0
 #        - close trace ressources at end of script execution
@@ -113,7 +120,7 @@ INTERFACE_LIST = 1
 INTERFACE["result"] = (("standalone"),
                        ("none", "standalone", "stdout"))
 INTERFACE["trace"] =  ([],
-                       ("none", "octopylog", "txt"))
+                       ("none", "octopylog", "txt", "logstash"))
 
 
 
@@ -144,9 +151,6 @@ def parse():
     parser.add_option("-m", "--mode",
                         action="store", type="string", dest="mode", default=None,
                         help="add mode general purpose string (debug, ...)")
-    parser.add_option("-d", "--doc",
-                        action="store_true", dest="doc", default=False,
-                        help="add path to Python path")
     parser.add_option("-v", "--version",
                         action="store_true", dest="ver", default=False,
                         help="version of software")    
@@ -176,15 +180,10 @@ else:
         sys.stdout.write("Copyright : %s\n" % __license__)
         sys.stdout.write("Contact   : %s\n" % __email__)
         sys.exit(0)
-    if OPTIONS.doc :
-        trace.TraceManager.create([])
-        result.Result.create(OPTIONS.result, trace.TraceManager.get())
-        pydoc.Pydoc.create(result.Result.get())
-        valid.Valid.create(result.Result.get())
-    else :
-        trace.TraceManager.create(OPTIONS.trace)
-        result.Result.create(OPTIONS.result, trace.TraceManager.get())
-        valid.Valid.create(result.Result.get())
+
+    trace.TraceManager.create(OPTIONS.trace)
+    result.Result.create(OPTIONS.result, trace.TraceManager.get())
+    valid.Valid.create(result.Result.get())
     
     trace.TraceManager.get().set_result(result.Result.get())
     trace.TraceManager.get().start()
@@ -206,12 +205,6 @@ def add_trace(interfaces):
     trace.TraceManager.get().start()
 
 
-def set_doc(doc):
-    """ set script doc for doc generation """
-    if OPTIONS.doc :
-        pydoc.Pydoc.get().set_doc(doc)
-
-
 def set_setup(func_setup):
     """
     @function           : set_setup(func_setup)
@@ -219,10 +212,8 @@ def set_setup(func_setup):
     @return             : None
     @summary            : add a setup function to the script
     """
-    if OPTIONS.doc :
-        pydoc.Pydoc.get().set_setup(func_setup)
-    else :
-        valid.Valid.get().set_setup(func_setup)
+
+    valid.Valid.get().set_setup(func_setup)
 
 def set_cleanup(func_cleanup):
     """
@@ -231,10 +222,8 @@ def set_cleanup(func_cleanup):
     @return             : None
     @summary            : add a cleanup function to the script
     """
-    if OPTIONS.doc :
-        pydoc.Pydoc.get().set_cleanup(func_cleanup)
-    else :
-        valid.Valid.get().set_cleanup(func_cleanup)
+
+    valid.Valid.get().set_cleanup(func_cleanup)
 
 
 
@@ -246,10 +235,8 @@ def set_create(func_create):
     @return             : None
     @summary            : add a create function to the script
     """
-    if OPTIONS.doc :
-        pass
-    else :
-        valid.Valid.get().set_create(func_create)
+
+    valid.Valid.get().set_create(func_create)
         
 
 def set_destroy(func_destroy):
@@ -259,10 +246,8 @@ def set_destroy(func_destroy):
     @return             : None
     @summary            : add a destroy function to the script
     """
-    if OPTIONS.doc :
-        pass
-    else :
-        valid.Valid.get().set_destroy(func_destroy)
+
+    valid.Valid.get().set_destroy(func_destroy)
 
 
 
@@ -273,10 +258,7 @@ def set_tracecase(func_tracecase):
     @return             : None
     @summary            : add a tracecase name function to the script
     """
-    if OPTIONS.doc :
-        pass
-    else :
-        valid.Valid.get().set_tracecase(func_tracecase)
+    valid.Valid.get().set_tracecase(func_tracecase)
 
 
 
@@ -287,10 +269,7 @@ def set_fatal_mode(stop_case_run=False):
     @return             : None
     @summary            : set mode for behavior when fatal : True abort all cases 
     """
-    if OPTIONS.doc :
-        pass
-    else :
-        valid.Valid.get().set_fatal_mode(stop_case_run)
+    valid.Valid.get().set_fatal_mode(stop_case_run)
         
         
 
@@ -302,10 +281,7 @@ def add_test_case(func_case):
     @return         : None
     @summary        : add a test case to the script
     """
-    if OPTIONS.doc :
-        pydoc.Pydoc.get().add_test_case(func_case)
-    else :
-        valid.Valid.get().add_test_case(func_case)
+    valid.Valid.get().add_test_case(func_case)
 
 
 def run():
@@ -317,11 +293,8 @@ def run():
     """
     
     valid.Valid.get().scan()
-    if OPTIONS.doc :
-        pass
-    else :
-        valid.Valid.get().run_script()
-        trace.TraceManager.get().stop()
+    valid.Valid.get().run_script()
+    trace.TraceManager.get().stop()
 
 
 
@@ -354,10 +327,8 @@ def get_trace_filename():
 
 
 def get_case_name():
-    if OPTIONS.doc :
-        pass
-    else :
-        return valid.Valid.get().get_case_name()
+
+    return valid.Valid.get().get_case_name()
 
 
 def get_uedi():
