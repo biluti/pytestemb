@@ -13,6 +13,8 @@ __email__       = "jm.beguinet@gmail.com"
 import os
 import sys
 import time
+import json
+import socket
 import codecs
 import hashlib
 import platform
@@ -39,10 +41,6 @@ class Trace(object):
     def set_result(self, result):
         self.result = result
         
-        
-    def get_ueid(self):
-        pass
-
 
     def start(self):
         pass
@@ -61,7 +59,6 @@ class Trace(object):
     
     def trace_warning(self, msg):
         pass
-
 
     def trace_env(self, scope, data):
         pass
@@ -146,6 +143,7 @@ class TraceManager(Trace):
     TRACE_OCTOPYLOG = "octopylog"
     TRACE_STDOUT    = "stdout"
     TRACE_TXT       = "txt"
+    TRACE_LOGSTASH  = "logstash"
     TRACE_NONE      = "none"
     
                    
@@ -240,10 +238,12 @@ class TraceManager(Trace):
                 self.add_trace(self.TRACE_STDOUT,    TraceStdout())
             elif interface == self.TRACE_TXT:
                 self.add_trace(self.TRACE_TXT,       TraceTxt())
+            elif interface == self.TRACE_LOGSTASH:
+                self.add_trace(self.TRACE_LOGSTASH,  TraceLogstash())                
             elif interface == self.TRACE_NONE:
                 pass
             else:
-                raise Exception("Invalid interfaces")
+                raise ValueError("Invalid interfaces")
 
 
 
@@ -391,6 +391,11 @@ class TraceStdout(Trace):
         
 
 
+
+
+
+
+
 class TraceTxt(Trace):
     
     SIZE_ATIME = 28
@@ -440,6 +445,7 @@ class TraceTxt(Trace):
         except (IOError) , (error):
             self.file = None
             des["error"] = error.__str__()
+            raise
         self.result.trace_ctrl(des)
         self.add_header()
 
@@ -510,10 +516,6 @@ class TraceTxt(Trace):
     def trace_script(self, msg):
         self._trace_multiline("script", msg)
                
-
-        
-        
-
     def trace_io(self, interface, data):
         self._trace_multiline(interface, data)
 
@@ -543,3 +545,123 @@ class TraceTxt(Trace):
 
 
 
+
+
+class TraceLogstash(Trace):
+    
+
+    DEFAULT_DIR = "/tmp/logstash"
+
+    SCOPE_MAPPING = {   "assert_ko":    "result",
+                        "assert_ok":    "result",
+                        "py_exception": "exception",}    
+
+    def __init__(self):
+        Trace.__init__(self)
+        self.file = None
+        self.hostname = socket.gethostname()
+
+    def start(self):
+        if self.started:
+            return
+        else:
+            self.started = True        
+
+        if not(os.path.lexists(TraceLogstash.DEFAULT_DIR)):
+            os.mkdir(TraceLogstash.DEFAULT_DIR)
+
+        pathfile =  os.path.join(TraceLogstash.DEFAULT_DIR, self.gen_file_name())
+        des = dict({"type":"json", "file":pathfile})
+        try :
+            self.file = codecs.open(pathfile, encoding="utf-8", mode="w", buffering=-1)
+        except (IOError), (error):
+            self.file = None
+            des["error"] = error.__str__()
+            raise
+        self.result.trace_ctrl(des)
+
+    @staticmethod
+    def gen_file_name():
+        name_script = utils.get_script_name()
+        name_hash = TraceManager.get().get_ueid()
+        return "%s_%s.json" % (name_script, name_hash)
+    
+        
+    def stop(self):
+        if self.started:
+            self.file.close()
+            self.started = False        
+        else:
+            return
+
+    def _trace_multiline(self, scope, msg):
+        ALIGN = 13
+        
+        msg = msg.strip("\n\r")
+        msg = msg.splitlines()
+        if len(msg) == 1 :
+            self.add_evts(scope, msg)
+        else :
+            data = []
+            data.append("# Start multiline trace #")
+            #data.append("")
+            data.append("%s| Message" % "Line number ".ljust(ALIGN-1))
+            for index, line in enumerate(msg):
+                ln = "%d" % index
+                ln = ln.ljust(ALIGN)
+                data.append("%s%s" % (ln, line))
+            #data.append("")
+            data.append("# Stop multiline trace #")      
+            
+            self.add_evts(scope, data)    
+
+
+
+    def add_evts(self, scope, msg):
+        for m in msg:
+            data = {}             
+            # Jenkins env var
+            data["jenkins_build_name"]    = os.getenv('BUILD_TAG', None)
+            data["jenkins_node_name"]     = os.getenv('NODE_NAME', None)
+            data["jenkins_build_url"]     = os.getenv('BUILD_URL', None)
+            data["jenkins_job_name"]      = os.getenv('JOB_NAME', None)            
+            # custom env var
+            data["package_version"]       = os.getenv('PACKAGE_VERSION', None)
+            data["host"]     = self.hostname
+            data["source"]   = "pytestemb"
+            data["type"]     = "pytestemb_log"
+            data["scope"]    = scope
+            data["script"]   = utils.get_script_name()
+            data["msg"]      = m
+            sjson = json.dumps(data)
+            self.file.write(sjson + "\n")
+
+    
+    def trace_script(self, msg):
+        self._trace_multiline("script", msg)
+
+    def trace_io(self, interface, data):
+        self._trace_multiline(interface, data)
+
+    def trace_result(self, name, des):
+        try:
+            scope = self.SCOPE_MAPPING[name]
+        except KeyError:
+            scope = "sequence"
+
+        ll = self.format_result(name, des)
+        self.add_evts(scope, ll)
+                      
+                      
+    def trace_report(self, msg):
+        pass
+
+    def trace_warning(self, des):
+        self.add_evts("Warning", [des["msg"]])
+        
+    def trace_env(self, scope, data):
+        self._trace_multiline(scope, data)
+
+    def trace_layer(self, scope, data):
+        self._trace_multiline(scope, data)
+    
