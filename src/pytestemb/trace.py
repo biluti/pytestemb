@@ -4,6 +4,7 @@
 PyTestEmb Project : trace manages trace coming from module and script execution
 """
 
+
 __author__      = "$Author: jmbeguinet $"
 __copyright__   = "Copyright 2009, The PyTestEmb Project"
 __license__     = "GPL"
@@ -559,9 +560,12 @@ class TraceLogstash(Trace):
     def __init__(self):
         Trace.__init__(self)
         self.file = None
-        self.hostname = socket.gethostname()
+        self._base_data = None
+        
 
     def start(self):
+        
+        self.create_base_data()
         if self.started:
             return
         else:
@@ -604,34 +608,36 @@ class TraceLogstash(Trace):
         else :
             data = []
             data.append("# Start multiline trace #")
-            #data.append("")
             data.append("%s| Message" % "Line number ".ljust(ALIGN-1))
             for index, line in enumerate(msg):
                 ln = "%d" % index
                 ln = ln.ljust(ALIGN)
                 data.append("%s%s" % (ln, line))
-            #data.append("")
             data.append("# Stop multiline trace #")      
             
             self.add_evts(scope, data)    
 
 
+    def create_base_data(self):
+        data = {}
+        data["jenkins_build_name"]    = os.getenv('BUILD_TAG', None)
+        data["jenkins_node_name"]     = os.getenv('NODE_NAME', None)
+        data["jenkins_build_url"]     = os.getenv('BUILD_URL', None)
+        data["jenkins_job_name"]      = os.getenv('JOB_NAME', None)      
+        data["package_version"]       = os.getenv('PACKAGE_VERSION', None)  
+        data["host"]                  = socket.gethostname()
+        data["script"]                = utils.get_script_name()
+        data["source"]                = "pytestemb"
+        self._base_data = data
+
+    def get_base_data(self):
+        return dict(self._base_data)
 
     def add_evts(self, scope, msg):
         for m in msg:
-            data = {}             
-            # Jenkins env var
-            data["jenkins_build_name"]    = os.getenv('BUILD_TAG', None)
-            data["jenkins_node_name"]     = os.getenv('NODE_NAME', None)
-            data["jenkins_build_url"]     = os.getenv('BUILD_URL', None)
-            data["jenkins_job_name"]      = os.getenv('JOB_NAME', None)            
-            # custom env var
-            data["package_version"]       = os.getenv('PACKAGE_VERSION', None)
-            data["host"]     = self.hostname
-            data["source"]   = "pytestemb"
+            data = self.get_base_data()
             data["type"]     = "pytestemb_log"
             data["scope"]    = scope
-            data["script"]   = utils.get_script_name()
             data["msg"]      = m
             sjson = json.dumps(data)
             self.file.write(sjson + "\n")
@@ -654,7 +660,30 @@ class TraceLogstash(Trace):
                       
                       
     def trace_report(self, msg):
-        pass
+        
+        if msg.startswith("| Case"):
+            case = msg.split("|")[1].strip(" ").replace("Case ", "").strip("'")
+            result = msg.split("|")[2].strip(" ")
+            result = result.replace("?", "na").lower()
+            
+            data = self.get_base_data()
+            data["type"]     = "pytestemb_result"
+            data["case"]     = case
+            data["result"]   = result
+        
+        elif msg.startswith("| Script time execution"):
+            timex = float(msg.split("|")[2].strip(" ").replace("(sec)", "").strip("'"))
+
+            data = self.get_base_data()
+            data["type"]     = "pytestemb_statistic"
+            data["timex"]   = timex
+   
+        else:
+            return
+        
+        sjson = json.dumps(data)
+        self.file.write(sjson + "\n")                 
+
 
     def trace_warning(self, des):
         self.add_evts("Warning", [des["msg"]])
