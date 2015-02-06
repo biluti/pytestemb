@@ -1,0 +1,37 @@
+input 
+{   
+    file 
+    {
+		type => "pytestemb"
+        path => "/tmp/logstash/*.json"
+        start_position => "beginning"
+        sincedb_path => "/dev/null"  
+        codec => "json"
+    }
+}
+ filter
+ {
+	json
+	{
+		type => "pytestemb"
+     	source => "message"
+     	target => "doc"
+     }
+}
+
+output 
+{ 
+    elasticsearch
+    { 
+    	host => localhost 
+    	protocol => "http" 
+    	port => "9200" 
+    	cluster => "elasticsearch-pytestemb" 
+    }
+    stdout 
+    { 
+    	codec => rubydebug 
+    }
+}
+
+
