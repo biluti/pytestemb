@@ -624,7 +624,7 @@ class TraceLogstash(Trace):
         data["jenkins_node_name"]     = os.getenv('NODE_NAME', None)
         data["jenkins_build_url"]     = os.getenv('BUILD_URL', None)
         data["jenkins_job_name"]      = os.getenv('JOB_NAME', None)      
-        data["jenkins_job_name"]      = os.getenv('BUILD_NUMBER', None)
+        data["jenkins_build_number"]  = os.getenv('BUILD_NUMBER', None)
         data["package_version"]       = os.getenv('PACKAGE_VERSION', None)  
         data["host"]                  = socket.gethostname()
         data["script"]                = utils.get_script_name()
