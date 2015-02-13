@@ -9,17 +9,17 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "3.0.0-beta1"
+VERSION_STRING = "3.0.1"
 
 
 #    Historic :
 #
+#    * 3.0.1
+#       - logstash add jenkins BUILD_NUMBER 
+#
 #    * 3.0.0
 #       - add logstash json trace
 #       - remove doc option 
-#
-#
-#
 #
 #    * 2.3.0
 #        - close trace ressources at end of script execution
