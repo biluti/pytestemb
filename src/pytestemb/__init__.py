@@ -9,10 +9,13 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "3.0.2"
+VERSION_STRING = "3.0.3"
 
 
 #    Historic :
+#    * 3.0.3
+#       - improve multiline for txt and logstash trace (remove useless information)
+#
 #    * 3.0.2
 #       - logstash fix regression on jenkins_job_name 
 #

@@ -305,15 +305,12 @@ class TraceOctopylog(Trace):
         if len(msg) == 1 :
             self.trace_scope(scope, msg[0])
         else :
-            self.trace_scope(scope, "# Start multiline trace #")
-            self.trace_scope(scope, "")
-            self.trace_scope(scope, "%s| Message" % "Line number ".ljust(ALIGN-1))
+            self.trace_scope(scope, "Start multiline :")
             for index, line in enumerate(msg):
                 ln = "%d" % index
                 ln = ln.ljust(ALIGN)
                 self.trace_scope(scope, "%s%s" % (ln, line))
-            self.trace_scope(scope, "")
-            self.trace_scope(scope, "# Stop multiline trace #")         
+
         
         
 
@@ -500,16 +497,11 @@ class TraceTxt(Trace):
             self.add_line(scope, msg)
         else :
             data = []
-            data.append("# Start multiline trace #")
-            
-            data.append("")
-            data.append("%s| Message" % "Line number ".ljust(ALIGN-1))
+            data.append("Start multiline :")
             for index, line in enumerate(msg):
                 ln = "%d" % index
                 ln = ln.ljust(ALIGN)
-                data.append("%s%s" % (ln, line))
-            data.append("")
-            data.append("# Stop multiline trace #")      
+                data.append("%s%s" % (ln, line))  
             
             self.add_line(scope, data)    
         
@@ -607,14 +599,10 @@ class TraceLogstash(Trace):
             self.add_evts(scope, msg)
         else :
             data = []
-            data.append("# Start multiline trace #")
-            data.append("%s| Message" % "Line number ".ljust(ALIGN-1))
             for index, line in enumerate(msg):
                 ln = "%d" % index
                 ln = ln.ljust(ALIGN)
                 data.append("%s%s" % (ln, line))
-            data.append("# Stop multiline trace #")      
-            
             self.add_evts(scope, data)    
 
 
