@@ -230,6 +230,11 @@ class TraceManager(Trace):
     def trace_report(self, msg):
         for i in self.lm:
             i.trace_report(msg)     
+            
+    def trace_json(self, obj):
+        for i in self.lm:
+            i.trace_json(obj)
+        
 
     def add_traces(self, interfaces):
         for interface in interfaces:
@@ -340,6 +345,11 @@ class TraceOctopylog(Trace):
 
     def trace_report(self, msg):
         self.trace_scope("report", msg.replace("\n", ""))
+
+    def trace_json(self, obj):
+        sjson = json.dumps(obj)
+        self.trace_scope("json", sjson)        
+        
         
 
 class TraceStdout(Trace):
@@ -387,7 +397,9 @@ class TraceStdout(Trace):
     def trace_report(self, msg):
         self._write(msg)
         
-
+    def trace_json(self, obj):
+        sjson = json.dumps(obj)
+        self._write(sjson)      
 
 
 
@@ -533,6 +545,11 @@ class TraceTxt(Trace):
 
     def trace_layer(self, scope, data):
         self._trace_multiline(scope, data)
+        
+    def trace_json(self, obj):
+        sjson = json.dumps(obj)
+        self.add_line("json", sjson)
+         
 
 
 
@@ -541,13 +558,18 @@ class TraceTxt(Trace):
 
 
 class TraceLogstash(Trace):
-    
+
 
     DEFAULT_DIR = "/tmp/logstash"
 
     SCOPE_MAPPING = {   "assert_ko":    "result",
                         "assert_ok":    "result",
-                        "py_exception": "exception",}    
+                        "py_exception": "exception",}
+    
+    TYPE_LOG = "pytestemb_log"
+    TYPE_RES = "pytestemb_result"
+    TYPE_CUS = "pytestemb_cus"
+    TYPE_STA = "pytestemb_statistic"
 
     def __init__(self):
         Trace.__init__(self)
@@ -625,7 +647,7 @@ class TraceLogstash(Trace):
     def add_evts(self, scope, msg):
         for m in msg:
             data = self.get_base_data()
-            data["type"]     = "pytestemb_log"
+            data["type"]     = self.TYPE_LOG
             data["scope"]    = scope
             data["msg"]      = m
             sjson = json.dumps(data)
@@ -656,7 +678,7 @@ class TraceLogstash(Trace):
             result = result.replace("?", "na").lower()
             
             data = self.get_base_data()
-            data["type"]     = "pytestemb_result"
+            data["type"]     = self.TYPE_RES
             data["case"]     = case
             data["result"]   = result
         
@@ -664,7 +686,7 @@ class TraceLogstash(Trace):
             timex = float(msg.split("|")[2].strip(" ").replace("(sec)", "").strip("'"))
 
             data = self.get_base_data()
-            data["type"]     = "pytestemb_statistic"
+            data["type"]    = self.TYPE_STA
             data["timex"]   = timex
    
         else:
@@ -683,3 +705,13 @@ class TraceLogstash(Trace):
     def trace_layer(self, scope, data):
         self._trace_multiline(scope, data)
     
+    def trace_json(self, obj):
+        
+        data = self.get_base_data()
+        data["type"] = self.TYPE_CUS
+        
+        data.update(obj)
+        
+        sjson = json.dumps(data)
+        self.file.write(sjson + "\n")     
+        
