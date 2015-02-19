@@ -232,6 +232,14 @@ class TraceManager(Trace):
             i.trace_report(msg)     
             
     def trace_json(self, obj):
+        
+        if not isinstance(obj, dict):
+            raise TypeError("Obj must be a Python dict, get type : %s" % obj.__class__.__name__)
+            
+        for k in obj.iterkeys():
+            if not isinstance(k, basestring):
+                raise TypeError("Obj key:'%s' must be a string, get type: %s" %  (k, obj.__class__.__name__))
+        
         for i in self.lm:
             i.trace_json(obj)
         
@@ -632,8 +640,13 @@ class TraceLogstash(Trace):
         data = {}
         data["jenkins_build_name"]    = os.getenv('BUILD_TAG', None)
         data["jenkins_node_name"]     = os.getenv('NODE_NAME', None)
-        data["jenkins_build_url"]     = os.getenv('BUILD_URL', None)
-        data["jenkins_job_name"]      = os.getenv('JOB_NAME', None)      
+        #data["jenkins_build_url"]     = os.getenv('BUILD_URL', None)
+        job_name = os.getenv('JOB_NAME', None)    
+        if job_name is None:
+            data["jenkins_job_name"] = None
+        else:
+            data["jenkins_job_name"] = job_name.replace("jenkins-", "") # remove useless prefix     
+        
         data["jenkins_build_number"]  = os.getenv('BUILD_NUMBER', None)
         data["package_version"]       = os.getenv('PACKAGE_VERSION', None)  
         data["host"]                  = socket.gethostname()
@@ -709,6 +722,8 @@ class TraceLogstash(Trace):
         
         data = self.get_base_data()
         data["type"] = self.TYPE_CUS
+        
+        # check if we overwrite some key:
         
         data.update(obj)
         

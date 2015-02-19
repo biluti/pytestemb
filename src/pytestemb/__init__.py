@@ -16,6 +16,7 @@ VERSION_STRING = "3.1.0"
 
 #    * 3.1.0
 #       - add trace_json for logstash 
+#       - remove jenkins BUILD_URL and add remove prefix for NODE_NAME
 #
 #    * 3.0.3
 #       - improve multiline for txt and logstash trace (remove useless information)
@@ -553,12 +554,7 @@ def trace_layer(scope, data):
     trace.TraceManager.get().trace_layer(utils.to_unicode(scope), utils.to_unicode(data))
     
 
-def trace_json(obj):
-    
-    for k in obj.iterkeys():
-        if not isinstance(k, basestring):
-            raise TypeError("Key String requiried : %s" % k)
-            
+def trace_json(obj):            
     trace.TraceManager.get().trace_json(obj)
 
 

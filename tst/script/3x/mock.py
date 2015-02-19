@@ -14,7 +14,7 @@ def mock_jenkins():
     os.environ["BUILD_TAG"]         = "NA"
     os.environ["NODE_NAME"]         = "nodetest"
     os.environ["BUILD_URL"]         = "NA"
-    os.environ["JOB_NAME"]          = "NA"
+    os.environ["JOB_NAME"]          = "jenkins-testjob"
     os.environ["PACKAGE_VERSION"]   = test.VERSION_STRING
     
 
