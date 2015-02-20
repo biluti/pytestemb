@@ -9,11 +9,15 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "3.1.0"
+VERSION_STRING = "3.1.1"
 
 
 #    Historic :
-
+#
+#    * 3.1.1
+#       - improve logstash confirguration
+#       - factorization jenkins OS var & verification to avoid conflict with user json
+#
 #    * 3.1.0
 #       - add trace_json for logstash 
 #       - remove jenkins BUILD_URL and add remove prefix for NODE_NAME
