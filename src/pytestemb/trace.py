@@ -729,10 +729,17 @@ class TraceLogstash(Trace):
         data = self.get_base_data()
         data["type"] = self.TYPE_CUS
         
-        # check if we overwrite some key:
-        
-        data.update(obj)
-        
+        inter = list(set(data).intersection(obj.keys()))
+        if len(inter) > 0:
+            raise ValueError("Key conflict, reserverd for pytestemb : %s" % inter)
+        else:    
+            data.update(obj)
         sjson = json.dumps(data)
         self.file.write(sjson + "\n")     
+        
+        
+        
+        
+        
+        
         

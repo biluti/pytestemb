@@ -37,7 +37,15 @@ class JsonError(test.Test):
                 test.success(ex)
                 
     def json_error_reservedkey(self):
-        pass
+        vector = [{"jenkins_build_number":"test"},
+                  {"script":"test"},
+                  ]
+        for obj in vector:   
+            try:     
+                test.trace_json(obj)
+            except ValueError, ex:
+                pass
+        test.success()
 
     def json_valid(self):
         vector = [{"key_a":"test"},
@@ -46,6 +54,7 @@ class JsonError(test.Test):
                   ]
         for obj in vector:        
             test.trace_json(obj)
+        test.success()
       
     
 
