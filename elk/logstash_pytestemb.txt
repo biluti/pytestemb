@@ -5,7 +5,9 @@ input
 		type => "pytestemb"
         path => "/tmp/logstash/*.json"
         start_position => "beginning"
-        sincedb_path => "/dev/null"  
+        sincedb_path => "/dev/null"
+        stat_interval => 1
+        sincedb_write_interval => 60
         codec => "json"
     }
 }
