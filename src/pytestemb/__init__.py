@@ -9,10 +9,14 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "3.1.1"
+VERSION_STRING = "3.1.2"
 
 
 #    Historic :
+
+#
+#    * 3.1.2
+#       - fix regression on jenkins_node_name and jenkins_build_name
 #
 #    * 3.1.1
 #       - improve logstash confirguration
