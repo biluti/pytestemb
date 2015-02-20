@@ -636,16 +636,21 @@ class TraceLogstash(Trace):
             self.add_evts(scope, data)    
 
 
+
     def create_base_data(self):
         data = {}
-        data["jenkins_build_name"]    = os.getenv('BUILD_TAG', None)
-        data["jenkins_node_name"]     = os.getenv('NODE_NAME', None)
-        #data["jenkins_build_url"]     = os.getenv('BUILD_URL', None)
-        job_name = os.getenv('JOB_NAME', None)    
-        if job_name is None:
-            data["jenkins_job_name"] = None
-        else:
-            data["jenkins_job_name"] = job_name.replace("jenkins-", "") # remove useless prefix     
+        
+        def remove_jenkins_prefix(value):
+            if value is None:
+                return None
+            else:
+                return value.replace("jenkins-", "")
+             
+        job_name = os.getenv('JOB_NAME', None)            
+        data["jenkins_job_name"] = remove_jenkins_prefix(job_name)     
+        
+        node_name = os.getenv('NODE_NAME', None)            
+        data["jenkins_node_name"] = remove_jenkins_prefix(node_name)           
         
         data["jenkins_build_number"]  = os.getenv('BUILD_NUMBER', None)
         data["package_version"]       = os.getenv('PACKAGE_VERSION', None)  
@@ -653,6 +658,7 @@ class TraceLogstash(Trace):
         data["script"]                = utils.get_script_name()
         data["source"]                = "pytestemb"
         self._base_data = data
+        
 
     def get_base_data(self):
         return dict(self._base_data)
