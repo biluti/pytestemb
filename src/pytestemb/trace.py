@@ -648,10 +648,10 @@ class TraceLogstash(Trace):
              
         job_name = os.getenv('JOB_NAME', None)            
         data["jenkins_job_name"] = remove_jenkins_prefix(job_name)     
-        
-        node_name = os.getenv('NODE_NAME', None)            
-        data["jenkins_node_name"] = remove_jenkins_prefix(node_name)           
-        
+        build_name = os.getenv('BUILD_TAG', None)            
+        data["jenkins_build_name"]    = remove_jenkins_prefix(build_name)
+                      
+        data["jenkins_node_name"]     = os.getenv('NODE_NAME', None)     
         data["jenkins_build_number"]  = os.getenv('BUILD_NUMBER', None)
         data["package_version"]       = os.getenv('PACKAGE_VERSION', None)  
         data["host"]                  = socket.gethostname()
