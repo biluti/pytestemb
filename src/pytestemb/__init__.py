@@ -9,11 +9,14 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "3.1.2"
+VERSION_STRING = "3.2.0"
 
 
 #    Historic :
 
+#
+#    * 3.2.0
+#       - logstash filter trace to limit flow : send only report, exception and json 
 #
 #    * 3.1.2
 #       - fix regression on jenkins_node_name and jenkins_build_name

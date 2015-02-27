@@ -579,6 +579,9 @@ class TraceLogstash(Trace):
     TYPE_CUS = "pytestemb_cus"
     TYPE_STA = "pytestemb_statistic"
 
+
+    SCOPE = ["result", "sequence"]
+
     def __init__(self):
         Trace.__init__(self)
         self.file = None
@@ -621,7 +624,6 @@ class TraceLogstash(Trace):
             return
 
     def _trace_multiline(self, scope, msg):
-        ALIGN = 13
         
         msg = msg.strip("\n\r")
         msg = msg.splitlines()
@@ -629,11 +631,12 @@ class TraceLogstash(Trace):
             self.add_evts(scope, msg)
         else :
             data = []
-            for index, line in enumerate(msg):
-                ln = "%d" % index
-                ln = ln.ljust(ALIGN)
-                data.append("%s%s" % (ln, line))
+            data.append("%s%s" % (0, msg[0]))
+            data.append("...")
+            data.append("%s%s" % (len(msg), msg[-1]))
             self.add_evts(scope, data)    
+            
+            
 
 
 
@@ -652,13 +655,16 @@ class TraceLogstash(Trace):
         data["jenkins_build_name"]    = remove_jenkins_prefix(build_name)
                       
         data["jenkins_node_name"]     = os.getenv('NODE_NAME', None)     
-        data["jenkins_build_number"]  = os.getenv('BUILD_NUMBER', None)
+        #data["jenkins_build_number"]  = os.getenv('BUILD_NUMBER', None)
         data["package_version"]       = os.getenv('PACKAGE_VERSION', None)  
         data["host"]                  = socket.gethostname()
         data["script"]                = utils.get_script_name()
         data["source"]                = "pytestemb"
         self._base_data = data
         
+    def is_scope(self, name):
+        return name in self.SCOPE
+
 
     def get_base_data(self):
         return dict(self._base_data)
@@ -674,20 +680,53 @@ class TraceLogstash(Trace):
 
     
     def trace_script(self, msg):
-        self._trace_multiline("script", msg)
+        #self._trace_multiline("script", msg)
+        pass
 
     def trace_io(self, interface, data):
-        self._trace_multiline(interface, data)
+        #self._trace_multiline(interface, data)
+        pass
 
     def trace_result(self, name, des):
+
         try:
             scope = self.SCOPE_MAPPING[name]
         except KeyError:
             scope = "sequence"
 
-        ll = self.format_result(name, des)
+        ll = self._format_result(name, des)
         self.add_evts(scope, ll)
-                      
+
+    @staticmethod
+    def _format_result(name, des):
+        line = []
+
+        if    name == "assert_ko":
+            pass
+        elif    name == "assert_ok":
+            pass
+        elif name == "abort":
+            
+            if des.has_key("msg"):
+                msg = des["msg"]
+            else:
+                msg = ""
+            line.append("%s : '%s'" % (name, msg))
+
+            for i in des["stack"]:
+                line.append("File '%s', line %d, in %s" % (i["path"], i["line"], i["function"]))
+                line.append("%s" % (i["code"]))    
+            line.append("File '%s', line %d, in %s" % (des["file"], des["line"], des["function"]))
+
+        elif  name == "py_exception":
+            line.append("%s : %s" % (des["exception_class"], des["exception_info"]))
+            for i in des["stack"]:
+                line.append("File '%s', line %d, in %s" % (i["path"], i["line"], i["function"]))
+                line.append(" %s" % (i["code"]))
+        else:
+            pass
+
+        return ["\n".join(line)]                   
                       
     def trace_report(self, msg):
         
@@ -719,10 +758,12 @@ class TraceLogstash(Trace):
         self.add_evts("Warning", [des["msg"]])
         
     def trace_env(self, scope, data):
-        self._trace_multiline(scope, data)
+        pass
+        #self._trace_multiline(scope, data)
 
     def trace_layer(self, scope, data):
-        self._trace_multiline(scope, data)
+        pass
+        #self._trace_multiline(scope, data)
     
     def trace_json(self, obj):
         
