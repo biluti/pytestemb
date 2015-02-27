@@ -15,6 +15,9 @@ VERSION_STRING = "3.2.0"
 #    Historic :
 
 #
+#    * 3.2.1
+#       - logstash filter fix issue on event with empty info
+#
 #    * 3.2.0
 #       - logstash filter trace to limit flow : send only report, exception and json 
 #

@@ -694,18 +694,11 @@ class TraceLogstash(Trace):
         except KeyError:
             scope = "sequence"
 
-        ll = self._format_result(name, des)
-        self.add_evts(scope, ll)
 
-    @staticmethod
-    def _format_result(name, des):
+
+        
         line = []
-
-        if    name == "assert_ko":
-            pass
-        elif    name == "assert_ok":
-            pass
-        elif name == "abort":
+        if   name == "abort":
             
             if des.has_key("msg"):
                 msg = des["msg"]
@@ -725,8 +718,15 @@ class TraceLogstash(Trace):
                 line.append(" %s" % (i["code"]))
         else:
             pass
+        
+        if len(line) == 0:
+            pass
+        else:
+            self.add_evts(scope, ["\n".join(line)])
+ 
 
-        return ["\n".join(line)]                   
+
+                  
                       
     def trace_report(self, msg):
         
