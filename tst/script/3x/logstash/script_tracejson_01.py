@@ -20,7 +20,7 @@ def test_json():
     r = r + r
 
     for i in r:
-        time.sleep(1)
+        time.sleep(0.001)
         v = random.randint(0, 10)
         if random.shuffle([True, False]):
             v = v * (-1)        
