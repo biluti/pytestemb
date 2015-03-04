@@ -15,6 +15,7 @@ __email__       = "jm.beguinet@gmail.com"
 import sys
 import types 
 import inspect
+import functools
 
 
 import pytestemb.utils as utils
@@ -44,6 +45,30 @@ sys.stderr = sys.stdout
 #  - all assert are fatal
 #  - setup failed (exception/assert) => cleanup
 #
+
+
+
+
+def skip(msg):
+    def decorator(test_item):
+        if not isinstance(test_item, (type, types.ClassType)):
+            @functools.wraps(test_item)
+            def skip_wrapper(*args, **kwargs):
+                raise result.CaseSkip(msg)
+            test_item = skip_wrapper
+
+        return test_item
+    return decorator
+
+def _rf(obj):
+    return obj
+
+def skipif(condition, msg):
+
+    if condition:
+        return skip(msg)
+    return _rf
+
 
 
 
@@ -221,6 +246,8 @@ class Valid(object):
             pass
         except result.TestAbort, ex:
             self._set_aborted(ex)
+        except result.CaseSkip, ex:
+            self._result.skip({"msg":"%s" % ex})           
         except (Exception), (error):
             self.inspect_traceback(error)
 
@@ -239,6 +266,8 @@ class Valid(object):
         except result.TestAbort, ex:
             self._set_aborted(ex)
             #self._result.abort_in_setup()
+        except result.CaseSkip, ex:
+            self._result.skip({"msg":"%s" % ex})         
         except (Exception), (error):
             self.inspect_traceback(error)
             self._set_aborted(error) 
@@ -247,6 +276,7 @@ class Valid(object):
 
 
     def run_case(self, case):
+        
         
         if self._aborted:
             self._result.aborted({"msg":self._aborted_msg})
@@ -263,6 +293,8 @@ class Valid(object):
                 self._abort_fatal = True          
         except result.TestAbort, ex:
             self._set_aborted(ex)
+        except result.CaseSkip, ex:
+            self._result.skip({"msg":"%s" % ex})            
         except (Exception), (error):
             self.inspect_traceback(error)
  

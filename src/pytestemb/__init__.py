@@ -9,11 +9,14 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "3.2.0"
+VERSION_STRING = "3.3.0"
 
 
 #    Historic :
 
+
+#    * 3.3.0
+#       - add skip case feature
 #
 #    * 3.2.1
 #       - logstash filter fix issue on event with empty info
@@ -132,6 +135,8 @@ import pytestemb.utils as utils
 
 from optparse import OptionParser
 from pytestemb.valid import Test
+from pytestemb.valid import skip
+from pytestemb.valid import skipif
 
 
 INTERFACE = {}
@@ -587,10 +592,6 @@ def is_assert():
 
 # alias
 run_script = run
-
-
-
-
 
 
 

@@ -735,11 +735,14 @@ class TraceLogstash(Trace):
             result = msg.split("|")[2].strip(" ")
             result = result.replace("?", "na").lower()
             
-            data = self.get_base_data()
-            data["type"]     = self.TYPE_RES
-            data["case"]     = case
-            data["result"]   = result
-        
+            if result == "skip":
+                return 
+            else:
+                data = self.get_base_data()
+                data["type"]     = self.TYPE_RES
+                data["case"]     = case
+                data["result"]   = result
+            
         elif msg.startswith("| Script time execution"):
             timex = float(msg.split("|")[2].strip(" ").replace("(sec)", "").strip("'"))
 

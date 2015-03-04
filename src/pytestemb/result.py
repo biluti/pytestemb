@@ -28,6 +28,9 @@ class TestErrorFatal(Exception):
 class TestAbort(Exception):
     pass
 
+class CaseSkip(Exception):
+    pass
+
 
 
 class Result(object):
@@ -46,6 +49,8 @@ class Result(object):
     TRACE               = "TRACE"
     DOC                 = "DOC"
     TAGVALUE            = "TAGVALUE"
+    SKIP                = "SKIP"
+    
 
     def __init__(self, inst_trace):
         self.trace          = inst_trace
@@ -269,6 +274,9 @@ class Result(object):
     def aborted(self, des):
         pass
 
+    def skip(self, des):
+        pass
+    
     def abort_in_setup(self, name):
         pass    
     
@@ -281,8 +289,7 @@ class Result(object):
     def trace_ctrl(self, des):
         # delay sending
         self.delay_trace_ctrl.append(des)
-            
-
+        
 
     def is_assert(self):
         try:
@@ -352,6 +359,8 @@ class Result(object):
             elif    case[self.PY_EXCEPTION] != None :    
                 self.report_add_line(name, case[self.PY_EXCEPTION])
                 ko = True
+            elif    case[self.SKIP] > 0 :
+                self.report_add_line(name, "SKIP")                
             elif    case[self.ASSERT_KO] == 0 \
                 and case[self.ASSERT_OK] > 0:
                 self.report_add_line(name, "ok")
@@ -384,6 +393,7 @@ class Result(object):
         self.result[-1][self.ASSERT_KO]     = 0
         self.result[-1][self.PY_EXCEPTION]  = None
         self.result[-1][self.ABORTED]       = 0        
+        self.result[-1][self.SKIP]          = 0    
         self.case = True
 
     def report_case_stop(self):
@@ -395,7 +405,8 @@ class Result(object):
         self.result[-1][self.ASSERT_OK]     = 0
         self.result[-1][self.ASSERT_KO]     = 0
         self.result[-1][self.PY_EXCEPTION]  = None
-        self.result[-1][self.ABORTED]       = 0               
+        self.result[-1][self.ABORTED]       = 0   
+        self.result[-1][self.SKIP]          = 0                
         self.setup = True
 
     def report_setup_stop(self):
@@ -407,7 +418,8 @@ class Result(object):
         self.result[-1][self.ASSERT_OK]     = 0
         self.result[-1][self.ASSERT_KO]     = 0
         self.result[-1][self.PY_EXCEPTION]  = None
-        self.result[-1][self.ABORTED]       = 0                      
+        self.result[-1][self.ABORTED]       = 0   
+        self.result[-1][self.SKIP]          = 0                       
         self.cleanup = True
 
     def report_cleanup_stop(self):
@@ -433,18 +445,9 @@ class Result(object):
         if self.case or self.setup or self.setup:
             self.result[-1][self.ABORTED] += 1
         
-
-
-
-
-
-
-
-
-
-
-
-
+    def report_skip(self):
+        if self.case or self.setup or self.setup:
+            self.result[-1][self.SKIP] += 1  
 
 
 
@@ -644,14 +647,12 @@ class ResultStdout(Result):
         # delay sending
         self.delay_trace_ctrl.append(des)
 
-
-
-
-
-
-
-
-
+    @stamp
+    @trace        
+    def skip(self, des):
+        self.write(ResultStdout.SKIP, des)
+        self.report_skip()
+    
 
 
 
@@ -839,7 +840,18 @@ class ResultStandalone(Result):
         else:
             msg = ""  
         self.write_stdout("  Aborted : '%s'\n" % msg)
+    
+    @trace
+    def skip(self, des):
         
+        self.report_skip()
+        
+        if des.has_key("msg"):   
+            msg = des["msg"]
+        else:
+            msg = ""         
+        self.write_stdout("  Skip : '%s'\n" % msg)    
+    
 
     @trace
     def tag_value(self, des):

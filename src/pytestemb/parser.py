@@ -93,6 +93,7 @@ class ResultStdoutReader(StdoutReader):
         obj.add_kind(result.ResultStdout.ABORT)
         obj.add_kind(result.ResultStdout.ABORTED)            
         obj.add_kind(result.ResultStdout.TAGVALUE)
+        obj.add_kind(result.ResultStdout.SKIP)
         return obj
     
     
@@ -165,7 +166,11 @@ class ResultStdoutReader(StdoutReader):
         elif        key == result.ResultStdout.TAGVALUE:
             self.check_started(self.script_started)
             tv = value.partition("=")
-            self.script[-1].case[-1].add_result(key, {tv[0]:tv[2]})                              
+            self.script[-1].case[-1].add_result(key, {tv[0]:tv[2]})       
+        # SKIP
+        elif        key == result.ResultStdout.SKIP:
+            self.check_started(self.script_started)
+            self.script[-1].case[-1].add_result(key, self.conv_dict(value))                                   
         else :
             pass
 

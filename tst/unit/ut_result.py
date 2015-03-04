@@ -49,6 +49,7 @@ class Test_ResultReader(unittest.TestCase):
         compare[result.ResultStdout.TAGVALUE] = []
         compare[result.ResultStdout.ABORT] = []
         compare[result.ResultStdout.ABORTED] = []
+        compare[result.ResultStdout.SKIP] = []
          
         self.assertEqual(resultcounter.counter, compare)
     
@@ -167,7 +168,20 @@ class Test_ResultReader(unittest.TestCase):
                                             {"name":"case_02", "time":1.0}))
         reader.add_line("%s%s%s\n" %    (   result.ResultStdout.CASE_STOP,\
                                             result.ResultStdout.SEPARATOR,\
-                                            {"name":"case_02", "time":2.0}))        
+                                            {"name":"case_02", "time":2.0}))     
+        
+
+        reader.add_line("%s%s%s\n" %    (   result.ResultStdout.CASE_START,\
+                                            result.ResultStdout.SEPARATOR,\
+                                            {"name":"case_03", "time":1.0}))
+        reader.add_line("%s%s%s\n" %    (   result.ResultStdout.SKIP,\
+                                            result.ResultStdout.SEPARATOR,\
+                                            {"msg":"skip", "time":1.0}))        
+        
+        reader.add_line("%s%s%s\n" %    (   result.ResultStdout.CASE_STOP,\
+                                            result.ResultStdout.SEPARATOR,\
+                                            {"name":"case_03", "time":2.0}))       
+                   
         
         reader.add_line("%s%s%s\n" % (result.ResultStdout.CLEANUP_START, result.ResultStdout.SEPARATOR, {}))
         reader.add_line("%s%s%s\n" % (result.ResultStdout.CLEANUP_STOP, result.ResultStdout.SEPARATOR, {}))
@@ -188,6 +202,7 @@ class Test_ResultReader(unittest.TestCase):
         compare[result.ResultStdout.ABORT] = []
         compare[result.ResultStdout.ABORTED] = []
         compare[result.ResultStdout.TAGVALUE] = [{"TAG":"VALUE"}]
+        compare[result.ResultStdout.SKIP] = []
 
          
         self.assertEqual(reader.script[0].case[1].counter, compare)
@@ -205,11 +220,15 @@ class Test_ResultReader(unittest.TestCase):
         compare[result.ResultStdout.PY_EXCEPTION] = []
         compare[result.ResultStdout.TAGVALUE] = []
         compare[result.ResultStdout.ABORT] = []
-        compare[result.ResultStdout.ABORTED] = []        
+        compare[result.ResultStdout.ABORTED] = []   
+        compare[result.ResultStdout.SKIP] = []     
         
         self.assertEqual(reader.script[0].case[0].counter, compare)
         self.assertEqual(reader.script[0].case[2].counter, compare)
-        self.assertEqual(reader.script[0].case[3].counter, compare) 
+        self.assertEqual(reader.script[0].case[3].counter, compare)
+        
+        compare[result.ResultStdout.SKIP] = [{'msg': 'skip', 'time': 1.0}] 
+        self.assertEqual(reader.script[0].case[4].counter, compare)  
         
         
         self.assertEqual(reader.script[0].case[0].timeex, None)
@@ -303,7 +322,8 @@ class Test_ResultReader(unittest.TestCase):
         compare[result.ResultStdout.PY_EXCEPTION] = [{"info":"py_exception_01"}] 
         compare[result.ResultStdout.TAGVALUE] = []
         compare[result.ResultStdout.ABORT] = []
-        compare[result.ResultStdout.ABORTED] = []        
+        compare[result.ResultStdout.ABORTED] = []     
+        compare[result.ResultStdout.SKIP] = []   
          
         self.assertEqual(reader.script[0].case[0].counter, compare)
         self.assertEqual(reader.script[0].case[-1].counter, compare)
@@ -473,7 +493,10 @@ class Test_ResultReader(unittest.TestCase):
         for l in vector.splitlines():
             reader.add_line(l)
     
+
+
         
+                
                 
 # stub stdout
 class stub_stdout:
