@@ -16,7 +16,7 @@ VERSION_STRING = "3.3.0"
 
 
 #    * 3.3.0
-#       - add skip case feature
+#       - add skip case feature with decorator @skip(msg) and @skipif(msg)
 #
 #    * 3.2.1
 #       - logstash filter fix issue on event with empty info
