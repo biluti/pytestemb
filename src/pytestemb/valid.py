@@ -56,6 +56,7 @@ def skip(msg):
             def skip_wrapper(*args, **kwargs):
                 raise result.CaseSkip(msg)
             test_item = skip_wrapper
+            test_item.skip_decorated = True
 
         return test_item
     return decorator
