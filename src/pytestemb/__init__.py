@@ -9,12 +9,14 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "3.3.0"
+VERSION_STRING = "3.3.1"
 
 
 #    Historic :
 
-
+#    * 3.3.1
+#       - manage skip for doc
+#
 #    * 3.3.0
 #       - add skip case feature with decorator @skip(msg) and @skipif(msg)
 #
