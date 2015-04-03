@@ -150,7 +150,8 @@ class DocGen(object):
 
         for case in cases:
             func_case = getattr(inst, case)
-            res[self.CASE].append({self.NAME:func_case.func_name, self.CASE_DOC:func_case.func_doc})
+            if "skip_decorated" not in dir(func_case):
+                res[self.CASE].append({self.NAME:func_case.func_name, self.CASE_DOC:func_case.func_doc})
             
         return res
 
