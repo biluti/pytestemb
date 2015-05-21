@@ -556,7 +556,7 @@ class TraceTxt(Trace):
         
     def trace_json(self, obj):
         sjson = json.dumps(obj)
-        self.add_line("json", sjson)
+        self.add_line("json", [sjson])
          
 
 
