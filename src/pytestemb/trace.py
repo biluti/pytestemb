@@ -656,7 +656,6 @@ class TraceLogstash(Trace):
                       
         data["jenkins_node_name"]     = os.getenv('NODE_NAME', None)     
         #data["jenkins_build_number"]  = os.getenv('BUILD_NUMBER', None)
-        data["package_version"]       = os.getenv('PACKAGE_VERSION', None)  
         data["host"]                  = socket.gethostname()
         data["script"]                = utils.get_script_name()
         data["source"]                = "pytestemb"
@@ -665,9 +664,17 @@ class TraceLogstash(Trace):
     def is_scope(self, name):
         return name in self.SCOPE
 
+    def get_version(self):
+        data = {}
+        data["package_version"]       = os.getenv('PACKAGE_VERSION', None)
+        data["hardware_version"]      = os.getenv('HARDWARE_VERSION', None)  
+        return data
+
 
     def get_base_data(self):
-        return dict(self._base_data)
+        data = dict(self._base_data)
+        data.update(self.get_version())
+        return data
 
     def add_evts(self, scope, msg):
         for m in msg:
