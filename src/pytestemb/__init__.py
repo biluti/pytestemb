@@ -9,11 +9,16 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "3.3.1"
+VERSION_STRING = "3.3.2"
 
 
 #    Historic :
 
+
+#    * 3.3.2
+#       - fix issue on TraceTxt.trace_json
+#       - add HARDWARE_VERSION and PACKAGE_VERSION/HARDWARE_VERSION are evaluated for each logstash post
+#
 #    * 3.3.1
 #       - manage skip for doc
 #
