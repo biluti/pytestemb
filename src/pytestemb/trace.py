@@ -513,9 +513,9 @@ class TraceTxt(Trace):
         
         msg = msg.strip("\n\r")
         msg = msg.splitlines()
-        if len(msg) == 1 :
+        if len(msg) == 1:
             self.add_line(scope, msg)
-        else :
+        else:
             data = []
             data.append("Start multiline :")
             for index, line in enumerate(msg):
@@ -670,10 +670,16 @@ class TraceLogstash(Trace):
         data["hardware_version"]      = os.getenv('HARDWARE_VERSION', None)  
         return data
 
+    def get_timestamp(self):
+        data = {}
+        data["timestamp"] =  datetime.datetime.now().isoformat()
+        return data
+
 
     def get_base_data(self):
         data = dict(self._base_data)
         data.update(self.get_version())
+        data.update(self.get_timestamp())
         return data
 
     def add_evts(self, scope, msg):
@@ -701,9 +707,6 @@ class TraceLogstash(Trace):
         except KeyError:
             scope = "sequence"
 
-
-
-        
         line = []
         if   name == "abort":
             
