@@ -121,7 +121,7 @@ class Result(object):
         dic["file"]         = traceback[call_depth][1]
         dic["line"]         = traceback[call_depth][2]
         dic["function"]     = traceback[call_depth][3]
-        dic["expression"]   = utils.to_unicode(traceback[call_depth][4][0]).strip(" \t\n")
+        dic["expression"]   = utils.to_unicode(traceback[call_depth][4][0]).strip(" \t\n\r")
         
         try:
             for index in range(call_depth+1, len(traceback)):
@@ -132,7 +132,7 @@ class Result(object):
                 stack[-1]["path"]      = traceback[index][1]
                 stack[-1]["line"]      = traceback[index][2]
                 stack[-1]["function"]  = traceback[index][3]
-                stack[-1]["code"]      = utils.to_unicode(traceback[index][4][0]).strip("\n")
+                stack[-1]["code"]      = utils.to_unicode(traceback[index][4][0]).strip("\n\r")
         except Exception:
             pass 
             

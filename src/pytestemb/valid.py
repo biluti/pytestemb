@@ -314,7 +314,7 @@ class Valid(object):
                 stack[-1]["path"]      = traceback[index][1]
                 stack[-1]["line"]      = traceback[index][2]
                 stack[-1]["function"]  = traceback[index][3]
-                stack[-1]["code"]      = utils.to_unicode(traceback[index][4][0]).strip("\n")
+                stack[-1]["code"]      = utils.to_unicode(traceback[index][4][0]).strip("\n\r")
         except Exception:
             pass
 
