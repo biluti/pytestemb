@@ -9,10 +9,13 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "3.3.3"
+VERSION_STRING = "3.3.4"
 
 
 #    Historic :
+#
+#    * 3.3.4
+#       - remove control caractere in string input (keep \n\t and replace unicode control character by code 0x0000) 
 #
 #    * 3.3.3
 #       - add timestamp for logstash json
