@@ -766,7 +766,7 @@ class ResultStandalone(Result):
         
         self.report_assert_ko()
         
-        if des.has_key("msg"):   
+        if "msg" in des:   
             msg = des["msg"]
         else:
             msg = ""     
@@ -812,7 +812,7 @@ class ResultStandalone(Result):
         
         self.report_abort()
         
-        if des.has_key("msg"):   
+        if "msg" in des:   
             msg = des["msg"]
         else:
             msg = ""     
@@ -835,7 +835,7 @@ class ResultStandalone(Result):
     @trace
     def aborted(self, des):
         self.report_aborted()
-        if des.has_key("msg"):   
+        if "msg" in des:   
             msg = des["msg"]
         else:
             msg = ""  
@@ -846,7 +846,7 @@ class ResultStandalone(Result):
         
         self.report_skip()
         
-        if des.has_key("msg"):   
+        if "msg" in des:   
             msg = des["msg"]
         else:
             msg = ""         
