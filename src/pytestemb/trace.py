@@ -669,6 +669,11 @@ class TraceLogstash(Trace):
         data["package_version"]       = os.getenv('PACKAGE_VERSION', None)
         data["hardware_version"]      = os.getenv('HARDWARE_VERSION', None)  
         return data
+    
+    def get_product(self):
+        data = {}
+        data["product_name"] = os.getenv('PRODUCT_NAME', None)  
+        return data        
 
     def get_timestamp(self):
         data = {}
@@ -679,6 +684,7 @@ class TraceLogstash(Trace):
     def get_base_data(self):
         data = dict(self._base_data)
         data.update(self.get_version())
+        data.update(self.get_product())
         data.update(self.get_timestamp())
         return data
 
