@@ -73,7 +73,7 @@ class Trace(object):
 
         if    name == "assert_ko":
             
-            if des.has_key("msg"):
+            if "msg" in des:
                 msg = des["msg"]
             else:
                 msg = ""
@@ -92,7 +92,7 @@ class Trace(object):
         
         elif name == "abort":
             
-            if des.has_key("msg"):
+            if "msg" in des:
                 msg = des["msg"]
             else:
                 msg = ""
@@ -109,7 +109,7 @@ class Trace(object):
             
         
         elif    name == "assert_ok":
-            if des.has_key("msg"):
+            if "msg" in des:
                 msg = des["msg"]
             else:
                 msg = ""            
@@ -158,7 +158,7 @@ class TraceManager(Trace):
 
     def get_trace_file(self):
         
-        if self.dictra.has_key(self.TRACE_TXT):
+        if self.TRACE_TXT in self.dictra:
             return self.dictra[self.TRACE_TXT].get_filename()
         else:
             return None 
@@ -185,7 +185,7 @@ class TraceManager(Trace):
         return cls.__single 
         
     def add_trace(self, name, tra):
-        if not self.dictra.has_key(name):
+        if name not in self.dictra:
             self.dictra[name] = tra
             self.lm.append(tra)
         else:
@@ -710,7 +710,7 @@ class TraceLogstash(Trace):
         line = []
         if   name == "abort":
             
-            if des.has_key("msg"):
+            if "msg" in des:
                 msg = des["msg"]
             else:
                 msg = ""
