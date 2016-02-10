@@ -26,7 +26,7 @@ import pytestemb.pexception as pexception
 
 
 # redirect sys.stderr => sys.stdout
-sys.stderr = sys.stdout
+#sys.stderr = sys.stdout
 
 
 #
