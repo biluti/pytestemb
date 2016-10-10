@@ -664,16 +664,24 @@ class TraceLogstash(Trace):
     def is_scope(self, name):
         return name in self.SCOPE
 
+    @staticmethod
+    def str_to_bool(v):
+        return v.lower() in ("true", "1")
+  
+  
     def get_version(self):
         data = {}
         data["package_version"]       = os.getenv('PACKAGE_VERSION', None)
         data["hardware_version"]      = os.getenv('HARDWARE_VERSION', None)  
+        data["simulator"]             = self.str_to_bool(os.getenv('SIMULATOR', ""))  
+        data["nightly"]               = self.str_to_bool(os.getenv('NIGHTLY', ""))
         return data
     
     def get_product(self):
         data = {}
         data["product_name"] = os.getenv('PRODUCT_NAME', None)  
         return data        
+
 
     def get_timestamp(self):
         data = {}

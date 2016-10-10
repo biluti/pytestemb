@@ -28,7 +28,15 @@ class MyRun(pytestemb.Test):
         os.environ["PACKAGE_VERSION"]   = "x.x.x"
         os.environ["HARDWARE_VERSION"]  = "x.x.x"
         pytestemb.trace_json({"ver":"x"})
-
+        
+    def test_ver_z(self):
+        import os
+        
+        os.environ["SIMULATOR"]   = "true"
+        os.environ["NIGHTLY"]  = "true"
+        
+        pytestemb.trace_json({"ver":"x"})
+        
 
 if __name__ == "__main__":
     
