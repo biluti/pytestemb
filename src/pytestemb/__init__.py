@@ -9,10 +9,13 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "3.4.0"
+VERSION_STRING = "3.4.1"
 
 
 #    Historic :
+#
+#    * 3.4.1
+#       - logstash add env variable SIMULATOR & NIGHTLY
 #
 #    * 3.4.0
 #       - remove sdterr redirection
