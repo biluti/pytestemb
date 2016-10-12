@@ -671,7 +671,7 @@ class TraceLogstash(Trace):
   
     def get_version(self):
         data = {}
-        data["package_version"]       = os.getenv('PACKAGE_VERSION', None)
+        data["package_version"]       = os.getenv('SOFTWARE_VERSION', None)
         data["hardware_version"]      = os.getenv('HARDWARE_VERSION', None)  
         data["simulator"]             = self.str_to_bool(os.getenv('SIMULATOR', ""))  
         data["nightly"]               = self.str_to_bool(os.getenv('NIGHTLY', ""))
