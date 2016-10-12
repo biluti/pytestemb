@@ -9,10 +9,13 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "3.4.1"
+VERSION_STRING = "3.4.2"
 
 
 #    Historic :
+#
+#    * 3.4.2
+#       - logstash change PACKAGE_VERSION to SOFTWARE_VERSION
 #
 #    * 3.4.1
 #       - logstash add env variable SIMULATOR & NIGHTLY
