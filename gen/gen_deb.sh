@@ -1,5 +1,7 @@
 # !/bin/bash
 
+# gen deb for Ubuntu 14.04 & Python 2.7
+
 PACKAGE_NAME="pytestemb-lib"
 
 echo "copy pytestemb source files"
@@ -8,12 +10,12 @@ mkdir -p deb/usr/local/lib/python2.7/dist-packages
 rm -rf deb/usr/local/lib/python2.7/dist-packages/*
 
 
-rm -rf src/pytestemb/*.pyc
-cp -rv src/pytestemb/ deb/usr/local/lib/python2.7/dist-packages
+rm -rf ../src/pytestemb/*.pyc
+cp -rv ../src/pytestemb/ deb/usr/local/lib/python2.7/dist-packages
 
 
 # write version
-version=$(grep -h "VERSION_STRING *= " src/pytestemb/__init__.py | sed s/"VERSION_STRING .*= \""// | sed s/'"'//)
+version=$(grep -h "VERSION_STRING *= " ../src/pytestemb/__init__.py | sed s/"VERSION_STRING .*= \""// | sed s/'"'//)
 echo $version
 
 sed -i '/^Package: / c\
