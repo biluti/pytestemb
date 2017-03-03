@@ -16,7 +16,7 @@ def test_json():
 
 
     
-    r = range(90) + [90]*60 + range(90, 0, -1)
+    r = list(range(90)) + [90]*60 + list(range(90, 0, -1))
     r = r + r
 
     for i in r:

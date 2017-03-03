@@ -25,8 +25,8 @@ if __name__ == "__main__":
     r.remove("2x.script_introspection_01")
     
     for p in r:
-        print pd.script_doc(p)
+        print((pd.script_doc(p)))
     
     
-    print pd.script_doc("2x.script_doc_01")
+    print((pd.script_doc("2x.script_doc_01")))
 

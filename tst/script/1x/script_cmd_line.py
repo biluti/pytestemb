@@ -22,8 +22,8 @@ def defaultValue():
     @goal : -
     @coverage : -
     """
-    print test.get_config()
-    print test.get_mode()
+    print((test.get_config()))
+    print((test.get_mode()))
 
 
 

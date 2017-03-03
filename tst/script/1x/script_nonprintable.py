@@ -6,10 +6,10 @@
 import pytestemb as test
 
 
-vector = [      u"abc\x00abc",
-                u"abc\x04\x05abc\x04abc",
-                u"x04\x05abc\x04",
-                u"abc\nabs",
+vector = [      "abc\x00abc",
+                "abc\x04\x05abc\x04abc",
+                "x04\x05abc\x04",
+                "abc\nabs",
                
             ]
 

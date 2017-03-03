@@ -20,6 +20,8 @@ import pytestemb.result as result
 import pytestemb.parser as parser
 
 
+from collections import UserDict 
+
 
 def create_des(info):
     dic = {}
@@ -473,14 +475,14 @@ class Test_ResultReader(unittest.TestCase):
         TRACE={u'type': u'octopylog'}
         TRACE={u'type': u'pyt', u'file': u'/tmp/pytestemb/script_2trace_0740B8B009ED6FD5.pyt'}
         CASE_START={'name': 'test_trace', 'time': 0.24247503280639648}
-        TRACE={u'\u043f\u0440\u0435\u0434\u044b\u0441\u0442\u043e\u0440\u0438\u044f': u'\u043f\u0440\u0435\u0434\u044b\u0441\u0442\u043e\u0440\u0438\u044f'}
-        TRACE={u'\u0627\u0644\u0625\u0646\u0643\u0644\u064a\u0632\u064a\u0629': u'\u0627\u0644\u0625\u0646\u0643\u0644\u064a\u0632\u064a\u0629'}
-        TRACE={u'\u043f\u0440\u0435\u0434\u044b\u0441\u0442\u043e\u0440\u0438\u044f': u'\u043f\u0440\u0435\u0434\u044b\u0441\u0442\u043e\u0440\u0438\u044f'}
-        TRACE={u'\u0627\u0644\u0625\u0646\u0643\u0644\u064a\u0632\u064a\u0629': u'\u0627\u0644\u0625\u0646\u0643\u0644\u064a\u0632\u064a\u0629'}
+        TRACE={u'\\u043f\\u0440\\u0435\\u0434\\u044b\\u0441\\u0442\\u043e\\u0440\\u0438\\u044f': u'\\u043f\\u0440\\u0435\\u0434\\u044b\\u0441\\u0442\\u043e\\u0440\\u0438\\u044f'}
+        TRACE={u'\\u0627\\u0644\\u0625\\u0646\\u0643\\u0644\\u064a\\u0632\\u064a\\u0629': u'\\u0627\\u0644\\u0625\\u0646\\u0643\\u0644\\u064a\\u0632\\u064a\\u0629'}
+        TRACE={u'\\u043f\\u0440\\u0435\\u0434\\u044b\\u0441\\u0442\\u043e\\u0440\\u0438\\u044f': u'\\u043f\\u0440\\u0435\\u0434\\u044b\\u0441\\u0442\\u043e\\u0440\\u0438\\u044f'}
+        TRACE={u'\\u0627\\u0644\\u0625\\u0646\\u0643\\u0644\\u064a\\u0632\\u064a\\u0629': u'\\u0627\\u0644\\u0625\\u0646\\u0643\\u0644\\u064a\\u0632\\u064a\\u0629'}
         TRACE={u'ascii': u'ascii'}
         TRACE={u'ascii': u'ascii'}
-        TRACE={u'\u0627\u0644\u0625\u0646\u0643\u0644\u064a\u0632\u064a\u0629\\u0627\\u0644\\u0625\\u0646\\u0643\\u0644\\u064a\\u0632\\u064a\\u0629\xd8\xa7\xd9\x84\xd8\xa5\xd9\x86\xd9\x83\xd9\x84\xd9\x8a\xd8\xb2\xd9\x8a\xd8\xa9': u'\u0627\u0644\u0625\u0646\u0643\u0644\u064a\u0632\u064a\u0629\\u0627\\u0644\\u0625\\u0646\\u0643\\u0644\\u064a\\u0632\\u064a\\u0629\xd8\xa7\xd9\x84\xd8\xa5\xd9\x86\xd9\x83\xd9\x84\xd9\x8a\xd8\xb2\xd9\x8a\xd8\xa9'}
-        TRACE={u'\u0627\u0644\u0625\u0646\u0643\u0644\u064a\u0632\u064a\u0629': u'\u0627\u0644\u0625\u0646\u0643\u0644\u064a\u0632\u064a\u0629'}
+        TRACE={u'\\u0627\\u0644\\u0625\\u0646\\u0643\\u0644\\u064a\\u0632\\u064a\\u0629\\u0627\\u0644\\u0625\\u0646\\u0643\\u0644\\u064a\\u0632\\u064a\\u0629\xd8\xa7\xd9\x84\xd8\xa5\xd9\x86\xd9\x83\xd9\x84\xd9\x8a\xd8\xb2\xd9\x8a\xd8\xa9': u'\\u0627\\u0644\\u0625\\u0646\\u0643\\u0644\\u064a\\u0632\\u064a\\u0629\\u0627\\u0644\\u0625\\u0646\\u0643\\u0644\\u064a\\u0632\\u064a\\u0629\xd8\xa7\xd9\x84\xd8\xa5\xd9\x86\xd9\x83\xd9\x84\xd9\x8a\xd8\xb2\xd9\x8a\xd8\xa9'}
+        TRACE={u'\\u0627\\u0644\\u0625\\u0646\\u0643\\u0644\\u064a\\u0632\\u064a\\u0629': u'\\u0627\\u0644\\u0625\\u0646\\u0643\\u0644\\u064a\\u0632\\u064a\\u0629'}
         TRACE={u'': u''}
         TRACE={u'': u''}
         TRACE={u'\\xc3': u'\\xc3'}

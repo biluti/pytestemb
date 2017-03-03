@@ -121,7 +121,7 @@ def tagvalue():
 
 if __name__ == "__main__":
     
-    test.set_doc(__doc__)
+
     test.add_test_case(case_assert_true)
     test.add_test_case(case_assert_false)
     test.add_test_case(case_assert_equal)

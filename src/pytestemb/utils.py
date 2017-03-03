@@ -13,7 +13,6 @@ __email__       = "jm.beguinet@gmail.com"
 
 import os
 import sys
-import types
 import unicodedata
 
 
@@ -23,14 +22,14 @@ def to_unicode(instr):
     
     
 def _to_unicode(instr):
-    if type(instr) == types.UnicodeType:
+    if type(instr) == str:
         return instr
     else:
         try:
-            return unicode(str(instr), "utf-8")
+            return str(instr)
         except UnicodeDecodeError:
             ascii_text = "%s" % (str(instr).encode('string_escape'))
-            return unicode(ascii_text)
+            return str(ascii_text)
 
 
 def filter_string(instr):
@@ -39,7 +38,7 @@ def filter_string(instr):
     for ch in instr:
         if unicodedata.category(ch)[0] == "C":
             toreplace[ch] = None
-    for r in toreplace.keys():
+    for r in list(toreplace.keys()):
         if r in ["\n", "\t"]:
             continue
         else:
@@ -54,10 +53,10 @@ def get_script_name():
 
 def str_dict(dic):
     res = []
-    for key, value in dic.iteritems():
-        ll = u"'%s':'%s'" % (unicode(key), unicode(value))
+    for key, value in dic.items():
+        ll = "'%s':'%s'" % (str(key), str(value))
         res.append(ll)
-    return u"{%s}" % ", ".join(res)
+    return "{%s}" % ", ".join(res)
 
 
 

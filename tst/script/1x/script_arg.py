@@ -14,7 +14,7 @@ import pytestemb as test
 
 def test_path():
     for line in sys.path :
-        print line
+        print(line)
 
 #    test.assert_true_fatal(1==2, "1==2")
 #    test.assert_true(1==1, "1==1")

@@ -15,7 +15,7 @@ class MyRun(test.Test):
         try:
             test.fail_fatal("")
         except result.TestErrorFatal:
-            print 'z'*3
+            print(('z'*3))
             test.success("")
             
     def cleanup(self):

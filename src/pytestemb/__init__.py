@@ -183,7 +183,7 @@ def checker(parser, name, value):
         if line == value:
             break
     else :
-        parser.error("Interface %s is not valid, see --help" % value)
+        parser.error("Interface {} is not valid, see --help".format(value))
 
 
 def parse():
@@ -356,7 +356,7 @@ def _create_des_(msg):
     if msg is None :
         return {}
     else:
-        return dict({u"msg":utils.to_unicode(msg)})
+        return dict({"msg":utils.to_unicode(msg)})
 
 
 def get_config():

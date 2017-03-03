@@ -96,7 +96,7 @@ class Result(object):
     
     def trace_trace(self, dic_des):
         if isinstance(dic_des, dict):
-            self._trace_trace_({utils.to_unicode(key):utils.to_unicode(value) for key, value in dic_des.iteritems()})
+            self._trace_trace_({utils.to_unicode(key):utils.to_unicode(value) for key, value in dic_des.items()})
         else:
             raise pexception.PytestembError("Parameter 'dic_des' must be a dict")           
 
@@ -295,7 +295,8 @@ class Result(object):
         try:
             return (self.result[-1][self.ASSERT_KO] > 0)
         except IndexError:
-            raise pexception.PytestembError("Invalid use of is_assert, allowed only in setup/cleanup and case")
+            raise RuntimeError('specific message')
+            
         
 
 
@@ -459,7 +460,7 @@ def trace(func):
      decorator function """
     def decorated(*args, **kwargs):
         trace_func = args[0].trace_result
-        trace_func(func.func_name, args[1])
+        trace_func(func.__name__, args[1])
         return func(*args, **kwargs)
     return decorated
 
@@ -637,7 +638,7 @@ class ResultStdout(Result):
         
     @trace
     def tag_value(self, des):
-        self.write(ResultStdout.TAGVALUE, "%s=%s" % (des.keys()[0], des.values()[0]))
+        self.write(ResultStdout.TAGVALUE, "%s=%s" % (list(des.keys())[0], list(des.values())[0]))
 
     @trace
     def doc(self, des):
@@ -895,7 +896,7 @@ class ResultCounter(object):
 
     def __str__(self):
         sstr = "%s\n" % self.name
-        for key, value in self.counter.iteritems():
+        for key, value in self.counter.items():
             sstr += "%s:%s\n" % (key, value)
         return sstr
 

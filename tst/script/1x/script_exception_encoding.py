@@ -9,13 +9,13 @@ import pytestemb as test
 
 
 def test_exception1():
-    raise Exception(u"abcééé".encode("latin_1"))
+    raise Exception("abcééé".encode("latin_1"))
 
 def test_exception2():
     raise Exception("\xC3")
 
 def test_exception3():
-    s = u""
+    s = ""
     s += "\xC3"
 
 

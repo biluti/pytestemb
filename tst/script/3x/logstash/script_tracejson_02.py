@@ -22,7 +22,7 @@ class JsonError(test.Test):
             try:
                 test.trace_json(obj)
                 test.fail()
-            except TypeError, ex:
+            except TypeError as ex:
                 test.success(ex)    
 
     def json_error_key(self):
@@ -33,7 +33,7 @@ class JsonError(test.Test):
             try:
                 test.trace_json(obj)
                 test.fail()
-            except TypeError, ex:
+            except TypeError as ex:
                 test.success(ex)
                 
     def json_error_reservedkey(self):
@@ -43,14 +43,14 @@ class JsonError(test.Test):
         for obj in vector:   
             try:     
                 test.trace_json(obj)
-            except ValueError, ex:
+            except ValueError as ex:
                 pass
         test.success()
 
     def json_valid(self):
         vector = [{"key_a":"test"},
                   {"key_b":10},
-                  {u"ééé":u"ééé"},
+                  {"ééé":"ééé"},
                   ]
         for obj in vector:        
             test.trace_json(obj)

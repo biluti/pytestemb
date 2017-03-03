@@ -15,7 +15,8 @@ __email__       = "jm.beguinet@gmail.com"
 
 import pytestemb.result as result
 
-import UserDict
+
+from collections import UserDict
 
 class StdoutReaderError(Exception):
     pass
@@ -54,14 +55,14 @@ class StdoutReader(object):
         else :
             try:
                 self.process(line[0:pos], line[pos+1:])
-            except StdoutReaderError, ex:
+            except StdoutReaderError as ex:
                 raise StdoutReaderError(ex.__str__() + ",line : %s" % line)
 
     @staticmethod
     def conv_dict(data):
         try:
-            return UserDict.UserDict(eval(data))
-        except SyntaxError, ex:
+            return UserDict(eval(data))
+        except SyntaxError as ex:
             raise StdoutReaderError("Problem during parsing : exception '%s', data '%s'" % (ex.__str__(), data))   
     
     def process(self, key, value):

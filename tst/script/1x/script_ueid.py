@@ -23,7 +23,7 @@ def t4():
     @goal : -
     @coverage : -
     """    
-    print test.get_uedi()
+    print((test.get_uedi()))
 
 
 
@@ -31,10 +31,10 @@ def t4():
         
         
 def start():
-    print test.get_uedi()
+    print((test.get_uedi()))
 
 def stop():
-    print test.get_uedi()
+    print((test.get_uedi()))
 
 
 

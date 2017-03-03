@@ -74,7 +74,7 @@ class Pydoc(object):
     def _function(self, ftype, func):
         des = dict()
         des[KEY_TYPE] = ftype
-        des[KEY_NAME] = func.func_name
+        des[KEY_NAME] = func.__name__
         if func.__doc__ is None :
             des[KEY_DOC] = ""
         else:
@@ -151,7 +151,7 @@ class DocGen(object):
         for case in cases:
             func_case = getattr(inst, case)
             if "skip_decorated" not in dir(func_case):
-                res[self.CASE].append({self.NAME:func_case.func_name, self.CASE_DOC:func_case.func_doc})
+                res[self.CASE].append({self.NAME:func_case.__name__, self.CASE_DOC:func_case.__doc__})
             
         return res
 

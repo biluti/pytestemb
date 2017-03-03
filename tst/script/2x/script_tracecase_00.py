@@ -25,7 +25,7 @@ class MyRun(pytestemb.Test):
 
 
 def tracecase(scriptname, scriptcase):
-    print "%s :: %s" % (scriptname, scriptcase)
+    print(("%s :: %s" % (scriptname, scriptcase)))
 
 
 if __name__ == "__main__":

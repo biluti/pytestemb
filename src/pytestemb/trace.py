@@ -125,7 +125,7 @@ class Trace(object):
             line.append("    %s" % (des["exception_info"]))
 
         elif    name in ["case_start", "case_stop", "assert_ok", "script_start", "script_stop", "tag_value", "warning"]:
-            info = ", ".join(["%s:'%s'" % (key, value) for key, value in des.iteritems()])
+            info = ", ".join(["%s:'%s'" % (key, value) for key, value in des.items()])
             line.append("%s : %s" % (name, info))                 
         else:
             line.append("%s : %s" % (name, utils.str_dict(des)))
@@ -167,8 +167,8 @@ class TraceManager(Trace):
 
     def _gen_ueid(self):
         md = hashlib.md5()
-        md.update(utils.get_script_name())
-        md.update(time.strftime("%d_%m_%Y_%H_%M_%S", self.gtime.start_date))
+        md.update(utils.get_script_name().encode('utf-8'))
+        md.update(time.strftime("%d_%m_%Y_%H_%M_%S", self.gtime.start_date).encode('utf-8'))
         return md.hexdigest()[0:16].upper()
 
     def get_ueid(self):
@@ -236,8 +236,8 @@ class TraceManager(Trace):
         if not isinstance(obj, dict):
             raise TypeError("Obj must be a Python dict, get type : %s" % obj.__class__.__name__)
             
-        for k in obj.iterkeys():
-            if not isinstance(k, basestring):
+        for k in obj.keys():
+            if not isinstance(k, str):
                 raise TypeError("Obj key:'%s' must be a string, get type: %s" %  (k, obj.__class__.__name__))
         
         for i in self.lm:
@@ -460,7 +460,8 @@ class TraceTxt(Trace):
         des = dict({"type":"pyt", "file":pathfile})
         try :
             self.file = codecs.open(pathfile, encoding="utf-8", mode="w", buffering=-1)
-        except (IOError) , (error):
+        except (IOError) as xxx_todo_changeme:
+            (error) = xxx_todo_changeme
             self.file = None
             des["error"] = error.__str__()
             raise
@@ -505,7 +506,7 @@ class TraceTxt(Trace):
         mtime = mtime.ljust(TraceTxt.SIZE_MTIME)
         scope = scope.ljust(TraceTxt.SIZE_SCOPE)
         for i in msg: 
-            self.file.write(u"%s%s%s%s\n" % (atime, mtime, scope, i))
+            self.file.write("%s%s%s%s\n" % (atime, mtime, scope, i))
 
 
     def _trace_multiline(self, scope, msg):
@@ -603,7 +604,8 @@ class TraceLogstash(Trace):
         des = dict({"type":"json", "file":pathfile})
         try :
             self.file = codecs.open(pathfile, encoding="utf-8", mode="w", buffering=-1)
-        except (IOError), (error):
+        except (IOError) as xxx_todo_changeme1:
+            (error) = xxx_todo_changeme1
             self.file = None
             des["error"] = error.__str__()
             raise
@@ -797,7 +799,7 @@ class TraceLogstash(Trace):
         data = self.get_base_data()
         data["type"] = self.TYPE_CUS
         
-        inter = list(set(data).intersection(obj.keys()))
+        inter = list(set(data).intersection(list(obj.keys())))
         if len(inter) > 0:
             raise ValueError("Key conflict, reserverd for pytestemb : %s" % inter)
         else:    

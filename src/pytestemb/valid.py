@@ -51,7 +51,7 @@ import pytestemb.pexception as pexception
 
 def skip(msg):
     def decorator(test_item):
-        if not isinstance(test_item, (type, types.ClassType)):
+        if not isinstance(test_item, type):
             @functools.wraps(test_item)
             def skip_wrapper(*args, **kwargs):
                 raise result.CaseSkip(msg)
@@ -160,7 +160,7 @@ class Valid(object):
         if self._tracecase != self._nothing_ :
             try:
                 self._tracecase(utils.get_script_name(), name)
-            except Exception, ex:
+            except Exception as ex:
                 raise pexception.PytestembError("Callback tracecase exception : '%s' => %s" % (ex.__class__.__name__, ex))
         else:
             pass
@@ -206,7 +206,7 @@ class Valid(object):
             self._case_name = None
         # Case
         for acase in self._case :
-            name = acase.func_name
+            name = acase.__name__
             self._result.case_start({"name":name})
             self.tracecase(name)
             self._case_name = name
@@ -245,11 +245,12 @@ class Valid(object):
             func()
         except result.TestErrorFatal:
             pass
-        except result.TestAbort, ex:
+        except result.TestAbort as ex:
             self._set_aborted(ex)
-        except result.CaseSkip, ex:
+        except result.CaseSkip as ex:
             self._result.skip({"msg":"%s" % ex})           
-        except (Exception), (error):
+        except (Exception) as xxx_todo_changeme:
+            (error) = xxx_todo_changeme
             self.inspect_traceback(error)
 
 
@@ -261,15 +262,16 @@ class Valid(object):
 
         try:
             func()
-        except result.TestErrorFatal, ex:
+        except result.TestErrorFatal as ex:
             self._set_aborted(ex)
             self._result.abort_in_setup("Fatal")
-        except result.TestAbort, ex:
+        except result.TestAbort as ex:
             self._set_aborted(ex)
             #self._result.abort_in_setup()
-        except result.CaseSkip, ex:
+        except result.CaseSkip as ex:
             self._result.skip({"msg":"%s" % ex})         
-        except (Exception), (error):
+        except (Exception) as xxx_todo_changeme1:
+            (error) = xxx_todo_changeme1
             self.inspect_traceback(error)
             self._set_aborted(error) 
             self._result.abort_in_setup("Exception")
@@ -292,11 +294,12 @@ class Valid(object):
         except result.TestErrorFatal:
             if self._abort_fatal_mode:
                 self._abort_fatal = True          
-        except result.TestAbort, ex:
+        except result.TestAbort as ex:
             self._set_aborted(ex)
-        except result.CaseSkip, ex:
+        except result.CaseSkip as ex:
             self._result.skip({"msg":"%s" % ex})            
-        except (Exception), (error):
+        except (Exception) as xxx_todo_changeme2:
+            (error) = xxx_todo_changeme2
             self.inspect_traceback(error)
  
  
@@ -315,12 +318,12 @@ class Valid(object):
                 stack[-1]["line"]      = traceback[index][2]
                 stack[-1]["function"]  = traceback[index][3]
                 stack[-1]["code"]      = utils.to_unicode(traceback[index][4][0]).strip("\n\r")
-        except Exception:
+        except Exception as exception:
             pass
 
         des = {}
         des["stack"]            = stack
-        des["exception_info"]   = utils.to_unicode(exception)
+        des["exception_info"]   = utils.to_unicode(str(exception))
         des["exception_class"]  = exception.__class__.__name__
 
         self._result.py_exception(des)

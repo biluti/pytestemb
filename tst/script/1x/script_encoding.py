@@ -6,12 +6,12 @@
 import pytestemb as test
 
 
-vector = [      u"abcééé".encode("latin_1"),
-                u"abcééé".encode("cp1250"),
-                u"abcééé".encode("iso8859"),
-                u"abcééé".encode("utf_32"),
+vector = [      "abcééé".encode("latin_1"),
+                "abcééé".encode("cp1250"),
+                "abcééé".encode("iso8859"),
+                "abcééé".encode("utf_32"),
                 "\xC3",
-                u"\xC3",
+                "\xC3",
             ]
 
 
