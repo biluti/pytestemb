@@ -1,17 +1,23 @@
 # !/bin/bash
 
-# gen deb for Ubuntu 14.04 & Python 2.7
+
 
 PACKAGE_NAME="pytestemb-lib"
 
 echo "copy pytestemb source files"
 
-mkdir -p deb/usr/local/lib/python2.7/dist-packages
-rm -rf deb/usr/local/lib/python2.7/dist-packages/*
+#DISTPACKAGE=$(python3 -c "import site; print(list(filter(lambda x: x.find('/usr/local/') != -1 , site.getsitepackages()))[0])")
+
+DISTPACKAGE="/usr/lib/python3/dist-packages/"
+
+echo $DISTPACKAGE
+
+mkdir -p deb$DISTPACKAGE
+rm -rf deb$DISTPACKAGE*
 
 
 rm -rf ../src/pytestemb/*.pyc
-cp -rv ../src/pytestemb/ deb/usr/local/lib/python2.7/dist-packages
+cp -rv ../src/pytestemb/ deb$DISTPACKAGE
 
 
 # write version
@@ -31,6 +37,6 @@ Version: '${version}'' ./deb/DEBIAN/control
 
 dpkg-deb --build deb $PACKAGE_NAME-${version}.deb
 
-rm -r ./deb/usr/local/lib/python2.7/dist-packages/*
+rm -r ./deb$DISTPACKAGE*
 
 echo "end"
