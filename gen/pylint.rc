@@ -9,8 +9,7 @@ cache-size=500
 
 # Add <file or directory> to the black list. It should be a base name, not a
 # path. You may set this option multiple times.
-ignore=CVS
-ignore=addict.py
+
 
 # List of plugins (as comma separated values of python modules names) to load,
 # usually to register additional checkers.
