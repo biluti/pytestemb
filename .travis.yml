@@ -5,5 +5,5 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
-script: PYTHONPATH=src py.test-3 tst/unit/*.py
+script: PYTHONPATH=src py.test tst/unit/*.py
 
