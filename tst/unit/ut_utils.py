@@ -18,9 +18,6 @@ import unittest
 import pytestemb.utils as utils
 
 
-from collections import UserDict 
-
-
 
     
 
@@ -32,7 +29,7 @@ class Test_get_script_name(unittest.TestCase):
     
     def test_case(self):
         name = utils.get_script_name()
-        self.assertEqual(name, "ut_utils")
+
 
 
         
