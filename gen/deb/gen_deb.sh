@@ -5,15 +5,15 @@ PACKAGE_NAME="pytestemb-lib"
 echo "copy pytestemb source files"
 
 mkdir -p deb/usr/local/lib/python2.7/dist-packages
-rm -rf deb/usr/local/lib/python2.7/dist-packages/*
+rm -vf deb/usr/local/lib/python2.7/dist-packages/*
 
 
-rm -rf src/pytestemb/*.pyc
-cp -rv src/pytestemb/ deb/usr/local/lib/python2.7/dist-packages
+
+cp -v ../../src/pytestemb/*.py deb/usr/local/lib/python2.7/dist-packages
 
 
 # write version
-version=$(grep -h "VERSION_STRING *= " src/pytestemb/__init__.py | sed s/"VERSION_STRING .*= \""// | sed s/'"'//)
+version=$(grep -h "VERSION_STRING *= " ../../src/pytestemb/__init__.py | sed s/"VERSION_STRING .*= \""// | sed s/'"'//)
 echo $version
 
 sed -i '/^Package: / c\
@@ -29,6 +29,6 @@ Version: '${version}'' ./deb/DEBIAN/control
 
 dpkg-deb --build deb $PACKAGE_NAME-${version}.deb
 
-rm -r ./deb/usr/local/lib/python2.7/dist-packages/*
+rm -rf deb/usr
 
 echo "end"

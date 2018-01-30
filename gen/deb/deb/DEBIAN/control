@@ -1,10 +1,10 @@
 Package: pytestemb-lib
-Version: 3.4.0
+Version: 3.4.2
 Section: python
 Priority: optional
 Architecture: all
 Maintainer: J.M.Beguinet
-Depends: python (>= 2.7), python (<< 2.8)
+Depends: python3 (>= 3.4)
 Description: PYTESTEMB library
  .
    * Unit testing framework
