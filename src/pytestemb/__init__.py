@@ -9,136 +9,7 @@ __email__       = "jm.beguinet@gmail.com"
 
 
 
-VERSION_STRING = "3.4.2"
-
-
-#    Historic :
-#
-#    * 3.4.2
-#       - logstash change PACKAGE_VERSION to SOFTWARE_VERSION
-#
-#    * 3.4.1
-#       - logstash add env variable SIMULATOR & NIGHTLY
-#
-#    * 3.4.0
-#       - remove sdterr redirection
-#
-#    * 3.3.5
-#       - logstash add env variable PRODUCT_NAME
-#       - integrate path for code quality improvement 
-#
-#    * 3.3.4
-#       - remove control caractere in string input (keep \n\t and replace unicode control character by code 0x0000) 
-#
-#    * 3.3.3
-#       - add timestamp for logstash json
-#
-#    * 3.3.2
-#       - fix issue on TraceTxt.trace_json
-#       - add HARDWARE_VERSION and PACKAGE_VERSION/HARDWARE_VERSION are evaluated for each logstash post
-#
-#    * 3.3.1
-#       - manage skip for doc
-#
-#    * 3.3.0
-#       - add skip case feature with decorator @skip(msg) and @skipif(msg)
-#
-#    * 3.2.1
-#       - logstash filter fix issue on event with empty info
-#
-#    * 3.2.0
-#       - logstash filter trace to limit flow : send only report, exception and json 
-#
-#    * 3.1.2
-#       - fix regression on jenkins_node_name and jenkins_build_name
-#
-#    * 3.1.1
-#       - improve logstash confirguration
-#       - factorization jenkins OS var & verification to avoid conflict with user json
-#
-#    * 3.1.0
-#       - add trace_json for logstash 
-#       - remove jenkins BUILD_URL and add remove prefix for NODE_NAME
-#
-#    * 3.0.3
-#       - improve multiline for txt and logstash trace (remove useless information)
-#
-#    * 3.0.2
-#       - logstash fix regression on jenkins_job_name 
-#
-#    * 3.0.1
-#       - logstash add jenkins BUILD_NUMBER 
-#
-#    * 3.0.0
-#       - add logstash json trace
-#       - remove doc option 
-#
-#    * 2.3.0
-#        - close trace ressources at end of script execution
-#
-#    * 2.2.2
-#        - add system time in txt trace
-#
-#    * 2.2.1
-#        - improve abortion during 'setup'
-#
-#    * 2.2.0
-#        - improve abortion info reporting : msg and case
-#
-#    * 2.1.0
-#        - pytestemb lib mode enable in arg '--pytestemb_lib_mode'
-#
-#    * 2.0.7
-#        - add set_tracecase callback for case name tracing in SUT trace
-#
-#    * 2.0.6
-#        - trace txt fix timestamp alignement
-#
-#    * 2.0.5
-#        - add multilines for trace io/env/script/layer
-#        - add parameter check on trace_trace function
-#
-#    * 2.0.4
-#        - object model : skip method that starts with '_' (private & disable)
-#
-#    * 2.0.3
-#        - object model : skip method that starts with '_' (private & disable)
-#
-#    * 2.0.2
-#        - fix Unicode issue on trace function (scope, tag and interface parameter)
-#
-#    * 2.0.1
-#        - fix issues with model object       
-#
-#    * 2.0.0
-#        - full compatibility with Pytestemb 1.x      
-#        - object model with automatic setup/case/cleanup discover
-#        - setup/cleanup status is displayed in report     
-#        - setup strategy : if exception occurs in setup, script is aborted              
-#        - new dynamic parser for object model          
-#        - get if assert has been generated during setup/case/cleanup execution               
-#
-# 
-#   
-#    class Test():
-#
-#        def setup(self):
-#            pass
-#    
-#        def cleanup(self):
-#            pass
-#    
-#        def case(self):
-#            pass
-#    
-#        def case(self):
-#            pass
-#
-#
-#    if __name__ == "__main__":
-#    
-#        pytestemb.run()
-#
+VERSION_STRING = "4.0.0"
 
 
 
@@ -152,13 +23,12 @@ import platform
 import pytestemb.trace as trace
 import pytestemb.valid as valid
 import pytestemb.result as result
-import pytestemb.pydoc as pydoc
 import pytestemb.pexception as pexeception
 import pytestemb.utils as utils
 
 
 
-from optparse import OptionParser
+import argparse
 from pytestemb.valid import Test
 from pytestemb.valid import skip
 from pytestemb.valid import skipif
@@ -188,35 +58,37 @@ def checker(parser, name, value):
 
 def parse():
     
-    parser = OptionParser()
+    parser = argparse.ArgumentParser()
     
-    parser.add_option("-r", "--result",
-                        action="store", type="string", dest="result", default=INTERFACE["result"][INTERFACE_DEFAULT],
-                        help="set the interface for result, value can be : %s" % INTERFACE["result"][INTERFACE_LIST].__str__())
-    parser.add_option("-t", "--trace",
-                        action="append", type="string", dest="trace", default=INTERFACE["trace"][INTERFACE_DEFAULT],
-                        help="set the interface for trace, value can be : %s" % INTERFACE["trace"][INTERFACE_LIST].__str__())
-    parser.add_option("-p", "--path",
-                        action="store", type="string", dest="path", default=None,
+    parser.add_argument("-r", "--result", action="store", type=str,  default="standalone",  help="set the interface for result")
+    parser.add_argument("-t", "--trace",
+                        action="append", type=str, dest="trace", default=[],
+                        help="set the interface for trace")
+    parser.add_argument("-p", "--path",
+                        action="store", type=str, dest="path", default=None,
                         help="add path to Python path")
-    parser.add_option("-c", "--config",
-                        action="store", type="string", dest="config", default=None,
+    parser.add_argument("-c", "--config",
+                        action="store", type=str, dest="config", default=None,
                         help="add config general purpose string (flag, filename ...)")
-    parser.add_option("-m", "--mode",
-                        action="store", type="string", dest="mode", default=None,
+    parser.add_argument("-m", "--mode",
+                        action="store", type=str, dest="mode", default=None,
                         help="add mode general purpose string (debug, ...)")
-    parser.add_option("-v", "--version",
-                        action="store_true", dest="ver", default=False,
-                        help="version of software")    
     
-    (options, args) = parser.parse_args()
+    parser.add_argument("--json",
+                        action="store", type=str, default=None,
+                        help="json report")
+    parser.add_argument("--junit",
+                        action="store", type=str, default=None,
+                        help="junit report")
     
-    if args != []:
-        parser.error("Argument invalid %s " % args.__str__())
-    checker(parser, "result", options.result)
-    for item in options.trace:
-        checker(parser, "trace", item)
-    return options
+    parser.add_argument("-v", "--version", action="version", version=VERSION_STRING,  help="version of software")    
+    
+    
+    args = parser.parse_args()
+
+    
+
+    return args
 
 
 
@@ -224,19 +96,12 @@ def parse():
 if sys.argv[1:].count("--pytestemb_lib_mode") == 1:
     pass
 else:
-    OPTIONS = parse()
-    if OPTIONS.path is not None:
-        sys.path.append(OPTIONS.path)
-    if OPTIONS.ver :
-        sys.stdout.write("pytestemb\n")
-        sys.stdout.write("Version   : %s\n" % VERSION_STRING)
-        sys.stdout.write("Copyright : %s\n" % __copyright__)
-        sys.stdout.write("Copyright : %s\n" % __license__)
-        sys.stdout.write("Contact   : %s\n" % __email__)
-        sys.exit(0)
+    arg = parse()
+    if arg.path is not None:
+        sys.path.append(arg.path)
 
-    trace.TraceManager.create(OPTIONS.trace)
-    result.Result.create(OPTIONS.result, trace.TraceManager.get())
+    trace.TraceManager.create(arg.trace)
+    result.Result.create(arg.result, trace.TraceManager.get(), arg.json, arg.junit)
     valid.Valid.create(result.Result.get())
     
     trace.TraceManager.get().set_result(result.Result.get())
@@ -606,17 +471,6 @@ def is_assert():
     return result.Result.get().is_assert()
 
 
-
-
-
-
-
-###########################################
-# Compatibility with Pytestemb 1.x
-###########################################
-
-# alias
-run_script = run
 
 
 

@@ -52,7 +52,7 @@ class Result(object):
     SKIP                = "SKIP"
     
 
-    def __init__(self, inst_trace):
+    def __init__(self, inst_trace, rjson, rjunit):
         self.trace          = inst_trace
         self.start_date     = time.localtime()
         self.start_clock    = time.clock()
@@ -64,6 +64,10 @@ class Result(object):
         self.setup      = False
         self.cleanup    = False
         
+        self.rjson = rjson
+        self.rjunit = rjunit
+        
+        
         self.result     = []
         self.time_exec  = None
         
@@ -74,14 +78,14 @@ class Result(object):
 
 
     @classmethod
-    def create(cls, interface, mtrace):
+    def create(cls, interface, mtrace, rjson, rjunit):
     
         if   interface == "none" :
-            res = Result(mtrace)
+            res = Result(mtrace, rjson, rjunit)
         elif interface == "stdout" :
-            res = ResultStdout(mtrace)
+            res = ResultStdout(mtrace, rjson, rjunit)
         elif interface == "standalone" :
-            res = ResultStandalone(mtrace)
+            res = ResultStandalone(mtrace, rjson, rjunit)
         else:
             assert False
         cls.__single = res
@@ -499,8 +503,8 @@ class ResultStdout(Result):
 
 
 
-    def __init__(self, inst_trace):
-        Result.__init__(self, inst_trace)
+    def __init__(self, inst_trace, rjson, rjunit):
+        Result.__init__(self, inst_trace, rjson, rjunit)
 
     @staticmethod
     def write_no_arg( key):
@@ -659,8 +663,8 @@ class ResultStdout(Result):
 class ResultStandalone(Result):
     
 
-    def __init__(self, inst_trace):
-        Result.__init__(self, inst_trace)
+    def __init__(self, inst_trace, rjson, rjunit):
+        Result.__init__(self, inst_trace, rjson, rjunit)
         
         self.report_add_callback(ResultStandalone.write_stdout)
 
@@ -920,6 +924,38 @@ class ResultScript(object):
         return sstr
 
 
-
+class Report(object):
+    
+    
+    def __init__(self, filename):
+        self.filename
+    
+    def generate(self):
+        raise NotImplementedError
+    
+    
+    
+    
+class ReportJson(Report):
+    
+    
+    def __init__(self, filename):
+        Report.__init__(self, filename)
+    
+    
+    def generate(self):
+        pass
+    
+    
+    
+class ReportJunit(Report):
+    
+    def __init__(self, filename):
+        Report.__init__(self, filename)
+    
+    
+    def generate(self):
+        pass
+        
 
 
