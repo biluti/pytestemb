@@ -13,6 +13,8 @@ __email__       = "jm.beguinet@gmail.com"
 
 import sys
 import time
+import json
+import pprint
 import inspect
 
 
@@ -47,7 +49,6 @@ class Result(object):
     ABORT               = "ABORT"
     ABORTED             = "ABORTED"
     TRACE               = "TRACE"
-    DOC                 = "DOC"
     TAGVALUE            = "TAGVALUE"
     SKIP                = "SKIP"
     
@@ -287,8 +288,6 @@ class Result(object):
     def tag_value(self, des):
         pass    
 
-    def doc(self, des):
-        pass
 
     def trace_ctrl(self, des):
         # delay sending
@@ -324,9 +323,21 @@ class Result(object):
 
     def report_script_stop(self, des):
         
+        self.time_exec = des["time"] - self.time_exec   
+        
+        if self.rjson is not None:
+            self.report_json(des, self.rjson)
+        if self.rjunit is not None:
+            self.report_junit(des, self.rjunit)
+            
+        self.report_txt(des)            
+         
+    
+    
+    def report_txt(self, des):    
         SIZE = 95
     
-        self.time_exec = des["time"] - self.time_exec     
+          
         
         # | aborted |   ok    |   ko    | result
         # +---------+---------+---------+--------
@@ -356,7 +367,6 @@ class Result(object):
                 name = "%s" % case["case"].capitalize()
             else:
                 name = "Case '%s'" % case["case"]
-            
             if case[self.ABORTED] > 0 or aborted:
                 self.report_add_line(name, "aborted")
                 aborted = True
@@ -390,6 +400,70 @@ class Result(object):
         
         self.report_trace("+%s+\n" % ("-"*SIZE))
 
+
+
+
+    def report_json(self, des, filename):
+        self.report_trace("Report json : ")
+        data = {}
+        data["name"] = utils.get_script_name()
+        data["timeexec"] = self.time_exec
+        data["case"] = []
+        for case in self.result :
+            data["case"].append(case)
+        try:
+            with open(filename, "w") as fd:
+                json.dump(data, fd, indent=4)
+            self.report_trace("{}\n".format(filename))
+        except IOError, ex:
+            self.report_trace("Write IOError {}\n".format(ex))
+    
+    
+    def report_junit(self, des, filename):
+        self.report_trace("Report junit :")
+        try:
+            from junit_xml import TestSuite, TestCase
+        except ImportError:
+            self.report_trace("Python Junit is not installed\n")      
+            return 
+        
+        time_exec = des["time"] - self.time_exec  
+
+
+        aborted = False        
+        test_cases = []
+        for case in self.result :
+            tc = TestCase(case["case"], elapsed_sec=time_exec)
+            
+            if case[self.ABORTED] > 0 or aborted:
+                aborted = True
+                tc.add_error_info(output="aborted")  
+            elif    case[self.PY_EXCEPTION] != None :    
+                pass
+            elif    case[self.SKIP] > 0 :
+                pass
+                tc.add_error_info(output="skip")             
+            elif    case[self.ASSERT_KO] == 0 \
+                and case[self.ASSERT_OK] > 0:
+                pass
+            elif    case[self.ASSERT_KO] == 0 \
+                and case[self.ASSERT_OK] == 0:
+                pass
+            else:
+                tc.add_error_info(output=pprint.pformat(case, indent=4))  
+                   
+                         
+            test_cases.append(tc)
+            
+        
+        ts = TestSuite(utils.get_script_name(), test_cases)            
+        try:
+            with open(filename, "w") as fd:
+                TestSuite.to_file(fd, [ts], prettyprint=True)
+            self.report_trace("{}\n".format(filename))
+        except IOError, ex:
+            self.report_trace("Write IOError {}\n".format(ex))        
+        
 
     def report_case_start(self, des):
         self.result.append({"case":des["name"]})
@@ -643,9 +717,6 @@ class ResultStdout(Result):
     def tag_value(self, des):
         self.write(ResultStdout.TAGVALUE, "%s=%s" % (des.keys()[0], des.values()[0]))
 
-    @trace
-    def doc(self, des):
-        self.write(ResultStdout.DOC, des)
 
     def trace_ctrl(self, des):
         # delay sending
@@ -675,15 +746,12 @@ class ResultStandalone(Result):
     @stamp
     @trace
     def script_start(self, des):
-        
         self.report_script_start(des)
-        
         dis = ""
         dis += "Start running '%s' ...\n" % des["name"]
         for item in self.delay_trace_ctrl:
             dis += "Trace : %s\n" % item
         dis += "\n"
-        
         self.write_stdout(dis)
 
        
@@ -813,14 +881,11 @@ class ResultStandalone(Result):
     @stamp
     @trace        
     def abort(self, des):
-        
         self.report_abort()
-        
         if "msg" in des:   
             msg = des["msg"]
         else:
             msg = ""     
-            
         dis = ""
         dis += "Abort : '%s'\n" % msg
         
@@ -847,9 +912,7 @@ class ResultStandalone(Result):
     
     @trace
     def skip(self, des):
-        
         self.report_skip()
-        
         if "msg" in des:   
             msg = des["msg"]
         else:
@@ -861,12 +924,6 @@ class ResultStandalone(Result):
     def tag_value(self, des):
         pass
         
-    @trace
-    def doc(self, des):
-        self.write_stdout("\n")
-        self.write_stdout("Name : %s\n" % des["name"])
-        self.write_stdout("Type : %s\n" % des["type"])
-        self.write_stdout("Doc :\n%s\n" % des["doc"])
 
 
 
@@ -924,38 +981,5 @@ class ResultScript(object):
         return sstr
 
 
-class Report(object):
-    
-    
-    def __init__(self, filename):
-        self.filename
-    
-    def generate(self):
-        raise NotImplementedError
-    
-    
-    
-    
-class ReportJson(Report):
-    
-    
-    def __init__(self, filename):
-        Report.__init__(self, filename)
-    
-    
-    def generate(self):
-        pass
-    
-    
-    
-class ReportJunit(Report):
-    
-    def __init__(self, filename):
-        Report.__init__(self, filename)
-    
-    
-    def generate(self):
-        pass
-        
 
 
