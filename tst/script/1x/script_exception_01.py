@@ -25,7 +25,7 @@ if __name__ == "__main__":
     
     test.add_test_case(case_01)
     test.add_test_case(case_02)
-    test.run_script()
+    test.run()
 
     
 

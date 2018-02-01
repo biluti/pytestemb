@@ -25,7 +25,7 @@ if __name__ == "__main__":
     
     test.add_test_case(case_msg_txt)
     test.add_test_case(case_msg_int)
-    test.run_script()
+    test.run()
 
     
     

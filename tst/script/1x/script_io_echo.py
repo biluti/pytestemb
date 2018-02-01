@@ -34,7 +34,7 @@ if __name__ == "__main__":
     
     test.set_setup(setup)
     test.add_test_case(check_io)
-    test.run_script()
+    test.run()
 
     
     

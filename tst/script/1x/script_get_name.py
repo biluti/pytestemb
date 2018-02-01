@@ -50,7 +50,7 @@ if __name__ == "__main__":
     test.add_test_case(a)
     test.add_test_case(b)
     test.set_cleanup(stop)
-    test.run_script()
+    test.run()
 
     
     

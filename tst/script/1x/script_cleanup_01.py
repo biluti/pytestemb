@@ -35,7 +35,7 @@ if __name__ == "__main__":
     test.set_setup(setup)
     test.add_test_case(case_01)
     test.set_cleanup(cleanup)
-    test.run_script()
+    test.run()
 
     
     

@@ -37,7 +37,7 @@ if __name__ == "__main__":
     for i in range(ran_test_number()):
         test.add_test_case(test_ko)
         
-    test.run_script()
+    test.run()
 
 
 

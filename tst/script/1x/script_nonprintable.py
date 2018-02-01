@@ -51,7 +51,7 @@ if __name__ == "__main__":
     test.add_test_case(test_assert)
     test.add_test_case(test_trace)
     test.add_test_case(test_assert_equal)
-    test.run_script()
+    test.run()
 
 
 

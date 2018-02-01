@@ -46,7 +46,7 @@ if __name__ == "__main__":
     test.add_test_case(defaultValue)
     test.set_cleanup(stop)
     test.set_destroy(destroy)
-    test.run_script()
+    test.run()
 
     
     

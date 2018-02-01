@@ -64,7 +64,7 @@ if __name__ == "__main__":
     test.add_trace(["txt", "logstash", "octopylog"])
 
         
-    test.run_script()
+    test.run()
 
 
 

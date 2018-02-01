@@ -69,7 +69,7 @@ if __name__ == "__main__":
     test.add_test_case(boundValue)
     test.add_test_case(loop)
     test.set_cleanup(stop)
-    test.run_script()
+    test.run()
 
     
     

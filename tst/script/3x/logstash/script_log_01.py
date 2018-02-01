@@ -43,7 +43,7 @@ if __name__ == "__main__":
     
 
         
-    test.run_script()
+    test.run()
 
 
 

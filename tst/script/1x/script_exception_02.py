@@ -23,7 +23,7 @@ if __name__ == "__main__":
     
     
     test.add_test_case(deep_00)
-    test.run_script()
+    test.run()
 
     
 

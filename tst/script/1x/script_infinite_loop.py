@@ -35,7 +35,7 @@ if __name__ == "__main__":
     
     test.set_doc(__doc__)
     test.add_test_case(wait_long_time)
-    test.run_script()
+    test.run()
 
     
     

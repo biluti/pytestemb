@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
 
     test.add_test_case(test_parsing)
-    test.run_script()
+    test.run()
 
 
 

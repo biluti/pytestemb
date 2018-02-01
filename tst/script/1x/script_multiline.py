@@ -58,7 +58,7 @@ if __name__ == "__main__":
     test.add_test_case(multi_100)
     test.add_test_case(multi_utf8)
     test.set_cleanup(stop)
-    test.run_script()
+    test.run()
 
     
     

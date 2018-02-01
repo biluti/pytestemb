@@ -31,7 +31,7 @@ if __name__ == "__main__":
     
     test.add_test_case(defaultValue)
     test.add_test_case(boundValue)
-    test.run_script()
+    test.run()
 
     
     
