@@ -96,12 +96,12 @@ def parse():
 if sys.argv[1:].count("--pytestemb_lib_mode") == 1:
     pass
 else:
-    arg = parse()
-    if arg.path is not None:
-        sys.path.append(arg.path)
+    ARGS = parse()
+    if ARGS.path is not None:
+        sys.path.append(ARGS.path)
 
-    trace.TraceManager.create(arg.trace)
-    result.Result.create(arg.result, trace.TraceManager.get(), arg.json, arg.junit)
+    trace.TraceManager.create(ARGS.trace)
+    result.Result.create(ARGS.result, trace.TraceManager.get(), ARGS.json, ARGS.junit)
     valid.Valid.create(result.Result.get())
     
     trace.TraceManager.get().set_result(result.Result.get())
@@ -113,7 +113,8 @@ else:
     trace.TraceManager.get().trace_env(SCOPE_CF, "Python-version : %s" % platform.python_version())
     trace.TraceManager.get().trace_env(SCOPE_CF, "Plateform : %s" % platform.platform(terse=True))
     trace.TraceManager.get().trace_env(SCOPE_CF, "Default encoding : %s" % sys.getdefaultencoding())
-
+    trace.TraceManager.get().trace_env(SCOPE_CF, "Report json : %s" % ARGS.json)
+    trace.TraceManager.get().trace_env(SCOPE_CF, "Report junit : %s" % ARGS.junit)
 
 
 
@@ -225,15 +226,15 @@ def _create_des_(msg):
 
 
 def get_config():
-    return OPTIONS.config
+    return ARGS.config
 
 
 def get_mode():
-    return OPTIONS.mode
+    return ARGS.mode
 
 
 def get_path():
-    return OPTIONS.path
+    return ARGS.path
 
 
 def get_script_name():
