@@ -44,7 +44,7 @@ INTERFACE_LIST = 1
 INTERFACE["result"] = (("standalone"),
                        ("none", "standalone", "stdout"))
 INTERFACE["trace"] =  ([],
-                       ("none", "octopylog", "txt", "logstash"))
+                       ("none", "octopylog", "txt", "logstash", "logtxt"))
 
 
 

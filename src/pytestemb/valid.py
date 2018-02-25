@@ -251,6 +251,7 @@ class Valid(object):
             self._result.skip({"msg":"%s" % ex})           
         except (Exception), (error):
             self.inspect_traceback(error)
+            
 
 
     def run_abort(self, func):
@@ -298,6 +299,7 @@ class Valid(object):
             self._result.skip({"msg":"%s" % ex})            
         except (Exception), (error):
             self.inspect_traceback(error)
+            self._set_aborted(error)
  
  
 

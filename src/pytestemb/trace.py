@@ -146,7 +146,7 @@ class TraceManager(Trace):
     TRACE_TXT       = "txt"
     TRACE_LOGSTASH  = "logstash"
     TRACE_NONE      = "none"
-    
+    TRACE_LOG_TXT   = "logtxt"
                    
     
     def __init__(self):
@@ -254,6 +254,8 @@ class TraceManager(Trace):
                 self.add_trace(self.TRACE_TXT,       TraceTxt())
             elif interface == self.TRACE_LOGSTASH:
                 self.add_trace(self.TRACE_LOGSTASH,  TraceLogstash())                
+            elif interface == self.TRACE_LOG_TXT:
+                self.add_trace(self.TRACE_LOG_TXT,  TraceLoggingTxt())     
             elif interface == self.TRACE_NONE:
                 pass
             else:
@@ -809,5 +811,135 @@ class TraceLogstash(Trace):
         
         
         
+class TraceLoggingTxt(Trace):
+
+    SIZE_SCOPE = 24
+    
+    SCOPE_MAPPING = {   "assert_ko":"result",
+                        "assert_ok":"result",
+                        "py_exception":"exception",}
+
+    DEFAULT_DIR = "/tmp/pytestemb"
+  
+
+    def __init__(self):
+        Trace.__init__(self)
+        self.file = None
+
+    def get_filename(self):
+        if self.file is None:
+            return self.file
+        else:
+            self.file.flush()
+            return self.file.name
+
+
+    def start(self):     
+        #self.logger = logging.getLogger("pytestemb")
+        #pathfile =  os.path.join(TraceTxt.DEFAULT_DIR, self.gen_file_name())
+        pathfile =  os.path.join(TraceTxt.DEFAULT_DIR, "log.txt")
+ 
+        ch = logging.FileHandler(pathfile, mode='w', encoding="utf-8", delay=False)
+        ch.setLevel(logging.DEBUG)
+        ch.setFormatter(self.formater())
+  
+        root = logging.getLogger("")
+        root.setLevel(logging.DEBUG)
+        root.addHandler(ch)
+
         
+        # create file
+        des = dict({"type":"log", "file":pathfile})
+        self.result.trace_ctrl(des)
+        self.add_header()
+        
+
+
+    @classmethod
+    def formater(cls):
+        FIELDS = []
+        FIELDS.append("%(asctime)s")
+        FIELDS.append("%(name)24s")
+        FIELDS.append("%(levelname)7s")
+        FIELDS.append("%(message)s")
+        formatter = logging.Formatter(" | ".join(FIELDS))
+        return formatter
+
+        
+    
+    def stop(self):
+        pass
+
+    @staticmethod
+    def gen_file_name():
+        name_script = utils.get_script_name()
+        name_hash = TraceManager.get().get_ueid()
+        return "%s_%s.log" % (name_script, name_hash)
+
+
+    def _log(self, msg):
+        logging.info(msg.strip("\n"))
+        
+
+
+    def add_header(self):
+        self._log("Script file    : %s" % sys.argv[0])
+        
+    
+    def add_line(self, scope, msg):
+        #scope = scope.ljust(TraceTxt.SIZE_SCOPE)
+        for i in msg: 
+            self._log("[{}] {}".format(scope, i))
+
+
+    def _trace_multiline(self, scope, msg):
+        ALIGN = 13
+        
+        msg = msg.strip("\n\r")
+        msg = msg.splitlines()
+        if len(msg) == 1:
+            self.add_line(scope, msg)
+        else:
+            data = []
+            data.append("Start multiline :")
+            for index, line in enumerate(msg):
+                ln = "%d" % index
+                ln = ln.ljust(ALIGN)
+                data.append("%s%s" % (ln, line))  
+            
+            self.add_line(scope, data)    
+        
+        
+    def trace_script(self, msg):
+        self._trace_multiline("script", msg)
+               
+    def trace_io(self, interface, data):
+        self._trace_multiline(interface, data)
+
+    def trace_result(self, name, des):
+        try:
+            scope = self.SCOPE_MAPPING[name]
+        except KeyError:
+            scope = "sequence"
+
+        ll = self.format_result(name, des)
+        self.add_line(scope, ll)
+                      
+                      
+    def trace_report(self, msg):
+        self._log(msg)
+
+    def trace_warning(self, des):
+        self.add_line("Warning", [des["msg"]])
+        
+    def trace_env(self, scope, data):
+        self._trace_multiline(scope, data)
+
+    def trace_layer(self, scope, data):
+        self._trace_multiline(scope, data)
+        
+    def trace_json(self, obj):
+        sjson = json.dumps(obj)
+        self.add_line("json", [sjson])
+                
         
