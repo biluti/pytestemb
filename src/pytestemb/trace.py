@@ -15,10 +15,8 @@ import os
 import sys
 import time
 import json
-import socket
 import codecs
 import hashlib
-import platform
 import datetime
 
 
@@ -175,9 +173,9 @@ class TraceManager(Trace):
         return self._ueid
         
     @classmethod
-    def create(cls, interfaces):
+    def create(cls, txt, sock):
         cls.__single = cls()
-        cls.__single.add_traces(interfaces)
+        cls.__single.add_traces(txt, sock)
         return cls.__single
     
     @classmethod
@@ -244,30 +242,22 @@ class TraceManager(Trace):
             i.trace_json(obj)
         
 
-    def add_traces(self, interfaces):
-        for interface in interfaces:
-            if interface == self.TRACE_OCTOPYLOG:
-                self.add_trace(self.TRACE_OCTOPYLOG, TraceOctopylog())
-            elif interface == self.TRACE_STDOUT:
-                self.add_trace(self.TRACE_STDOUT,    TraceStdout())
-            elif interface == self.TRACE_TXT:
-                self.add_trace(self.TRACE_TXT,       TraceTxt())
-            elif interface == self.TRACE_LOGSTASH:
-                self.add_trace(self.TRACE_LOGSTASH,  TraceLogstash())                
-            elif interface == self.TRACE_LOG_TXT:
-                self.add_trace(self.TRACE_LOG_TXT,  TraceLoggingTxt())     
-            elif interface == self.TRACE_NONE:
-                pass
-            else:
-                raise ValueError("Invalid interfaces")
+    def add_traces(self, txt=None, sock=None):
+        
+        if txt is not None:
+            self.add_trace(self.TRACE_TXT, TraceLoggingTxt(txt))    
+        if sock is not None:
+            self.add_trace(self.TRACE_OCTOPYLOG, TraceOctopylog(sock))            
+    
 
 
 
 
 class TraceOctopylog(Trace):
 
-    def __init__(self):
+    def __init__(self, port):
         Trace.__init__(self)
+        self.port = port
         self._scope = {}
 
     def start(self):
@@ -276,7 +266,7 @@ class TraceOctopylog(Trace):
         else:
             self.started = True
             
-        self.sockethandler = logging.handlers.SocketHandler("localhost", logging.handlers.DEFAULT_TCP_LOGGING_PORT)
+        self.sockethandler = logging.handlers.SocketHandler("localhost", self.port)
         self.rootlogger = logging.getLogger("pytestemb")
         self.rootlogger.setLevel(logging.INFO)
         self.rootlogger.addHandler(self.sockethandler)
@@ -427,12 +417,7 @@ class TraceTxt(Trace):
                          "py_exception":"exception",
                          }
 
-    if      platform.system() == "Linux":
-        DEFAULT_DIR = "/tmp/pytestemb"
-    elif    platform.system() == "Windows":
-        DEFAULT_DIR = "c:\\temp\\pytestemb"
-    else:
-        raise Exception("Platform not supported")
+
 
     def __init__(self):
         Trace.__init__(self)
@@ -566,250 +551,6 @@ class TraceTxt(Trace):
 
 
 
-
-class TraceLogstash(Trace):
-
-
-    DEFAULT_DIR = "/tmp/logstash"
-
-    SCOPE_MAPPING = {   "assert_ko":    "result",
-                        "assert_ok":    "result",
-                        "py_exception": "exception",}
-    
-    TYPE_LOG = "pytestemb_log"
-    TYPE_RES = "pytestemb_result"
-    TYPE_CUS = "pytestemb_cus"
-    TYPE_STA = "pytestemb_statistic"
-
-
-    SCOPE = ["result", "sequence"]
-
-    def __init__(self):
-        Trace.__init__(self)
-        self.file = None
-        self._base_data = None
-        
-
-    def start(self):
-        
-        self.create_base_data()
-        if self.started:
-            return
-        else:
-            self.started = True        
-
-        if not(os.path.lexists(TraceLogstash.DEFAULT_DIR)):
-            os.mkdir(TraceLogstash.DEFAULT_DIR)
-
-        pathfile =  os.path.join(TraceLogstash.DEFAULT_DIR, self.gen_file_name())
-        des = dict({"type":"json", "file":pathfile})
-        try :
-            self.file = codecs.open(pathfile, encoding="utf-8", mode="w", buffering=-1)
-        except (IOError), (error):
-            self.file = None
-            des["error"] = error.__str__()
-            raise
-        self.result.trace_ctrl(des)
-
-    @staticmethod
-    def gen_file_name():
-        name_script = utils.get_script_name()
-        name_hash = TraceManager.get().get_ueid()
-        return "%s_%s.json" % (name_script, name_hash)
-    
-        
-    def stop(self):
-        if self.started:
-            self.file.close()
-            self.started = False        
-        else:
-            return
-
-    def _trace_multiline(self, scope, msg):
-        
-        msg = msg.strip("\n\r")
-        msg = msg.splitlines()
-        if len(msg) == 1 :
-            self.add_evts(scope, msg)
-        else :
-            data = []
-            data.append("%s%s" % (0, msg[0]))
-            data.append("...")
-            data.append("%s%s" % (len(msg), msg[-1]))
-            self.add_evts(scope, data)    
-            
-            
-
-
-
-    def create_base_data(self):
-        data = {}
-        
-        def remove_jenkins_prefix(value):
-            if value is None:
-                return None
-            else:
-                return value.replace("jenkins-", "")
-             
-        job_name = os.getenv('JOB_NAME', None)            
-        data["jenkins_job_name"] = remove_jenkins_prefix(job_name)     
-        build_name = os.getenv('BUILD_TAG', None)            
-        data["jenkins_build_name"]    = remove_jenkins_prefix(build_name)
-                      
-        data["jenkins_node_name"]     = os.getenv('NODE_NAME', None)     
-        #data["jenkins_build_number"]  = os.getenv('BUILD_NUMBER', None)
-        data["host"]                  = socket.gethostname()
-        data["script"]                = utils.get_script_name()
-        data["source"]                = "pytestemb"
-        self._base_data = data
-        
-    def is_scope(self, name):
-        return name in self.SCOPE
-
-    @staticmethod
-    def str_to_bool(v):
-        return v.lower() in ("true", "1")
-  
-  
-    def get_version(self):
-        data = {}
-        data["package_version"]       = os.getenv('SOFTWARE_VERSION', None)
-        data["hardware_version"]      = os.getenv('HARDWARE_VERSION', None)  
-        data["simulator"]             = self.str_to_bool(os.getenv('SIMULATOR', ""))  
-        data["nightly"]               = self.str_to_bool(os.getenv('NIGHTLY', ""))
-        return data
-    
-    def get_product(self):
-        data = {}
-        data["product_name"] = os.getenv('PRODUCT_NAME', None)  
-        return data        
-
-
-    def get_timestamp(self):
-        data = {}
-        data["timestamp"] =  datetime.datetime.now().isoformat()
-        return data
-
-
-    def get_base_data(self):
-        data = dict(self._base_data)
-        data.update(self.get_version())
-        data.update(self.get_product())
-        data.update(self.get_timestamp())
-        return data
-
-    def add_evts(self, scope, msg):
-        for m in msg:
-            data = self.get_base_data()
-            data["type"]     = self.TYPE_LOG
-            data["scope"]    = scope
-            data["msg"]      = m
-            sjson = json.dumps(data)
-            self.file.write(sjson + "\n")
-
-    
-    def trace_script(self, msg):
-        #self._trace_multiline("script", msg)
-        pass
-
-    def trace_io(self, interface, data):
-        #self._trace_multiline(interface, data)
-        pass
-
-    def trace_result(self, name, des):
-
-        try:
-            scope = self.SCOPE_MAPPING[name]
-        except KeyError:
-            scope = "sequence"
-
-        line = []
-        if   name == "abort":
-            
-            if "msg" in des:
-                msg = des["msg"]
-            else:
-                msg = ""
-            line.append("%s : '%s'" % (name, msg))
-
-            for i in des["stack"]:
-                line.append("File '%s', line %d, in %s" % (i["path"], i["line"], i["function"]))
-                line.append("%s" % (i["code"]))    
-            line.append("File '%s', line %d, in %s" % (des["file"], des["line"], des["function"]))
-
-        elif  name == "py_exception":
-            line.append("%s : %s" % (des["exception_class"], des["exception_info"]))
-            for i in des["stack"]:
-                line.append("File '%s', line %d, in %s" % (i["path"], i["line"], i["function"]))
-                line.append(" %s" % (i["code"]))
-        else:
-            pass
-        
-        if len(line) == 0:
-            pass
-        else:
-            self.add_evts(scope, ["\n".join(line)])
- 
-
-
-                  
-                      
-    def trace_report(self, msg):
-        
-        if msg.startswith("| Case"):
-            case = msg.split("|")[1].strip(" ").replace("Case ", "").strip("'")
-            result = msg.split("|")[2].strip(" ")
-            result = result.replace("?", "na").lower()
-            
-            if result == "skip":
-                return 
-            else:
-                data = self.get_base_data()
-                data["type"]     = self.TYPE_RES
-                data["case"]     = case
-                data["result"]   = result
-            
-        elif msg.startswith("| Script time execution"):
-            timex = float(msg.split("|")[2].strip(" ").replace("(sec)", "").strip("'"))
-
-            data = self.get_base_data()
-            data["type"]    = self.TYPE_STA
-            data["timex"]   = timex
-   
-        else:
-            return
-        
-        sjson = json.dumps(data)
-        self.file.write(sjson + "\n")                 
-
-
-    def trace_warning(self, des):
-        self.add_evts("Warning", [des["msg"]])
-        
-    def trace_env(self, scope, data):
-        pass
-        #self._trace_multiline(scope, data)
-
-    def trace_layer(self, scope, data):
-        pass
-        #self._trace_multiline(scope, data)
-    
-    def trace_json(self, obj):
-        
-        data = self.get_base_data()
-        data["type"] = self.TYPE_CUS
-        
-        inter = list(set(data).intersection(obj.keys()))
-        if len(inter) > 0:
-            raise ValueError("Key conflict, reserverd for pytestemb : %s" % inter)
-        else:    
-            data.update(obj)
-        sjson = json.dumps(data)
-        self.file.write(sjson + "\n")     
-        
-        
-        
-        
         
 class TraceLoggingTxt(Trace):
 
@@ -819,12 +560,14 @@ class TraceLoggingTxt(Trace):
                         "assert_ok":"result",
                         "py_exception":"exception",}
 
-    DEFAULT_DIR = "/tmp/pytestemb"
-  
 
-    def __init__(self):
+    def __init__(self, destination):
         Trace.__init__(self)
+        self.destination = destination
         self.file = None
+        self.logger = logging.getLogger("pytestemb") 
+        
+        
 
     def get_filename(self):
         if self.file is None:
@@ -835,15 +578,14 @@ class TraceLoggingTxt(Trace):
 
 
     def start(self):     
-        #self.logger = logging.getLogger("pytestemb")
-        #pathfile =  os.path.join(TraceTxt.DEFAULT_DIR, self.gen_file_name())
-        pathfile =  os.path.join(TraceTxt.DEFAULT_DIR, "log.txt")
+
+        pathfile =  os.path.join(self.destination, self.gen_file_name())
  
         ch = logging.FileHandler(pathfile, mode='w', encoding="utf-8", delay=False)
         ch.setLevel(logging.DEBUG)
         ch.setFormatter(self.formater())
   
-        root = logging.getLogger("")
+        root = logging.getLogger()
         root.setLevel(logging.DEBUG)
         root.addHandler(ch)
 
@@ -853,8 +595,7 @@ class TraceLoggingTxt(Trace):
         self.result.trace_ctrl(des)
         self.add_header()
         
-
-
+        
     @classmethod
     def formater(cls):
         FIELDS = []
@@ -878,7 +619,7 @@ class TraceLoggingTxt(Trace):
 
 
     def _log(self, msg):
-        logging.info(msg.strip("\n"))
+        self.logger.info(msg.strip("\n"))
         
 
 

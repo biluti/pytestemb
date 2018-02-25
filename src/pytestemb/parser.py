@@ -175,22 +175,7 @@ class ResultStdoutReader(StdoutReader):
             pass
 
 
-class DocStdoutReader(StdoutReader):
-    
-    def __init__(self):
-        StdoutReader.__init__(self)
-        self.data = []
-        
-    def __str__(self):
-        return ""
-    
-    def process(self, key, value):
-        # DOC
-        if  key == result.ResultStdout.DOC :
-            self.data.append(self.conv_dict(value))
-        else:
-            pass
-            #print "key=%s value=%s" % (key, value)
-            
-            
+
+
+
             

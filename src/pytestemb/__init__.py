@@ -18,7 +18,7 @@ import sys
 import types
 import platform
 
-
+import logging
 
 import pytestemb.trace as trace
 import pytestemb.valid as valid
@@ -47,13 +47,15 @@ INTERFACE["trace"] =  ([],
                        ("none", "octopylog", "txt", "logstash", "logtxt"))
 
 
+LOG_SOCKET_DEFAUT_PORT = logging.handlers.DEFAULT_TCP_LOGGING_PORT
 
-def checker(parser, name, value):
-    for line in INTERFACE[name][INTERFACE_LIST] :
-        if line == value:
-            break
-    else :
-        parser.error("Interface %s is not valid, see --help" % value)
+
+# def checker(parser, name, value):
+#     for line in INTERFACE[name][INTERFACE_LIST] :
+#         if line == value:
+#             break
+#     else :
+#         parser.error("Interface %s is not valid, see --help" % value)
 
 
 def parse():
@@ -61,33 +63,27 @@ def parse():
     parser = argparse.ArgumentParser()
     
     parser.add_argument("-r", "--result", action="store", type=str,  default="standalone",  help="set the interface for result")
-    parser.add_argument("-t", "--trace",
-                        action="append", type=str, dest="trace", default=[],
-                        help="set the interface for trace")
-    parser.add_argument("-p", "--path",
-                        action="store", type=str, dest="path", default=None,
-                        help="add path to Python path")
-    parser.add_argument("-c", "--config",
-                        action="store", type=str, dest="config", default=None,
-                        help="add config general purpose string (flag, filename ...)")
-    parser.add_argument("-m", "--mode",
-                        action="store", type=str, dest="mode", default=None,
-                        help="add mode general purpose string (debug, ...)")
+
+    parser.add_argument("-lt", "--logtxt", help="")
+    parser.add_argument("-ls", "--logsock", type=int, help="")
+        
+    parser.add_argument("-p", "--pypath", type=str, default=None,  help="add path to Python path")
     
-    parser.add_argument("--json",
-                        action="store", type=str, default=None,
-                        help="json report")
-    parser.add_argument("--junit",
-                        action="store", type=str, default=None,
-                        help="junit report")
+#     parser.add_argument("-c", "--config",
+#                         action="store", type=str, dest="config", default=None,
+#                         help="add config general purpose string (flag, filename ...)")
+#     
+#     parser.add_argument("-m", "--mode",
+#                         action="store", type=str, dest="mode", default=None,
+#                         help="add mode general purpose string (debug, ...)")
     
+    
+    parser.add_argument("--json", action="store", type=str, default=None, help="json report")
+    parser.add_argument("--junit", action="store", type=str, default=None, help="junit report")
     parser.add_argument("-v", "--version", action="version", version=VERSION_STRING,  help="version of software")    
     
     
     args = parser.parse_args()
-
-    
-
     return args
 
 
@@ -97,24 +93,42 @@ if sys.argv[1:].count("--pytestemb_lib_mode") == 1:
     pass
 else:
     ARGS = parse()
-    if ARGS.path is not None:
-        sys.path.append(ARGS.path)
-
-    trace.TraceManager.create(ARGS.trace)
-    result.Result.create(ARGS.result, trace.TraceManager.get(), ARGS.json, ARGS.junit)
-    valid.Valid.create(result.Result.get())
     
+    
+    print ARGS
+    
+    if ARGS.pypath is not None:
+        sys.path.append(ARGS.pypath)
+
+    
+    if hasattr(ARGS, "logtxt"):
+        txt = ARGS.logtxt
+    else:
+        txt = None
+        
+    if hasattr(ARGS, "logsock"):
+        sock = ARGS.logsock
+    else:
+        sock = None        
+        
+    trace.TraceManager.create(txt, sock)
+    
+    
+    result.Result.create(ARGS.result, trace.TraceManager.get(), ARGS.json, ARGS.junit)
+
+
+    valid.Valid.create(result.Result.get())
     trace.TraceManager.get().set_result(result.Result.get())
-    trace.TraceManager.get().start()
     
     # Configuration management
+    trace.TraceManager.get().start()
     SCOPE_CF = "CF"
+    trace.TraceManager.get().trace_env(SCOPE_CF, str(ARGS))
     trace.TraceManager.get().trace_env(SCOPE_CF, "Library version : pytestemb %s" % VERSION_STRING)
     trace.TraceManager.get().trace_env(SCOPE_CF, "Python-version : %s" % platform.python_version())
     trace.TraceManager.get().trace_env(SCOPE_CF, "Plateform : %s" % platform.platform(terse=True))
-    trace.TraceManager.get().trace_env(SCOPE_CF, "Default encoding : %s" % sys.getdefaultencoding())
-    trace.TraceManager.get().trace_env(SCOPE_CF, "Report json : %s" % ARGS.json)
-    trace.TraceManager.get().trace_env(SCOPE_CF, "Report junit : %s" % ARGS.junit)
+    trace.TraceManager.get().trace_env(SCOPE_CF, "Default encoding : %s" % sys.getdefaultencoding())    
+
 
 
 
